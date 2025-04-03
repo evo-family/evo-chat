@@ -27,7 +27,8 @@ win:
   target:
     - target: nsis
 nsis:
-  icon: resources/logo.png
+  installerIcon: 'resources/logo.png'
+  uninstallerIcon: 'resources/logo.png'
   artifactName: ${productName}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
