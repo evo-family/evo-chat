@@ -1,0 +1,77 @@
+appId: com.evo.app
+productName: Evo Chat
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!*.md'
+  - '!**/*.{map,ts,tsx,jsx,less,scss,sass,css.d.ts,d.cts,d.mts,md,markdown,yaml,yml}'
+  - '!**/{test,tests,__tests__,coverage}/**'
+  - '!**/*.{spec,test}.{js,jsx,ts,tsx}'
+  - '!**/*.min.*.map'
+  - '!**/*.d.ts'
+asar: false
+asarUnpack:
+  - resources/**
+
+icon: resources/logo.png
+win:
+  icon: resources/logo.png
+  executableName: Evo Chat
+  artifactName: ${productName}-${version}-portable.${ext}
+  target:
+    - target: nsis
+nsis:
+  icon: resources/logo.png
+  artifactName: ${productName}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  allowToChangeInstallationDirectory: true
+  oneClick: false
+  include: pkg-script/nsis-installer.nsh
+mac:
+  icon: resources/logo.png
+  entitlementsInherit: pkg-script/entitlements.mac.plist
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  extendInfo:
+    - NSCameraUsageDescription: Application requests access to the device's camera.
+    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+  notarize: false
+  identity: null # 开发环境禁用签名
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  signIgnore: ['node_modules/**/*']
+  target:
+    - target: dmg
+      arch:
+        - arm64
+        - x64
+    - target: zip
+      arch:
+        - arm64
+        - x64
+linux:
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  target:
+    - target: AppImage
+      arch:
+        - arm64
+        - x64
+  maintainer: electronjs.org
+  category: Utility
+
+npmRebuild: false
+publish:
+  provider: github
+  owner: evo-family
+  repo: test
+electronDownload:
+  mirror: https://npmmirror.com/mirrors/electron/

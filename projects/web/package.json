@@ -1,0 +1,36 @@
+{
+  "name": "@evo/web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "rsbuild dev --open",
+    "build": "rsbuild build"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@ant-design/pro-components": "^2.8.6",
+    "@ant-design/x": "^1.0.5",
+    "@evo/component": "workspace:*",
+    "@evo/data-store": "workspace:*",
+    "@evo/platform-bridge": "workspace:*",
+    "@evo/types": "workspace:*",
+    "@evo/utils": "workspace:*",
+    "@llm-tools/embedjs-interfaces": "^0.1.28",
+    "ahooks": "^3.7.8",
+    "antd": "^5.24.0",
+    "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
+    "i18next": "^24.2.2",
+    "i18next-browser-languagedetector": "^8.0.4",
+    "rc-virtual-list": "^3.18.5",
+    "react": "18",
+    "react-dom": "18",
+    "react-i18next": "^15.4.1",
+    "react-router": "^7.1.5",
+    "use-context-selector": "^2.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

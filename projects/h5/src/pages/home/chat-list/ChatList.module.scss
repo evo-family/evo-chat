@@ -1,0 +1,41 @@
+.menu {
+  background: transparent !important;
+  border-right: none !important;
+
+  :global {
+    .ant-menu-item-group {
+      // margin-bottom: 16px; // 设置组之间的间距
+
+      &:last-child {
+        margin-bottom: 0; // 最后一个组不需要底部间距
+      }
+    }
+
+    .ant-menu-item-group-title {
+      padding: 0px 12px; // 可以调整组标题的内边距
+      font-size: 12px;
+    }
+  }
+}
+
+.chatItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 16px;
+}
+
+.rightContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

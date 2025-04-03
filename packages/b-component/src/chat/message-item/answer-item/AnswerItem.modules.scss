@@ -1,0 +1,19 @@
+.container {
+  padding: 10px 20px 10px 10px;
+  background-color: #fff;
+  border-radius: 8px;
+
+  :global {
+    .ant-collapse-content-box {
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #fff;
+      margin: 4px;
+    }
+  }
+
+  .reasoning-wrap {
+    margin-top: 10px;
+    border: 1px solid var(--evo-collapse-header-bg);
+  }
+}

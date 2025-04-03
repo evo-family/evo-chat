@@ -1,0 +1,42 @@
+{
+  "name": "@evo/utils",
+  "version": "1.0.0",
+  "description": "",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./build/index.d.ts",
+      "build": "./dist/index.mjs"
+    },
+    "./style/*.scss": "./src/style/*.scss"
+  },
+  "scripts": {
+    "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development"
+  },
+  "dependencies": {
+    "@evo-tools/compile": "workspace:*",
+    "@evo/types": "workspace:*",
+    "@tanstack/query-core": "^5.66.4",
+    "@tanstack/query-persist-client-core": "^5.66.4",
+    "@tanstack/react-query": "^5.66.9",
+    "ahooks": "^3.7.8",
+    "axios": "^1.7.9",
+    "dexie": "^4.0.11",
+    "lodash": "^4.17.21",
+    "openai": "^4.85.4",
+    "react": "18.3.1",
+    "rxjs": "^7.8.2",
+    "use-context-selector": "^2.0.0",
+    "uuid": "^11.1.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
+  }
+}

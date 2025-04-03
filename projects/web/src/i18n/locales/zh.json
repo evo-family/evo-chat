@@ -1,0 +1,7 @@
+{
+  "sender": {
+    "placeholder": "发消息、输入 @ 选择模型",
+    "uploadFile": "上传文件",
+    "dropFile": "拖拽文件到此处上传"
+  }
+}

@@ -1,0 +1,29 @@
+.body {}
+
+.evo-button-icon {
+  .ant-btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.evo-menu {
+  background: transparent !important;
+  border-right: none !important;
+
+  :global {
+    .ant-menu-item-group {
+      // margin-bottom: 16px; // 设置组之间的间距
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .ant-menu-item-group-title {
+      padding: 0px 12px;
+      font-size: 12px;
+    }
+  }
+}

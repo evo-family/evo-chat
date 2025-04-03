@@ -1,0 +1,16 @@
+{
+  "exclude": [
+    "build",
+    "tests",
+    "./src/state-utils/hooks"
+  ],
+  "extends": "@evo-tools/compile/config/tsconfig.options.json",
+  "include": [
+    "src/**/*",
+    "types/**/*",
+    "./node_modules/@evo/types/electron.d.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "./build",
+  }
+}

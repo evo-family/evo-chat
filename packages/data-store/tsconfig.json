@@ -1,0 +1,57 @@
+{
+  "exclude": [
+    "build",
+    "tests"
+  ],
+  "extends": "@evo-tools/compile/config/tsconfig.options.json",
+  "include": [
+    "src/**/*",
+    "src/**/*.json",
+    "types/**/*",
+    "typings.d.ts",
+    "../../types/**/*",
+  ],
+  "references": [
+    {
+      "path": "../utils"
+    }
+  ],
+  "compilerOptions": {
+    "outDir": "./build",
+    "paths": {
+      "@/assets/*": [
+        "./src/assets/*"
+      ],
+      "@/chat-controller/*": [
+        "./src/chat-controller/*"
+      ],
+      "@/chat-message/*": [
+        "./src/chat-message/*"
+      ],
+      "@/chat-window/*": [
+        "./src/chat-window/*"
+      ],
+      "@/config-data/*": [
+        "./src/config-data/*"
+      ],
+      "@/model-connection/*": [
+        "./src/model-connection/*"
+      ],
+      "@/processor/*": [
+        "./src/processor/*"
+      ],
+      "@/query-client/*": [
+        "./src/query-client/*"
+      ],
+      "@/react-context/*": [
+        "./src/react-context/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ]
+    }
+  }
+}

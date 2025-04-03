@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.menu {
+  width: 200px;
+  border-right: 1px solid var(--evo-color-border);
+  background-color: transparent;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+
+  scroll-behavior: smooth;
+  background: #fff;
+
+  section {
+    min-height: 400px;
+    margin-bottom: 24px;
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+}
+
+.scroll {
+  padding: 24px;
+}

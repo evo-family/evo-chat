@@ -1,0 +1,39 @@
+{
+  "name": "h5",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rsbuild build",
+    "dev": "rsbuild dev --open",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "preview": "rsbuild preview"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@ant-design/pro-components": "^2.8.6",
+    "@ant-design/x": "^1.0.5",
+    "@evo/component": "workspace:*",
+    "@evo/data-store": "workspace:*",
+    "@evo/platform-bridge": "workspace:*",
+    "@evo/types": "workspace:*",
+    "@evo/utils": "workspace:*",
+    "ahooks": "^3.7.8",
+    "antd": "^5.24.0",
+    "antd-mobile": "^5.38.1",
+    "antd-mobile-icons": "^0.3.0",
+    "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
+    "i18next": "^24.2.2",
+    "i18next-browser-languagedetector": "^8.0.4",
+    "jotai": "^2.12.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.1",
+    "react-router": "^7.1.5",
+    "react-router-dom": "^7.4.0",
+    "use-context-selector": "^2.0.0",
+    "vconsole": "^3.15.1"
+  }
+}

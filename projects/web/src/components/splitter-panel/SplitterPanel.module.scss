@@ -1,0 +1,22 @@
+.splitter {
+  height: 100%;
+
+  :global {
+    .ant-splitter-bar-dragger {
+      // height: 100px !important;
+    }
+
+    .ant-splitter-pane-first {
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .ant-splitter-handler {
+      transition: left 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+  }
+}
+
+.leftPanel {
+  overflow: hidden;
+  border-radius: 10px;
+}

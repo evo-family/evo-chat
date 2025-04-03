@@ -1,0 +1,29 @@
+{
+  "name": "@evo/platform-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "module": "dist/index.js",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development"
+  },
+  "dependencies": {
+    "@evo/types": "workspace:*",
+    "@evo/utils": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@llm-tools/embedjs-interfaces": "^0.1.28"
+  }
+}

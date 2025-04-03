@@ -1,0 +1,29 @@
+{
+  "name": "@evo/pglite-manager",
+  "version": "1.0.0",
+  "description": "",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require":  "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.17",
+    "@evo/types": "workspace:*"
+  },
+  "peerDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@llm-tools/embedjs-interfaces": "^0.1.28"
+  }
+}

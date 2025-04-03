@@ -1,0 +1,54 @@
+{
+  "exclude": [
+    "build",
+    "tests",
+    "./src/state-utils/hooks"
+  ],
+  "extends": "@evo-tools/compile/config/tsconfig.options.json",
+  "include": [
+    "src/**/*",
+    "types/**/*",
+    "./node_modules/@evo/types/electron.d.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "./build",
+    "paths": {
+      "@/base-idb-store/*": [
+        "./src/base-idb-store/*"
+      ],
+      "@/base-processor/*": [
+        "./src/base-processor/*"
+      ],
+      "@/base-service/*": [
+        "./src/base-service/*"
+      ],
+      "@/data-cell/*": [
+        "./src/data-cell/*"
+      ],
+      "@/hook-executor/*": [
+        "./src/hook-executor/*"
+      ],
+      "@/open-ai-client/*": [
+        "./src/open-ai-client/*"
+      ],
+      "@/platform-service/*": [
+        "./src/platform-service/*"
+      ],
+      "@/request/*": [
+        "./src/request/*"
+      ],
+      "@/state-tissue/*": [
+        "./src/state-tissue/*"
+      ],
+      "@/state-utils/*": [
+        "./src/state-utils/*"
+      ],
+      "@/storage/*": [
+        "./src/storage/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ]
+    }
+  }
+}

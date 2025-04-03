@@ -1,0 +1,42 @@
+.paramCard {
+  width: 380px;
+
+  :global {
+    .ant-card-head {
+      min-height: 40px;
+      padding: 0 12px;
+
+      .ant-card-head-title {
+        padding: 8px 0;
+      }
+    }
+
+    .ant-card-body {
+      padding: 12px;
+    }
+  }
+}
+
+.paramItem {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  .desc {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+  }
+}
+
+.control {
+  display: flex;
+  align-items: center;
+}

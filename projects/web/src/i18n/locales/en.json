@@ -1,0 +1,7 @@
+{
+  "sender": {
+    "placeholder": "Send message, type @ to select model",
+    "uploadFile": "Upload File",
+    "dropFile": "Drop file here to upload"
+  }
+}

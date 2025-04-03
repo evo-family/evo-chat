@@ -1,0 +1,24 @@
+{
+  "name": "@evo/types",
+  "version": "1.0.0",
+  "description": "",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts",
+      "build": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@llm-tools/embedjs-interfaces": "^0.1.28"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

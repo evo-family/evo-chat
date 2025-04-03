@@ -1,0 +1,21 @@
+{
+  "exclude": [
+    "build",
+    "tests"
+  ],
+  "extends": "@evo-tools/compile/config/tsconfig.options.json",
+  "include": [
+    "src/**/*",
+    "types/**/*",
+    "typings.d.ts",
+    "../../types/**/*",
+  ],
+  "compilerOptions": {
+    "outDir": "./build",
+    "paths": {
+      "@/meta/*": [
+        "./src/meta/*"
+      ],
+    }
+  }
+}
