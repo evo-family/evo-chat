@@ -1,0 +1,209 @@
+$prefix-module-cls: 'evo-setting';
+
+@mixin flexbox($direction: row, $alignItems: normal, $justifyContent: normal) {
+  @if $direction ==row {
+    display: flex;
+    flex-direction: row;
+    align-items: $alignItems;
+    justify-content: $justifyContent;
+  }
+
+  @else if $direction ==column {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    justify-content: $justifyContent;
+  }
+
+  @else {
+    @error 'direction must be row or column';
+  }
+}
+
+
+.evo-setting {
+  &-panel {}
+
+  &-has {
+
+    &-vt+&-vc {
+      margin-top: 8px;
+    }
+
+    &-vc+&-vt {
+      margin-top: 16px;
+    }
+
+    &-vt+&-vtc {
+      margin-top: 16px;
+    }
+
+    &-vtc+&-vt {
+      margin-top: 16px;
+    }
+
+    &-vt+&-htc {
+      margin-top: 12px;
+    }
+
+    &-htc+&-vt {
+      margin-top: 20px;
+    }
+
+    &-vc+&-vtc {
+      margin-top: 16px;
+    }
+
+    &-vtc+&-vc {
+      margin-top: 8px;
+    }
+
+    &-vc+&-htc {
+      margin-top: 8px;
+    }
+
+    &-htc+&-vc {
+      margin-top: 8px;
+    }
+
+    &-vtc+&-htc {
+      margin-top: 12px;
+    }
+
+    &-htc+&-vtc {
+      margin-top: 16px;
+    }
+
+    &-vt+&-vt {
+      margin-top: 16px;
+    }
+
+    &-vc+&-vc {
+      margin-top: 8px;
+    }
+
+    &-htc+&-htc {
+      margin-top: 8px;
+    }
+
+    &-vtc+&-vtc {
+      margin-top: 16px;
+    }
+  }
+
+  *+&-divider,
+  &-divider+*,
+  *+&-group,
+  &-group+* {
+    margin-top: 16px;
+  }
+
+  // 分割线
+  &-divider {
+    // --setting-divider-padding: var(--setting-panel-padding, 0);
+    height: 1px;
+    background-color: var(--evo-color-fill);
+    // margin-left: calc(0px - var(--setting-divider-padding));
+    // margin-right: calc(0px - var(--setting-divider-padding));
+    margin-left: -100px;
+    margin-right: -100px;
+  }
+
+  // 分组
+  &-group {}
+
+  &-title {
+    @include flexbox(row, center);
+    max-width: 100%;
+
+    &-name {
+      @include flexbox(row, center);
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+
+      &-small {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 400;
+        color: var(--evo-color-text-secondary);
+      }
+
+      &-middle {
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--evo-color-text);
+      }
+
+      &-large {
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--evo-color-text);
+      }
+    }
+
+
+    &-required {
+      color: var(--evo-error-color);
+      margin-left: 4px;
+    }
+
+    &-tooltips {
+      margin-left: 4px;
+      cursor: pointer;
+
+    }
+  }
+
+  // 控件项
+  &-control {
+    line-height: 1;
+  }
+
+  // 说明项
+  &-description {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--evo-color-text-tertiary);
+  }
+
+  *+&-description {
+    margin-top: 8px;
+  }
+
+  // 垂直结构
+  &-vertical {
+    .#{$prefix-module-cls}-container {
+      @include flexbox(column);
+    }
+
+    .evo-setting-title+.evo-setting-control {
+      margin-top: 8px;
+    }
+  }
+
+  // 水平结构
+  &-horizontal {
+    .evo-setting-container {
+      @include flexbox(row, center, space-between);
+    }
+
+    .evo-setting {
+      &-title {}
+
+      &-control {
+        font-size: 12px;
+
+        flex: 0 1 auto;
+      }
+    }
+
+    .evo-setting-title+.evo-setting-control {
+      margin-left: 16px;
+    }
+  }
+}

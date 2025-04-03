@@ -1,0 +1,38 @@
+{
+  "name": "@evo/data-store",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development"
+  },
+  "dependencies": {
+    "@evo-tools/compile": "workspace:*",
+    "@evo/pglite-manager": "workspace:*",
+    "@evo/platform-bridge": "workspace:*",
+    "@evo/types": "workspace:*",
+    "@evo/utils": "workspace:*",
+    "@tanstack/query-core": "^5.66.4",
+    "@tanstack/query-persist-client-core": "^5.66.4",
+    "ahooks": "^3.7.8",
+    "openai": "^4.85.4",
+    "react": "18.3.1",
+    "use-context-selector": "^2.0.0",
+    "uuid": "^11.1.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./build/index.d.ts",
+      "build": "./dist/index.mjs"
+    },
+    "./style/*.scss": "./src/style/*.scss"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
+  }
+}

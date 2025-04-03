@@ -1,0 +1,13 @@
+.menuIcon {
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  
+  &:hover {
+    opacity: 1;
+  }
+  
+  &.visible {
+    opacity: 1;
+  }
+}

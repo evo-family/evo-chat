@@ -1,0 +1,109 @@
+.container {
+  height: calc(100vh - 45px); // 减去 NavBar 的高度
+  display: flex;
+  flex-direction: column;
+}
+
+
+.modelList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  // SortableList 容器
+  >div:first-child {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.sortItem {
+  padding: 0 16px;
+  background-color: var(--adm-color-background);
+  margin-bottom: 1px;
+}
+
+
+.modelItem {
+
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: move;
+
+  .dragHandle {
+    color: var(--evo-text-color);
+  }
+
+  .content {
+    flex: 1;
+    padding: 8px 0;
+    cursor: pointer;
+
+    .space {
+      width: calc(100% - 16px);
+      padding-left: 16px;
+    }
+
+  }
+
+
+  // padding: 12px 16px;
+  // cursor: pointer;
+  // transition: background-color 0.3s;
+
+  // &:hover {
+  //   background-color: var(--evo-color-bg-elevated);
+  // }
+
+  // &.active {
+  //   background-color: var(--evo-color-primary-bg);
+  // }
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.configArea {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+}
+
+.sortableContainer {
+  flex: 1;
+  overflow: auto;
+}
+
+.addModelProvider {
+  position: sticky;
+  bottom: 0;
+  background: var(--evo-bg-color);
+  padding: 12px 16px;
+  border-top: 1px solid var(--evo-border-color);
+}
+
+.setModal {
+  height: 100%;
+  background-color: red;
+}
+
+.popupContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .popupHeader {
+    flex-shrink: 0;
+  }
+
+  .popupContent {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+  }
+}

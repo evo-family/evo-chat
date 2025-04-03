@@ -1,0 +1,19 @@
+@function to-evo-token($token) {
+  $result: '--evo-' + to-kebab-case($token);
+  @return var(#{$result});
+}
+
+@function to-kebab-case($string) {
+  $result: $string;
+
+  // 替换大写字母为 -小写字母
+  @while str-index($result, '[A-Z]') {
+    $index: str-index($result, '[A-Z]');
+    $before: str-slice($result, 1, $index - 1);
+    $letter: to-lower-case(str-slice($result, $index, $index));
+    $after: str-slice($result, $index + 1);
+    $result: $before + '-' + $letter + $after;
+  }
+
+  @return $result;
+}

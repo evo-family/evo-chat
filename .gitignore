@@ -1,0 +1,77 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ide setting
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/*.code-snippets
+
+.idea/*
+!.idea/vcs.xml
+!.idea/startup.xml
+!.idea/runConfigurations/
+
+# dependencies
+node_modules/
+pnpm-global/
+.pnp/
+.pnp.js
+
+# testing
+coverage/
+
+# production
+dist/
+build/
+.cache/
+
+# misc
+TODO.*
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# force using pnpm as the package manager
+package-lock.json
+yarn.lock
+
+# error messages
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo
+
+# ignore unused path
+packages/*/public/static/css/
+packages/*/es/
+packages/*/lib/
+packages/*/release/
+
+# static file which generated from v5-theme
+projects/*/public/static
+projects/*/release/
+
+# ignore others
+.hash
+versions.env
+.idea
+
+test/
+
+
+vite.config.*.timestamp*
+deploy.sh
+*.txt
+nginx.conf
+.git
+
+resources/data/otherAgent
+
+# 临时提供商配置
+**/temp-provider/
+**/temp-provider/*

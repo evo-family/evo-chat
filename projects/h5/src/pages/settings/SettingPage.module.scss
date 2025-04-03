@@ -1,0 +1,53 @@
+.page {
+  padding: 12px;
+  background-color: #f5f5f5;
+  min-height: 100%;
+}
+
+.section {
+  margin-bottom: 12px;
+  
+  .title {
+    padding: 8px 12px;
+    color: #999;
+    font-size: 14px;
+  }
+}
+
+.list {
+  :global {
+    .adm-list-body {
+      border-radius: 6px;
+      overflow: hidden;
+    }
+  }
+  
+  // background-color: blue;
+  
+  // // --adm-list-body-border-radius: 20px;
+  // .adm-list {
+  //   background-color: green !important;
+  //   .adm-list-body {
+  //     height: 800;
+  //     background-color: red !important;
+  //     border-radius: 8px;
+  //     overflow: hidden;
+  //   }
+  // }
+}
+
+.item {
+    color: var(--adm-color-text-secondary)
+}
+
+.themeList {
+  min-width: 120px;
+  padding: 8px 0;
+}
+
+// ... existing code ...
+.currentTheme {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--adm-color-text-secondary);
+}

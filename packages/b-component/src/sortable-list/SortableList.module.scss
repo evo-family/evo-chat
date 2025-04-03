@@ -1,0 +1,15 @@
+.list {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dragHandle {
+  cursor: grab;
+  outline: none;
+  margin-left: -4px;
+  &:active {
+    cursor: grabbing;
+  }
+}

@@ -1,0 +1,5 @@
+packages:
+  - 'tools/*'
+  - 'packages/*'
+  - 'projects/*'
+  - '!**/tests/**'

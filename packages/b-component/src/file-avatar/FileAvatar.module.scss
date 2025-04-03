@@ -1,0 +1,16 @@
+.fileAvatar {
+  display: inline-block;
+
+  :global {
+    .ant-attachment-list-card-content {
+      display: none;
+    }
+
+    .ant-attachment-list-card {
+      margin: 0;
+      padding: 0;
+      border-radius: 4px;
+      background: transparent !important;
+    }
+  }
+}

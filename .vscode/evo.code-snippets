@@ -1,0 +1,9 @@
+{
+  "Evo Console Log": {
+    "prefix": "elog",
+    "body": [
+      "console.log(\"evo=>\", $1)"
+    ],
+    "description": "Evo 项目专用的 console.log"
+  }
+}
