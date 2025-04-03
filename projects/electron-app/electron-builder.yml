@@ -73,6 +73,6 @@ npmRebuild: false
 publish:
   provider: github
   owner: evo-family
-  repo: test
+  repo: eov-chat
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
