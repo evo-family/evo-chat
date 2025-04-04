@@ -1,8 +1,8 @@
-import { EResourceType, IFileMeta } from "@evo/types";
-import { isElectron, isMobile } from "./env";
+import { EResourceType, IFileMeta } from '@evo/types';
+import { isElectron, isMobile } from './env';
 
 export const IMG_EXTS = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg'];
-export const DOCUMENT_EXTS = ['.pdf', '.docx', '.pptx', '.xlsx', '.odt', '.odp', '.ods']
+export const DOCUMENT_EXTS = ['.pdf', '.docx', '.pptx', '.xlsx', '.odt', '.odp', '.ods'];
 
 /**
  * 获取文件扩展名
@@ -10,7 +10,7 @@ export const DOCUMENT_EXTS = ['.pdf', '.docx', '.pptx', '.xlsx', '.odt', '.odp',
  * @returns 小写的扩展名（带点），如 .jpg
  */
 export const getFileExtension = (fileName: string): string => {
-  const ext = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
+  const ext = fileName.slice(((fileName.lastIndexOf('.') - 1) >>> 0) + 2);
   return ext ? `.${ext.toLowerCase()}` : '';
 };
 
@@ -20,7 +20,7 @@ export const getFileExtension = (fileName: string): string => {
  * @returns 小写的扩展名（不带点），如 jpg
  */
 export const getFileExtensionWithoutDot = (fileName: string): string => {
-  const ext = fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2);
+  const ext = fileName.slice(((fileName.lastIndexOf('.') - 1) >>> 0) + 2);
   return ext ? ext.toLowerCase() : '';
 };
 
@@ -66,10 +66,13 @@ export const getPlatformFileAccept = () => {
  * @param type 文件类型
  * @returns 文件列表
  */
-export const getFileListByType = (files: IFileMeta[], options: {
-  type: EResourceType,
-  search?: string,
-}) => {
+export const getFileListByType = (
+  files: IFileMeta[],
+  options: {
+    type: EResourceType;
+    search?: string;
+  }
+) => {
   const { type, search } = options;
   let result = [];
   // 如果是全部文件或没有指定类型，返回所有文件
@@ -77,7 +80,7 @@ export const getFileListByType = (files: IFileMeta[], options: {
     result = files;
   } else {
     // 根据文件类型过滤
-    result = files.filter(file => {
+    result = files.filter((file) => {
       const ext = file.type.toLocaleLowerCase();
       switch (type) {
         case EResourceType.Image:
@@ -96,14 +99,11 @@ export const getFileListByType = (files: IFileMeta[], options: {
     });
   }
 
-
   // 按关键词搜索
   if (search) {
     const keyword = search.toLowerCase();
-    result = result.filter(file =>
-      file.name.toLowerCase().includes(keyword)
-    );
+    result = result.filter((file) => file.name.toLowerCase().includes(keyword));
   }
 
   return result;
-}
+};

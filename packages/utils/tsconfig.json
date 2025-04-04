@@ -2,7 +2,6 @@
   "exclude": [
     "build",
     "tests",
-    "./src/state-utils/hooks"
   ],
   "extends": "@evo-tools/compile/config/tsconfig.options.json",
   "include": [

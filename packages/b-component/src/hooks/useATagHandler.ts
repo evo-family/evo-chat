@@ -10,10 +10,9 @@ export const useATagHandler = () => {
       const target = e.target as HTMLElement;
       const link = target.closest('a');
 
-      // link.getAttribute('target') === '_blank'
-      if (link) {
+      if (link && link.hasAttribute('href')) {
         e.preventDefault();
-        e.stopPropagation();  // 阻止事件冒泡
+        e.stopPropagation();
         const href = link.getAttribute('href');
         if (href) {
           openUrl(href);
@@ -21,7 +20,7 @@ export const useATagHandler = () => {
       }
     };
 
-    document.addEventListener('click', handleClick, true);  // 使用捕获阶段
+    document.addEventListener('click', handleClick, true);
     return () => document.removeEventListener('click', handleClick, true);
   }, []);
 };

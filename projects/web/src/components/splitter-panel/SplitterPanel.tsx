@@ -1,8 +1,13 @@
+import React, { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { usePrevious, useUpdate, useUpdateEffect } from 'ahooks';
+
 import { Splitter } from 'antd';
-import React, { FC } from 'react';
+import cxb from 'classnames/bind';
 import s from './SplitterPanel.module.scss';
 import { useAntdToken } from '@evo/component';
 import { useSettingSelector } from '@evo/data-store';
+
+const cx = cxb.bind(s);
 
 export interface ISplitterPanelProps {
   /**
@@ -13,14 +18,25 @@ export interface ISplitterPanelProps {
   children?: React.ReactNode;
 }
 
-export const SplitterPanel: FC<ISplitterPanelProps> = (props) => {
+export const SplitterPanel: FC<ISplitterPanelProps> = React.memo((props) => {
   const { leftContent, children, leftVisible } = props;
-  const layout = useSettingSelector((s) => s.layout);
+
+  const leftVisibleRef = useRef(leftVisible);
+  const lastRenderLeftVisble = leftVisibleRef.current;
+  leftVisibleRef.current = leftVisible;
+  const visibleChanged = leftVisible !== lastRenderLeftVisble;
+
   const token = useAntdToken();
+  const forceFlush = useUpdate();
+
+  useUpdateEffect(() => {
+    setTimeout(forceFlush, 300);
+  }, [visibleChanged]);
+
   return (
     <Splitter className={s.splitter}>
       <Splitter.Panel
-        className={s.leftPanel}
+        className={cx(['leftPanel', { 'collpase-transition': visibleChanged }])}
         defaultSize={260}
         min={200}
         max="70%"
@@ -31,13 +47,11 @@ export const SplitterPanel: FC<ISplitterPanelProps> = (props) => {
       <Splitter.Panel
         className={s.message}
         style={{
-          // backgroundColor: layout === ELayout.l2 ? token.colorBgLayout : token.colorBgContainer,
           backgroundColor: token.colorBgLayout,
-          // border: `1px solid ${token.colorSplit}`,
         }}
       >
         {children}
       </Splitter.Panel>
     </Splitter>
   );
-};
+});
