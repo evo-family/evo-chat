@@ -45,7 +45,7 @@ export const defaultMsgSend: IBaseModelHandler = async (conn, params) => {
     ...modelParams,
   });
 
-  const pipeTask = defaultStreamResolver({ stream: result, answerCell });
+  const streamTask = defaultStreamResolver({ stream: result, answerCell });
 
-  return { result, pipeTask };
+  return { result, streamTask };
 };

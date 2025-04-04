@@ -1,12 +1,11 @@
-import React, { useLayoutEffect, useMemo, useState } from 'react';
-import { TModelAnswerCell, useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
-
-import { useGetState, useMemoizedFn } from 'ahooks';
-import { Dropdown, MenuProps } from 'antd';
-import { DropdownButtonProps } from 'antd/es/dropdown';
 import { CopyOutlined, DeleteOutlined, SendOutlined, SyncOutlined } from '@ant-design/icons';
+import { Dropdown, MenuProps } from 'antd';
+import React, { useMemo } from 'react';
+import { useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
 
+import { DropdownButtonProps } from 'antd/es/dropdown';
 import style from './Style.module.scss';
+import { useMemoizedFn } from 'ahooks';
 
 export interface IMessageToolbarProps {}
 
@@ -29,9 +28,7 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
   const retryMessage = useMemoizedFn(() => {
     const msgConfig = chatMsg.getConfigState();
 
-    msgConfig.answerIds.forEach((answerId) => {
-      chatWin.retryAnswer({ answerId, msgId: msgConfig.id });
-    });
+    chatWin.retryMessage({ msgId: msgConfig.id });
   });
 
   const removeMessage = useMemoizedFn(() => {
@@ -48,29 +45,33 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
     const result: MenuProps['items'] = [
       {
         key: '1',
+        className: style['action-item'],
         label: (
-          <div className={style['action-item']}>
-            <SyncOutlined />
+          <>
+            <SyncOutlined className={style['action-icon']} />
             重试
-          </div>
+          </>
         ),
         onClick: retryMessage,
       },
       {
         key: '2',
+        className: style['action-item'],
         label: (
           <>
-            <SendOutlined />
-            重发
+            <CopyOutlined className={style['action-icon']} />
+            复制
           </>
         ),
-        onClick: resendMessage,
+        onClick: copyMessageText,
       },
+
       {
         key: '3',
+        className: style['action-item'],
         label: (
           <>
-            <DeleteOutlined />
+            <DeleteOutlined className={style['action-icon']} />
             删除
           </>
         ),
@@ -78,13 +79,14 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
       },
       {
         key: '4',
+        className: style['action-item'],
         label: (
           <>
-            <CopyOutlined />
-            复制
+            <SendOutlined className={style['action-icon']} />
+            重发
           </>
         ),
-        onClick: copyMessageText,
+        onClick: resendMessage,
       },
     ];
     return result;
