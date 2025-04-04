@@ -54,7 +54,7 @@ export class FileProcessor
 
         for (let i = 0; i < bytes.length; i += chunkSize) {
           const chunk = bytes.slice(i, i + chunkSize);
-          binary += String.fromCharCode.apply(null, chunk);
+          binary += String.fromCharCode.apply(null, chunk as any);
         }
 
         const base64 = `data:image/${ext.slice(1)};base64,${btoa(binary)}`;

@@ -1,5 +1,9 @@
 import { PGlite, PGliteOptions } from '@electric-sql/pglite';
-import { transformKeysToSnakeCase, transformObjectToCamelCase, transformResultToCamelCase } from './dbUtil';
+import {
+  transformKeysToSnakeCase,
+  transformObjectToCamelCase,
+  transformResultToCamelCase,
+} from './dbUtil';
 
 /**
  * PgLite 数据库管理器
@@ -32,7 +36,7 @@ export class PGLiteManager {
    */
   async query(query: string, params: any[] = []): Promise<any> {
     if (!this.initialized) await this.initialize();
-    transformResultToCamelCase
+    transformResultToCamelCase;
     const result = await this.db.query(query, params);
     if (result.rows) {
       result.rows = transformResultToCamelCase(result.rows);
@@ -85,7 +89,7 @@ export class PGLiteManager {
     `;
 
     const result = await this.db.query(query, values);
-    return result.rows[0] as T;
+    return transformObjectToCamelCase(result.rows[0]!) as T;
   }
 
   /**
@@ -127,7 +131,11 @@ export class PGLiteManager {
    * @param conditions 更新条件
    * @returns 更新的行数
    */
-  async update(tableName: string, data: Record<string, any>, conditions: Record<string, any>): Promise<number> {
+  async update(
+    tableName: string,
+    data: Record<string, any>,
+    conditions: Record<string, any>
+  ): Promise<number> {
     if (!this.initialized) await this.initialize();
 
     const snakeCaseData = transformKeysToSnakeCase(data);
@@ -139,7 +147,9 @@ export class PGLiteManager {
     const conditionValues = Object.values(snakeCaseConditions);
 
     const setClause = dataKeys.map((key, i) => `${key} = $${i + 1}`).join(', ');
-    const whereClause = conditionKeys.map((key, i) => `${key} = $${i + dataKeys.length + 1}`).join(' AND ');
+    const whereClause = conditionKeys
+      .map((key, i) => `${key} = $${i + dataKeys.length + 1}`)
+      .join(' AND ');
 
     const query = `
       UPDATE ${tableName}
@@ -159,7 +169,12 @@ export class PGLiteManager {
    * @param idField ID字段名，默认为'id'
    * @returns 更新后的数据
    */
-  async updateById<T>(tableName: string, id: string | number, data: Record<string, any>, idField: string = 'id'): Promise<T | null> {
+  async updateById<T>(
+    tableName: string,
+    id: string | number,
+    data: Record<string, any>,
+    idField: string = 'id'
+  ): Promise<T | null> {
     if (!this.initialized) await this.initialize();
 
     const snakeCaseData = transformKeysToSnakeCase(data);
@@ -176,7 +191,7 @@ export class PGLiteManager {
     `;
 
     const result = await this.db.query(query, [...values, id]);
-    return result.rows.length > 0 ? (result.rows[0] as T) : null;
+    return result.rows.length > 0 ? (transformObjectToCamelCase(result.rows[0]!) as T) : null;
   }
 
   async find<T>(
@@ -228,7 +243,11 @@ export class PGLiteManager {
    * @param idField ID字段名，默认为'id'
    * @returns 查询结果
    */
-  async findById<T>(tableName: string, id: string | number, idField: string = 'id'): Promise<T | null> {
+  async findById<T>(
+    tableName: string,
+    id: string | number,
+    idField: string = 'id'
+  ): Promise<T | null> {
     if (!this.initialized) await this.initialize();
 
     const query = `SELECT * FROM ${tableName} WHERE ${idField} = $1 LIMIT 1`;
@@ -267,7 +286,11 @@ export class PGLiteManager {
    * @param idField ID字段名，默认为'id'
    * @returns 是否删除成功
    */
-  async deleteById(tableName: string, id: string | number, idField: string = 'id'): Promise<boolean> {
+  async deleteById(
+    tableName: string,
+    id: string | number,
+    idField: string = 'id'
+  ): Promise<boolean> {
     if (!this.initialized) await this.initialize();
 
     const query = `DELETE FROM ${tableName} WHERE ${idField} = $1`;
