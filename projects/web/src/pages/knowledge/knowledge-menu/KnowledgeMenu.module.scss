@@ -13,16 +13,16 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  // height: 100%;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 16px;
-    margin-bottom: 16px;
 
-    h4 {
+    .title {
+      color: var(--evo-color-text);
       margin: 0;
     }
   }

@@ -6,6 +6,7 @@ import { AddOrUpdateKnowledge } from '../components/add-or-update/AddOrUpdateKno
 import { useKnowledgeSelector } from '../knowledge-processor/KnowledgeProvider';
 import { MenuItem } from '@evo/component';
 import Item from 'antd/es/list/Item';
+import { useGlobalCtx } from '@evo/data-store';
 
 export interface IKnowledgeMenuProps {
   onMenuClick?: (key: string) => void;
@@ -80,7 +81,7 @@ export const KnowledgeMenu: FC<IKnowledgeMenuProps> = ({ onMenuClick, selectable
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h4>知识库</h4>
+        <span className={styles.title}>知识库</span>
         <AddOrUpdateKnowledge />
       </div>
       <Menu
