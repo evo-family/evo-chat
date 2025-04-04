@@ -4,7 +4,11 @@
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "homepage": "https://hevoai.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evo-family/evo-chat.git"
+  },
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
