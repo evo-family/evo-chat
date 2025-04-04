@@ -54,8 +54,9 @@ export const MessageItem = React.memo<IMessageItemProps>((props) => {
     <ChatMsgContextProvider id={id}>
       <div className={style.container}>
         <MessageLayout
+          avatar={null}
+          // name={'just test name'}
           className={style.question}
-          name={'just test name'}
           time={createdTime}
           actionArea={<MessageToolbar />}
         >
