@@ -1,15 +1,15 @@
-import { Button, Flex, Input, Menu, Space, Typography } from 'antd';
+import { Button, Flex, Menu, Space, Typography } from 'antd';
+import { EvoIcon, SearchInput } from '@evo/component';
 import React, { FC, useEffect, useLayoutEffect, useMemo } from 'react';
 import { agentsData, useGlobalCtx } from '@evo/data-store';
 
-import { EvoIcon, FlexFillWidth, SearchInput } from '@evo/component';
+import { ContentPanel } from '../../components';
 import { IAssistant } from '@evo/types';
 import List from 'rc-virtual-list';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import { ContentPanel } from '../../components';
 
 export interface IAssistantProps {}
 
@@ -168,19 +168,25 @@ export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
         />
       }
     >
-      <div className={style['agent-list']}>
-        {/* <div className={style['search-container']}></div> */}
-        <List
-          data={filteredAgents as unknown as IAssistant[]}
-          height={window.innerHeight - 90} // 调整高度计算，预留更多空间
-          itemHeight={88}
-          itemKey="identifier"
-        >
-          {(agent: IAssistant) => (
-            <RenderAgent key={agent.identifier} data={agent} onClick={handleSelectAgent} />
-          )}
-        </List>
-      </div>
+      {/* <div className={style['search-container']}></div> */}
+      {filteredAgents.length ? (
+        <div className={style['agent-list']}>
+          <List
+            data={filteredAgents as unknown as IAssistant[]}
+            height={window.innerHeight - 90} // 调整高度计算，预留更多空间
+            itemHeight={88}
+            itemKey="identifier"
+          >
+            {(agent: IAssistant) => (
+              <RenderAgent key={agent.identifier} data={agent} onClick={handleSelectAgent} />
+            )}
+          </List>
+        </div>
+      ) : (
+        <Flex vertical align="center" justify="center" style={{ height: '100%' }}>
+          未搜索到结果
+        </Flex>
+      )}
     </ContentPanel>
   );
 });
