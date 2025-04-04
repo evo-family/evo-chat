@@ -26,7 +26,7 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
     return (
       <Flex className={style.container}>
         <Tooltip title="停止内容生成">
-          <BorderOutlined className={style.icon} onClick={stopModel} />
+          <BorderOutlined className={style['stop-icon']} onClick={stopModel} />
         </Tooltip>
       </Flex>
     );
