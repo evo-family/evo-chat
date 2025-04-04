@@ -16,3 +16,4 @@ export * from './react-context/global';
 export * from './react-context/window/context';
 export * from './react-context/message';
 export * from './glob-state/agent';
+export * from './hooks/agent/useAgentLogic';
