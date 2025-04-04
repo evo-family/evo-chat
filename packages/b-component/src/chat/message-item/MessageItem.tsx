@@ -10,7 +10,7 @@ import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { AnswerItem } from './answer-item/AnswerItem';
 import { MessageLayout } from './message-layout//MessageLayout';
-import { MessageToolbar } from '../bubble-chat/message-toolbar/MessageToolbar';
+import { MessageToolbar } from './message-toolbar/MessageToolbar';
 import { formatChatStringTime } from '../../utils/format';
 import style from './MessageItem.module.scss';
 
@@ -54,8 +54,9 @@ export const MessageItem = React.memo<IMessageItemProps>((props) => {
     <ChatMsgContextProvider id={id}>
       <div className={style.container}>
         <MessageLayout
+          avatar={null}
+          // name={'just test name'}
           className={style.question}
-          name={'just test name'}
           time={createdTime}
           actionArea={<MessageToolbar />}
         >

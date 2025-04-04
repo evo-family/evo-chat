@@ -21,13 +21,14 @@ asarUnpack:
 
 icon: resources/logo.png
 win:
-  icon: resources/logo.png
+  icon: resources/logo.ico
   executableName: Evo Chat
   artifactName: ${productName}-${version}-portable.${ext}
   target:
     - target: nsis
 nsis:
-  icon: resources/logo.png
+  installerIcon: resources/logo.ico
+  uninstallerIcon: resources/logo.ico
   artifactName: ${productName}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
@@ -69,9 +70,9 @@ linux:
   category: Utility
 
 npmRebuild: false
-publish:
-  provider: github
-  owner: evo-family
-  repo: test
+# publish:
+#   provider: github
+#   owner: evo-family
+#   repo: eov-chat
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
