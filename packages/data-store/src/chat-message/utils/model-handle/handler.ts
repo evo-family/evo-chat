@@ -1,5 +1,4 @@
 import { IBaseModelHandler, IModelConnHandle } from './types';
-import { IMessageConfig, TModelAnswerCell } from '../../types';
 
 import { OpenAiClient } from '@evo/utils';
 import { defaultMsgSend } from './default-handler/handle';
@@ -10,6 +9,7 @@ const modelHandlerMap = new Map<string, IBaseModelHandler>([]);
 export const modelConnHandle: IModelConnHandle = async (params) => {
   const { answerCell } = params;
   const providerName = answerCell.get().provider;
+
   // 根据供应商获取对应的连接
   const provider = modelProcessor.availableModels?.get().find((f) => f.id == providerName);
   if (!provider) {
