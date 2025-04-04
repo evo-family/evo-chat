@@ -195,10 +195,15 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
     );
   }, [latestMsg]);
 
+  // 切换窗口时，聚焦发送框
+  useLayoutEffect(() => {
+    senderRef.current?.focus();
+  }, [chatWin]);
+
   return (
     <AntdXSender
-      loading={loading}
       allowSpeech
+      loading={loading}
       style={{
         background: token.colorFillSecondary,
       }}

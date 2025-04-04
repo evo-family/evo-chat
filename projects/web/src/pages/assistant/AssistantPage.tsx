@@ -1,15 +1,15 @@
-import { Button, Flex, Input, Menu, Space, Typography } from 'antd';
-import React, { FC, useEffect, useLayoutEffect, useMemo } from 'react';
-import { agentsData, useGlobalCtx } from '@evo/data-store';
+import { Button, Flex, Menu, Space, Typography } from 'antd';
+import { EvoIcon, SearchInput } from '@evo/component';
+import React, { FC, useMemo } from 'react';
+import { useAgentLogic, useGlobalCtx } from '@evo/data-store';
 
-import { EvoIcon, FlexFillWidth, SearchInput } from '@evo/component';
+import { ContentPanel } from '../../components';
 import { IAssistant } from '@evo/types';
 import List from 'rc-virtual-list';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
-import { ContentPanel } from '../../components';
 
 export interface IAssistantProps {}
 
@@ -34,6 +34,7 @@ const RenderAgent = React.forwardRef<
   const handleClick = useMemoizedFn(() => {
     onClick?.(data);
   });
+
   return (
     <Flex ref={ref} className={style['agent-item']} align="center" justify="space-between">
       <Flex align="center" style={{ flex: 1 }}>
@@ -55,56 +56,22 @@ const RenderAgent = React.forwardRef<
 });
 
 export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
+  const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
+
   const [searchText, setSearchText] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('全部');
-  const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
-  const [agents, setAgents] = useState<IAssistant[]>([]);
+
+  const { tags, agents, filteredAgents } = useAgentLogic({ searchText, selectedTag });
 
   const navigate = useNavigate();
 
-  // 收集所有不重复的标签并按使用频率排序
-  const tags = useMemo(() => {
-    const tagCount = new Map<string, number>();
-
-    // 统计每个标签的使用次数
-    agents.forEach((agent) => {
-      agent.meta.tags?.forEach((tag) => {
-        tagCount.set(tag, (tagCount.get(tag) || 0) + 1);
-      });
-    });
-
-    // 将标签按使用频率排序
-    const sortedTags = Array.from(tagCount.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([tag]) => tag);
-
-    // 取前12个标签，其余放入"其他"类别
-    const topTags = sortedTags.slice(0, 12);
-    const hasOtherTags = sortedTags.length > 12;
-
-    return ['全部', ...topTags, ...(hasOtherTags ? ['其他'] : [])];
-  }, [agents]);
-
-  // 修改过滤逻辑以支持"其他"类别
-  const filteredAgents = useMemo(() => {
-    return agents.filter((agent) => {
-      const searchLower = searchText.toLowerCase();
-      const matchSearch = agent.meta.title.toLowerCase().includes(searchLower);
-      const matchDescription = agent.meta.description.toLowerCase().includes(searchLower);
-      let matchTag = selectedTag === '全部';
-
-      if (!matchTag) {
-        if (selectedTag === '其他') {
-          // 对于"其他"类别，只显示标签不在前15个中的助手
-          matchTag = agent.meta.tags?.every((tag) => !tags.slice(1, -1).includes(tag)) ?? false;
-        } else {
-          matchTag = agent.meta.tags?.includes(selectedTag) ?? false;
-        }
-      }
-
-      return (matchSearch || matchDescription) && matchTag;
-    });
-  }, [searchText, selectedTag, tags, agents]);
+  const tagMenus = useMemo(() => {
+    return tags.map((tag) => ({
+      key: tag,
+      label: tag,
+      onClick: () => setSelectedTag(tag),
+    }));
+  }, [tags]);
 
   const handleSelectAgent = useMemoizedFn(async (data: IAssistant) => {
     const value = data.identifier;
@@ -124,15 +91,6 @@ export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
     // 关闭弹窗并重置状态
     setSearchText('');
   });
-
-  useLayoutEffect(() => {
-    agentsData.globListen(
-      (signal) => {
-        setAgents(agentsData.getCellsValue({ all: true, getArray: true }).array as IAssistant[]);
-      },
-      { immediate: true, debounceTime: 100 }
-    );
-  }, [agentsData]);
 
   return (
     <ContentPanel
@@ -156,31 +114,28 @@ export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
         </Space>
       }
       leftContent={
-        <Menu
-          className={'evo-menu'}
-          selectedKeys={[selectedTag]}
-          mode="inline"
-          items={tags.map((tag) => ({
-            key: tag,
-            label: tag,
-            onClick: () => setSelectedTag(tag),
-          }))}
-        />
+        <Menu className={'evo-menu'} selectedKeys={[selectedTag]} mode="inline" items={tagMenus} />
       }
     >
-      <div className={style['agent-list']}>
-        {/* <div className={style['search-container']}></div> */}
-        <List
-          data={filteredAgents as unknown as IAssistant[]}
-          height={window.innerHeight - 90} // 调整高度计算，预留更多空间
-          itemHeight={88}
-          itemKey="identifier"
-        >
-          {(agent: IAssistant) => (
-            <RenderAgent key={agent.identifier} data={agent} onClick={handleSelectAgent} />
-          )}
-        </List>
-      </div>
+      {/* <div className={style['search-container']}></div> */}
+      {filteredAgents.length ? (
+        <div className={style['agent-list']}>
+          <List
+            data={filteredAgents as unknown as IAssistant[]}
+            height={window.innerHeight - 90} // 调整高度计算，预留更多空间
+            itemHeight={88}
+            itemKey="identifier"
+          >
+            {(agent: IAssistant) => (
+              <RenderAgent key={agent.identifier} data={agent} onClick={handleSelectAgent} />
+            )}
+          </List>
+        </div>
+      ) : (
+        <Flex vertical align="center" justify="center" style={{ height: '100%' }}>
+          未搜索到结果
+        </Flex>
+      )}
     </ContentPanel>
   );
 });
