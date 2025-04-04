@@ -70,9 +70,9 @@ linux:
   category: Utility
 
 npmRebuild: false
-publish:
-  provider: github
-  owner: evo-family
-  repo: eov-chat
+# publish:
+#   provider: github
+#   owner: evo-family
+#   repo: eov-chat
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
