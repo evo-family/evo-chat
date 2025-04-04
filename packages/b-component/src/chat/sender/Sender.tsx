@@ -7,7 +7,8 @@ import {
 } from '@ant-design/x';
 import { Button, GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
 import { CloudUploadOutlined, LinkOutlined, OpenAIFilled, OpenAIOutlined } from '@ant-design/icons';
-import React, { FC, memo } from 'react';
+import { EModalAnswerStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
+import React, { FC, memo, useLayoutEffect } from 'react';
 import { SenderProvider, useSenderSelector } from './sender-processor/SenderProvider';
 import {
   getFileExtension,
@@ -16,16 +17,16 @@ import {
   isWeb,
   useCellValue,
 } from '@evo/utils';
-import { useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 
+import { ActionsRender } from '@ant-design/x/es/sender';
+import { EvoIcon } from '../../icon';
 import { IFileMeta } from '@evo/types';
 import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
 import { UploadBridgeFactory } from '@evo/platform-bridge';
 import { noop } from 'lodash';
-import { useMemoizedFn } from 'ahooks';
-import { EvoIcon } from '../../icon';
 import { useAntdToken } from '../../hooks';
+import { useMemoizedFn } from 'ahooks';
 
 const SENDER_ATTACH_STYLES = {
   content: {
@@ -44,6 +45,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
   const senderRef = useSenderSelector((s) => s.senderRef);
   const [chatCtrl] = useGlobalCtx((s) => s.chatCtrl);
   const [chatWin] = useChatWinCtx((s) => s.chatWin);
+  const [latestMsg] = useChatWinCtx((s) => s.latestMsg);
 
   const [fileOpen, setFileOpen] = React.useState(false);
   const [items, setItems] = React.useState<GetProp<AttachmentsProps, 'items'>>([]);
@@ -141,8 +143,61 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
     }
   });
 
+  const handleStopMessage = useMemoizedFn(() => {
+    const msgId = latestMsg?.getConfigState('id');
+
+    if (!msgId) return;
+
+    chatWin.stopResolveMessage(msgId);
+  });
+
+  const renderActions = useMemoizedFn<ActionsRender>((_, info) => {
+    const { SendButton, LoadingButton, ClearButton, SpeechButton } = info.components;
+
+    return (
+      <Space size="small">
+        {/* <ClearButton /> */}
+        <SpeechButton variant="filled" color="default" />
+        {loading ? (
+          // icon={<Spin size="small" />}
+          <LoadingButton type="default" />
+        ) : (
+          <SendButton
+            className={'evo-button-icon'}
+            // variant="filled"
+            variant="solid"
+            color="default"
+            icon={<EvoIcon type="icon-send" />}
+            disabled={false}
+          />
+        )}
+      </Space>
+    );
+  });
+
+  useLayoutEffect(() => {
+    if (!latestMsg) return;
+
+    latestMsg.modelAnswers.globListen(
+      () => {
+        const allAnswersInfo = latestMsg.modelAnswers.getCellsValue({ all: true });
+        const arrayAnswers = allAnswersInfo.array;
+
+        const isResolving = arrayAnswers.some(
+          (info) =>
+            info?.status === EModalAnswerStatus.PENDING ||
+            info?.status === EModalAnswerStatus.RECEIVING
+        );
+
+        setLoading(isResolving);
+      },
+      { debounceTime: 50 }
+    );
+  }, [latestMsg]);
+
   return (
     <AntdXSender
+      loading={loading}
       allowSpeech
       style={{
         background: token.colorFillSecondary,
@@ -179,30 +234,10 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
       onChange={setText}
       placeholder="发消息、输入 @ 选择模型"
       value={text}
-      actions={(_, info) => {
-        const { SendButton, LoadingButton, ClearButton, SpeechButton } = info.components;
-        return (
-          <Space size="small">
-            {/* <ClearButton /> */}
-            <SpeechButton variant="filled" color="default" />
-            {loading ? (
-              <LoadingButton type="default" icon={<Spin size="small" />} disabled />
-            ) : (
-              <SendButton
-                onClick={handleSubmit}
-                className={'evo-button-icon'}
-                // variant="filled"
-                variant="solid"
-                color="default"
-                icon={<EvoIcon type="icon-send" />}
-                disabled={false}
-              />
-            )}
-          </Space>
-        );
-      }}
+      actions={renderActions}
       onPasteFile={onPasteFile}
       onSubmit={handleSubmit}
+      onCancel={handleStopMessage}
     />
   );
 });

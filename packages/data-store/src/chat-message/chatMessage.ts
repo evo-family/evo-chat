@@ -12,7 +12,6 @@ import {
   IChatMessageOptions,
   IMessageConfig,
   TModelAnswer,
-  TModelAnswerCell,
 } from './types';
 import { IBaseModelHandler, IModelConnHandleBaseParams } from './utils/model-handle/types';
 
@@ -92,7 +91,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     return key ? config[key] : config;
   }
 
-  stopAnswer(id: string) {
+  stopResolveAnswer(id: string) {
     const modelResolver = this.answerResolver.get(id);
 
     // 先清理前一个model连接接收
@@ -101,9 +100,13 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     }
   }
 
+  stopResolveAllAnswer() {
+    this.getConfigState('answerIds').forEach((id) => this.stopResolveAnswer(id));
+  }
+
   removeAnswer(id: string) {
     this.modelAnswers.clearCell(id);
-    this.stopAnswer(id);
+    this.stopResolveAnswer(id);
 
     const msgConfig = this.getConfigState();
 
@@ -114,19 +117,15 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     });
   }
 
-  retryAnswer(id: string, params?: IModelConnHandleBaseParams) {
-    const targetAnswerCell = this.modelAnswers.getCellSync(id);
+  async reinitializeAnswer(id: string, params?: IModelConnHandleBaseParams) {
+    const answerCell = this.modelAnswers.getCellSync(id);
 
-    if (targetAnswerCell) {
-      this.resolveModel(targetAnswerCell, params);
-    }
-  }
+    if (!answerCell) return;
 
-  protected async resolveModel(answerCell: TModelAnswerCell, params?: IModelConnHandleBaseParams) {
     const answerData = answerCell.get();
     const msgConfig = this.getConfigState();
     // 先尝试停止前一个model连接接收
-    this.stopAnswer(answerData.id);
+    this.stopResolveAnswer(answerData.id);
 
     try {
       // 重置数据answer的数据
@@ -144,7 +143,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       if (handleResult) {
         this.answerResolver.set(answerData.id, handleResult);
 
-        await handleResult.pipeTask;
+        await handleResult.streamTask;
       }
 
       answerCell.set({
@@ -180,24 +179,18 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     const { providers, sendMessage, attachFileInfos } = params;
 
-    const modelHandlers: ((...args: any[]) => any)[] = [];
-
     const answerIds = providers.map(({ name, model }) => {
       const id = generateHashId(32, 'c_ans_');
 
-      modelHandlers.push(() => {
-        const initialAnswerData: TModelAnswer = {
-          id,
-          model,
-          provider: name,
-          ...getEmptyAnswerData(),
-        };
-        const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);
+      const initialAnswerData: TModelAnswer = {
+        id,
+        model,
+        provider: name,
+        ...getEmptyAnswerData(),
+      };
+      const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);
 
-        this.modelAnswers.connectCell(id, answerCell);
-
-        this.resolveModel(answerCell, params);
-      });
+      this.modelAnswers.connectCell(id, answerCell);
 
       return id;
     });
@@ -210,7 +203,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       answerIds,
     });
 
-    modelHandlers.forEach((handle) => handle());
+    answerIds.forEach((id) => this.reinitializeAnswer(id, params));
 
     return this.modelAnswers;
   }

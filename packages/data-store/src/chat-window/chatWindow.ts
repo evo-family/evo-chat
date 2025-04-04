@@ -63,7 +63,6 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
     try {
       this.registerHook('prepare', async () => {
         await persistenceTissue(this.options.config.id);
-        5;
 
         // 持久化tissue初始化后，再调用tryInitCell来初始化本地没有的key、value。（只针对第一次实例化该id的chatWindow时）
         Object.entries(this.options.config).forEach(([key, value]) => {
@@ -238,10 +237,25 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
       await this.composeMessageContext(),
     ]);
 
-    return messageIns.retryAnswer(answerId, {
+    return messageIns.reinitializeAnswer(answerId, {
       composedContexts,
       historyMessages,
     });
+  }
+
+  async retryMessage(params: { msgId: string }) {
+    const { msgId } = params;
+    const chatMsg = await this.getMessage(msgId);
+    const msgConfig = chatMsg.getConfigState();
+
+    return Promise.all(
+      msgConfig.answerIds.map((answerId) => this.retryAnswer({ answerId, msgId: msgConfig.id }))
+    );
+  }
+
+  async stopResolveMessage(msgId: string) {
+    const messageIns = await this.getMessage(msgId);
+    messageIns.stopResolveAllAnswer();
   }
 
   async resendMessage(params: { msgId: string }) {
