@@ -15,14 +15,11 @@ export const FilePageContent: FC<IFilePageContentProps> = memo((props) => {
   const type = useFileSelector((s) => s.type);
   const sliderVisible = useFileSelector((s) => s.sliderVisible);
   const setType = useFileSelector((s) => s.setType);
-  const [isElectron] = useGlobalCtx((s) => s.envProcessor?.isElectron);
   const isFile = type === 'file';
   const leftContent = (
     <>
       <FileMenu selectable={isFile} onMenuClick={() => setType('file')} />
-      {isElectron && (
-        <KnowledgeMenu selectable={!isFile} onMenuClick={() => setType('knowledge')} />
-      )}
+      <KnowledgeMenu selectable={!isFile} onMenuClick={() => setType('knowledge')} />
     </>
   );
   return (

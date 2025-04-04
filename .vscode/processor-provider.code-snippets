@@ -1,0 +1,38 @@
+{
+  "Processor Provider Template": {
+    "prefix": "evoProvider",
+    "description": "创建一个处理器 Provider 模板",
+    "body": [
+      "import React, { createContext, FC, useEffect } from 'react';",
+      "import { useCreation } from 'ahooks';",
+      "import { ${1:Customer}Processor } from './${1:Customer}Processor';",
+      "import { useProcessorSelector } from '@evo/utils';",
+      "",
+      "export interface I${1:Customer}ProviderProps {",
+      "  children: React.ReactElement;",
+      "}",
+      "",
+      "const Context = createContext({} as ${1:Customer}Processor);",
+      "",
+      "export const ${1:Customer}Provider: FC<I${1:Customer}ProviderProps> = ({ children }) => {",
+      "  const processorAction = useCreation(() => {",
+      "    return ${1:Customer}Processor.create();",
+      "  }, []);",
+      "  const { processor, getRoot, destroy } = processorAction || {};",
+      "",
+      "  useEffect(() => {",
+      "    return () => {",
+      "      destroy?.();",
+      "    };",
+      "  }, []);",
+      "",
+      "  return <Context.Provider value={processor!}>{children}</Context.Provider>;",
+      "};",
+      "",
+      "export function use${1:Customer}Selector<R>(selector: (s: ${1:Customer}Processor) => R) {",
+      "  return useProcessorSelector(Context, selector)",
+      "}",
+      ""
+    ]
+  }
+}
