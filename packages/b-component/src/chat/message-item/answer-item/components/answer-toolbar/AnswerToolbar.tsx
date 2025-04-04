@@ -36,6 +36,12 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
     chatMsg.removeAnswer(answerCell.get().id);
   });
 
+  const copyModelAnswer = useMemoizedFn(() => {
+    const answerContent = answerCell.get().content;
+
+    navigator.clipboard.writeText(answerContent);
+  });
+
   if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
     return (
       <Flex className={style.container}>
@@ -43,7 +49,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
           <SyncOutlined onClick={retryModel} />
         </Tooltip>
         <Tooltip title="复制">
-          <CopyOutlined />
+          <CopyOutlined onClick={copyModelAnswer} />
         </Tooltip>
         <Tooltip title="删除">
           <DeleteOutlined onClick={removeModel} />
