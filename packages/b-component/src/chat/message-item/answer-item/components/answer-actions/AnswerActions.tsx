@@ -1,10 +1,10 @@
-import { BorderOutlined } from '@ant-design/icons';
-import { Flex } from 'antd';
 import { EModalAnswerStatus, TModelAnswerCell, useChatMsgCtx } from '@evo/data-store';
-import React from 'react';
-import { useCellValueSelector } from '@evo/utils';
+import { Flex, Tooltip } from 'antd';
 
+import { BorderOutlined } from '@ant-design/icons';
+import React from 'react';
 import style from './Style.module.scss';
+import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
 export interface IAnswerActionsProps {
@@ -19,13 +19,15 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
   const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
   const stopModel = useMemoizedFn(() => {
-    chatMsg.stopAnswer(answerCell.get().id);
+    chatMsg.stopResolveAnswer(answerCell.get().id);
   });
 
   if (status === EModalAnswerStatus.PENDING || status === EModalAnswerStatus.RECEIVING) {
     return (
       <Flex className={style.container}>
-        <BorderOutlined onClick={stopModel} />
+        <Tooltip title="停止内容生成">
+          <BorderOutlined className={style['stop-icon']} onClick={stopModel} />
+        </Tooltip>
       </Flex>
     );
   }

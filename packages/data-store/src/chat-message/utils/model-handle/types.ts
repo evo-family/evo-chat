@@ -1,5 +1,6 @@
 import { ChatResponse, DataCell, OpenAiClient } from '@evo/utils';
 import { IMessageConfig, TComposedContexts, TModelAnswer, TModelAnswerCell } from '../../types';
+
 import { ChatMessage } from '@/chat-message/chatMessage';
 import { IChatWindowConfig } from '@/chat-window/types';
 
@@ -17,7 +18,7 @@ export interface IModelConnHandleParams extends IModelConnHandleBaseParams {
 export interface IModelConnHandle {
   (params: IModelConnHandleParams): Promise<{
     result: ChatResponse<true>;
-    pipeTask: Promise<any>;
+    streamTask: Promise<any>;
   }>;
 }
 

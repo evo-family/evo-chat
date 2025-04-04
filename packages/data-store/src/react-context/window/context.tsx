@@ -9,13 +9,14 @@ import React, {
 } from 'react';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
+import { ChatWindow } from '@/chat-window/chatWindow';
 import { DataCell } from '@evo/utils';
+import { IChatWindowContext } from './types';
 import { IFileMeta } from '@evo/types';
 import { createContext } from 'use-context-selector';
 import { createUseContextSelector } from '@/utils/createContextSelector';
 import { useGlobalCtx } from '../global';
-import { ChatWindow } from '@/chat-window/chatWindow';
-import { IChatWindowContext } from './types';
+import { useLatestMessage } from './hooks/useLatestMsg';
 import { useListScroll } from './hooks/useListScroll';
 
 export const ChatWinContext = createContext<IChatWindowContext>({} as any);
@@ -34,6 +35,7 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
 
   const listDOMRef = useRef<HTMLDivElement>(null);
 
+  const latestMsg = useLatestMessage(curWindowCell);
   const { autoScroll, onMsgListScroll, scrollToBottom, tryScrollToBtmIfNeed } = useListScroll({
     listDOMRef,
   });
@@ -58,6 +60,7 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
       chatWin: curWindowCell as any,
       autoScroll,
       listDOMRef,
+      latestMsg,
       onMsgListScroll,
       tryScrollToBtmIfNeed,
       scrollToBottom,
@@ -68,6 +71,7 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
     autoScroll,
     listDOMRef,
     listDOMRef,
+    latestMsg,
     onMsgListScroll,
     tryScrollToBtmIfNeed,
     handlePostMessage,

@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import s from './contentPanel.module.scss';
+import s from './ContentPanel.module.scss';
 import { Button, Flex } from 'antd';
 import { useAntdToken } from '@evo/component';
 

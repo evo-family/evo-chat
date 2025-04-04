@@ -6,10 +6,10 @@ import {
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
+import { Flex, Tooltip } from 'antd';
 import React, { useDeferredValue, useMemo } from 'react';
 import { useCellValue, useCellValueSelector } from '@evo/utils';
 
-import { Flex } from 'antd';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
 
@@ -36,12 +36,24 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
     chatMsg.removeAnswer(answerCell.get().id);
   });
 
+  const copyModelAnswer = useMemoizedFn(() => {
+    const answerContent = answerCell.get().content;
+
+    navigator.clipboard.writeText(answerContent);
+  });
+
   if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
     return (
       <Flex className={style.container}>
-        <SyncOutlined onClick={retryModel} />
-        <CopyOutlined />
-        <DeleteOutlined onClick={removeModel} />
+        <Tooltip title="重新生成">
+          <SyncOutlined onClick={retryModel} />
+        </Tooltip>
+        <Tooltip title="复制">
+          <CopyOutlined onClick={copyModelAnswer} />
+        </Tooltip>
+        <Tooltip title="删除">
+          <DeleteOutlined onClick={removeModel} />
+        </Tooltip>
       </Flex>
     );
   }

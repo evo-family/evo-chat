@@ -1,4 +1,3 @@
-import React, { FC, useRef, useState } from 'react';
 import { Button, Flex, Menu } from 'antd';
 import {
   CloseOutlined,
@@ -8,15 +7,16 @@ import {
   RobotOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-import { SettingContainer } from './setting-container/SettingContainer';
-import s from './SettingPage.module.scss';
-import { ContentPanel } from '../../components';
-import classNames from 'classnames';
-import { ModelSection } from '../../bcomponents';
+import React, { FC, useRef, useState } from 'react';
+
 import { AboutContent } from './setting-container/about-content/AboutContent';
+import { ContentPanel } from '../../components';
 import { DataContent } from './setting-container/data-content/DataContent';
 import { GeneralContent } from './setting-container/general-content/GeneralContent';
+import { ModelSection } from '../../bcomponents';
 import { ShortcutContent } from './setting-container/shortcut-content/ShortcutContent';
+import classNames from 'classnames';
+import s from './SettingPage.module.scss';
 
 const menuItems = [
   {
@@ -116,7 +116,7 @@ export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
         onScroll={handleScroll}
       >
         {selectedKey === 'model' ? (
-          <section>
+          <section className={s['option-group']}>
             <h2>模型设置</h2>
             <ModelSection />
           </section>
@@ -125,20 +125,20 @@ export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
             {/* <section id="account">
               <h2>账号与安全</h2>
             </section> */}
-            <section id="general">
+            <section id="general" className={s['option-group']}>
               <h2>通用</h2>
               <GeneralContent />
             </section>
 
-            <section id="data">
+            <section id="data" className={s['option-group']}>
               <h2>数据设置</h2>
               <DataContent />
             </section>
-            <section id="shortcut">
+            <section id="shortcut" className={s['option-group']}>
               <h2>快捷键</h2>
               <ShortcutContent />
             </section>
-            <section id="about">
+            <section id="about" className={s['option-group']}>
               <h2>关于我们</h2>
               <AboutContent />
             </section>

@@ -1,9 +1,10 @@
 import React, { useLayoutEffect, useMemo, useState } from 'react';
-import { TModelAnswerCell, useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
+import { TModelAnswerCell, getModelLogo, useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
 
 import { AnswerActions } from './components/answer-actions/AnswerActions';
 import { AnswerRender } from './components/answer-render/AnswerRender';
 import { MessageLayout } from '../message-layout/MessageLayout';
+import { ModelAvatar } from '../../../avatar/model/ModelAvatar';
 import { formatChatStringTime } from '../../../utils/format';
 import style from './AnswerItem.modules.scss';
 import { useGetState } from 'ahooks';
@@ -47,6 +48,7 @@ export const AnswerItem = React.memo<IAnswerItemProps>((props) => {
   return (
     <MessageLayout
       className={style.container}
+      avatar={<ModelAvatar modelName={model} />}
       name={model}
       time={formatCreatedTime}
       actionArea={<AnswerActions answerCell={answerCell} />}
