@@ -4,7 +4,7 @@ import { Flex } from 'antd';
 import { FlexFillWidth } from '../../../flexable/flex-fill-width/FlexFillWidth';
 import cxb from 'classnames/bind';
 import style from './MessageItem.module.scss';
-import { UserAvatar } from '../../../avatar/user';
+import { UserAvatar } from '../../../avatar/User';
 
 const cx = cxb.bind(style);
 
