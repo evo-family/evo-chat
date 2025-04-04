@@ -27,3 +27,10 @@
     }
   }
 }
+
+// 设置图片预览的关闭按钮可点击
+.ant-image-preview-operations-wrapper {
+  .ant-image-preview-close {
+    -webkit-app-region: no-drag;
+  }
+}

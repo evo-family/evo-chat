@@ -2,8 +2,12 @@ import React, { FC, memo } from 'react';
 import s from './ContentPanel.module.scss';
 import { Button, Flex } from 'antd';
 import { useAntdToken } from '@evo/component';
+import {
+  ContentPanelProvider,
+  useContentPanelSelector,
+} from './content-panel-processor/ContentPanelProvider';
 
-export interface IContentPanelProps {
+interface IContentPanelContentProps {
   title: string;
   subTitle?: string;
   toolbar?: React.ReactElement;
@@ -12,8 +16,9 @@ export interface IContentPanelProps {
   children?: React.ReactNode;
 }
 
-export const ContentPanel: FC<IContentPanelProps> = memo((props) => {
+const ContentPanelContent: FC<IContentPanelContentProps> = memo((props) => {
   const { title, toolbar, leftContent, children, leftStyle } = props;
+  const setToolbarElement = useContentPanelSelector((s) => s.setToolbarElement);
   const token = useAntdToken();
   return (
     <div className={s.container}>
@@ -23,7 +28,9 @@ export const ContentPanel: FC<IContentPanelProps> = memo((props) => {
             <div className={s.title}>{title}</div>
             {props.subTitle && <div className={s.subTitle}>{props.subTitle}</div>}
           </div>
-          {toolbar}
+          <div className="app-region-no-drag" ref={setToolbarElement}>
+            {toolbar}
+          </div>
         </Flex>
       </div>
       <div className={s.content}>
@@ -40,5 +47,14 @@ export const ContentPanel: FC<IContentPanelProps> = memo((props) => {
         </div>
       </div>
     </div>
+  );
+});
+
+export interface IContentPanelProps extends IContentPanelContentProps {}
+export const ContentPanel: FC<IContentPanelProps> = memo((props) => {
+  return (
+    <ContentPanelProvider>
+      <ContentPanelContent {...props} />
+    </ContentPanelProvider>
   );
 });
