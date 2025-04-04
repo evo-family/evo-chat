@@ -20,7 +20,6 @@ jobs:
 
     strategy:
       matrix:
-        # os: [windows-latest]
         os: [macos-latest, windows-latest, ubuntu-latest]
       fail-fast: false
 
@@ -33,9 +32,9 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
           else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Install Node.js
@@ -43,20 +42,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
+      - name: Enable Corepack and Install pnpm
+        run: corepack enable && pnpm setup
 
       - name: Get pnpm store directory
         id: pnpm-cache-dir-path
         shell: bash
-        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(pnpm store path)" >> "$GITHUB_OUTPUT"
 
       - name: Cache pnpm dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ steps.pnpm-cache-dir-path.outputs.dir }}
-            node_modules
+          path: ${{ steps.pnpm-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
@@ -66,16 +63,14 @@ jobs:
 
       - name: Build Linux
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          pnpm run build:linux
+        run: pnpm run build:linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RENDERER_VITE_AIHUBMIX_SECRET: ${{ vars.RENDERER_VITE_AIHUBMIX_SECRET }}
 
       - name: Build Mac
         if: matrix.os == 'macos-latest'
-        run: |
-          pnpm run build:mac
+        run: pnpm run build:mac
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -87,6 +82,7 @@ jobs:
 
       - name: Build Windows
         if: matrix.os == 'windows-latest'
+        shell: bash
         run: pnpm run build:win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -102,5 +98,15 @@ jobs:
           allowUpdates: true
           makeLatest: false
           tag: ${{ steps.get-tag.outputs.tag }}
-          artifacts: 'projects/electron-app/dist/*.exe,projects/electron-app/dist/*.zip,projects/electron-app/dist/*.dmg,projects/electron-app/dist/*.AppImage,projects/electron-app/dist/*.snap,projects/electron-app/dist/*.deb,projects/electron-app/dist/*.rpm,projects/electron-app/dist/*.tar.gz,projects/electron-app/dist/latest*.yml,projects/electron-app/dist/*.blockmap'
+          artifacts: |
+            projects/electron-app/dist/*.exe,
+            projects/electron-app/dist/*.zip,
+            projects/electron-app/dist/*.dmg,
+            projects/electron-app/dist/*.AppImage,
+            projects/electron-app/dist/*.snap,
+            projects/electron-app/dist/*.deb,
+            projects/electron-app/dist/*.rpm,
+            projects/electron-app/dist/*.tar.gz,
+            projects/electron-app/dist/latest*.yml,
+            projects/electron-app/dist/*.blockmap
           token: ${{ secrets.GITHUB_TOKEN }}
