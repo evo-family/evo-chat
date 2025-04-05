@@ -1,12 +1,13 @@
 import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
+import { isMobileApp } from '@evo/utils';
 
 // @ts-ignore
 import iconFontUrl from './evo-font.js';
 
 export const IconFont = createFromIconfontCN({
   scriptUrl: process.env.NODE_ENV === 'development'
-    ? '//at.alicdn.com/t/c/font_4858713_6og786bv0xp.js'
+    ? ((isMobileApp() ? 'https:' : '') + '//at.alicdn.com/t/c/font_4858713_6og786bv0xp.js')
     : iconFontUrl,
 });
 

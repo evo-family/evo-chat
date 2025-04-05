@@ -2,7 +2,7 @@ import { EResourceType, IVectorProgress, TUploadDirectoryResult, TUploadResult }
 import { IFileMeta, IKnowledgeMeta, IKnowledgeVectorMeta, IKnowledgeVectorMetaVo } from './meta';
 
 import { BaseResult } from './common';
-import { EThemeMode } from './setting';
+import { EThemeMode, MobilePermissionType } from './setting';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { TAvailableModelMap } from './model';
 
@@ -110,6 +110,7 @@ export interface ICommonService {
   onThemeChange(callback: (theme: EThemeMode) => void): void;
   openExternal: (url: string, options?: any) => void;
   getVersion(): Promise<string>;
+  checkMobilePermission?(permissions: MobilePermissionType[]): Promise<boolean>;
 }
 
 export interface IGetFileListParams {

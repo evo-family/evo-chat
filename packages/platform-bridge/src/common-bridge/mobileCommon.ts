@@ -1,11 +1,8 @@
-import { EThemeMode, ICommonService } from "@evo/types";
+import { EThemeMode, ICommonService, MobilePermissionType } from "@evo/types";
 import { BaseBridge } from "../common/baseBridge";
 
 
 export class MobileCommon extends BaseBridge implements ICommonService {
-  getVersion(): Promise<string> {
-    throw new Error("Method not implemented.");
-  }
   getTheme(): Promise<EThemeMode> {
     return new Promise((resolve, reject) => {
       sendMessageToRN('getTheme');
@@ -24,12 +21,34 @@ export class MobileCommon extends BaseBridge implements ICommonService {
   openExternal(url: string): void {
     sendMessageToRN('openExternal', {url});
   }
-  getImageOrFile(): Promise<string | []> {
+
+
+  getVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
-      sendMessageToRN('getImageOrFile');
+      sendMessageToRN('getAppVersion');
       // @ts-ignore
-      window.getImageOrFile = (data) => {
-        resolve(data as string | []);
+      window.getAppVersion = (data) => {
+        resolve(data as string);
+      }
+    });
+  }
+
+  checkMobilePermission(permissions: MobilePermissionType[]): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      sendMessageToRN('checkMobilePermission', {permissionArr: permissions});
+      // @ts-ignore
+      window.checkMobilePermission = (data:string) => {
+        // data数组的长度和permissions的长度一致 即为同意了权限
+        try {
+          const dataArr = JSON.parse(data);
+          if (dataArr.length === permissions.length) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } catch (error) {
+          reject(error);
+        }
       }
     });
   }
