@@ -43,3 +43,13 @@ export interface IAboutSetting {
   version: string;
   isAutoUpdate: boolean;
 }
+
+/**
+ * 移动端权限枚举
+ */
+export enum MobilePermissionType {
+  camera = 'camera',
+  microphone = 'microphone',
+  mediaLibrary = 'mediaLibrary',
+}
+
