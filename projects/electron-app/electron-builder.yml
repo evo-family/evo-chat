@@ -21,14 +21,14 @@ asarUnpack:
 
 icon: resources/logo.png
 win:
-  icon: resources/logo.ico
+  icon: resources/logo_256.ico
   executableName: Evo Chat
   artifactName: ${productName}-${version}-portable.${ext}
   target:
     - target: nsis
 nsis:
-  installerIcon: resources/logo.ico
-  uninstallerIcon: resources/logo.ico
+  installerIcon: resources/logo_256.ico
+  uninstallerIcon: resources/logo_256.ico
   artifactName: ${productName}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
