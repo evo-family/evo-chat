@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: 'project/web/build/*'
+          source: 'projects/web/build/*'
           target: '/data/evo/chat/'
           strip_components: 1
           # debug: true
