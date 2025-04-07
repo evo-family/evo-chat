@@ -1,32 +1,15 @@
 name: ReleaseWeb
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v0.1.1'
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: '部署环境'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - staging
-      branch:
-        description: '选择分支'
-        required: true
-        default: 'main'
-        type: choice
-        options:
-          - main
-          - develop
-          - feat/*
-      version:
-        description: '版本号'
-        required: false
-        type: string
 
 jobs:
   build:
