@@ -1,6 +1,6 @@
-import { app, BrowserWindow, Menu, MenuItem } from "electron"
-import { logger } from "./logger"
-import { getHtmlPath, getPreloadPath } from "./utils/AppUtil";
+import { app, BrowserWindow, Menu, MenuItem } from 'electron'
+import { logger } from './logger'
+import { getAppIcon, getHtmlPath, getPreloadPath } from './utils/AppUtil'
 let mainWindow: BrowserWindow | null = null
 /**
  * 获取主窗口
@@ -10,46 +10,51 @@ export function getMainWindow() {
   if (mainWindow && !mainWindow.isDestroyed()) {
     return mainWindow
   }
-  return null;
+  return null
 }
 export function createMainWindow() {
-
-  const currMainWindow = getMainWindow();
+  const currMainWindow = getMainWindow()
   if (currMainWindow) {
     return mainWindow!
   }
-
-  const win = mainWindow = new BrowserWindow({
+  const appIcon = getAppIcon('logo.png')
+  const win = (mainWindow = new BrowserWindow({
     width: 1080,
     height: 600,
     minWidth: 1080,
     minHeight: 600,
     autoHideMenuBar: true,
-    frame: true,  // 使用原生窗口框架
+    icon: appIcon,
+    frame: true, // 使用原生窗口框架
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default', // macOS 隐藏标题栏，Windows 使用默认
     webPreferences: {
       nodeIntegration: true,
-      preload: getPreloadPath(),
+      preload: getPreloadPath()
     }
-  })
+  }))
+
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(appIcon)
+  }
 
   logger.info('窗口创建成功')
 
   // 创建右键菜单
   const contextMenu = new Menu()
 
-
   // contextMenu.append(new MenuItem({ type: 'separator' }))  // 分隔线
-  contextMenu.append(new MenuItem({
-    label: '开发者工具',
-    accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-    click: () => {
-      win.webContents.toggleDevTools()
-    }
-  }))
+  contextMenu.append(
+    new MenuItem({
+      label: '开发者工具',
+      accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+      click: () => {
+        win.webContents.toggleDevTools()
+      }
+    })
+  )
 
   // 监听右键点击事件
-  win.webContents.on('context-menu', (e, params) => {
+  win.webContents.on('context-menu', () => {
     contextMenu.popup()
   })
 
@@ -71,7 +76,7 @@ export function createMainWindow() {
   win.on('unresponsive', () => {
     // 记录日志
     logger.error('窗口无响应')
-    win.reload();
+    win.reload()
   })
 
   // 监听窗口恢复响应
@@ -79,15 +84,13 @@ export function createMainWindow() {
     logger.info('窗口恢复响应')
   })
 
+  win.loadURL(getHtmlPath())
 
-  win.loadURL(getHtmlPath());
-
-  return win;
+  return win
 }
 
-
 export function showMainWindow() {
-  const currMainWindow = getMainWindow();
+  const currMainWindow = getMainWindow()
   if (currMainWindow) {
     if (currMainWindow.isMinimized()) {
       return currMainWindow.restore()
