@@ -17,10 +17,18 @@ on:
         options:
           - production
           - staging
+      branch:
+        description: '选择分支'
+        required: true
+        default: 'main'
+      version:
+        description: '版本号'
+        required: false
+        type: string
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
