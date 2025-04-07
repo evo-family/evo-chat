@@ -1,12 +1,13 @@
 import { Attachments, Bubble } from '@ant-design/x';
-import { UserOutlined } from '@ant-design/icons';
 import { Flex, GetProp } from 'antd';
 import React, { FC, memo } from 'react';
 
 import { BubbleDataType } from '@ant-design/x/es/bubble/BubbleList';
 import { ErrorMessage } from './components/error-message/ErrorMsg';
 import { MarkdownRender } from '../../markdown-render/MarkdownRender';
+import { UserOutlined } from '@ant-design/icons';
 import style from './BubbleChat.module.scss';
+
 export interface IBubbleChatProps {
   contents: BubbleDataType[];
 }
@@ -33,6 +34,7 @@ const roles: GetProp<typeof Bubble.List, 'roles'> = {
       if (React.isValidElement(content)) {
         return content;
       }
+
       return <MarkdownRender content={content} />;
     },
   },
