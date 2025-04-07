@@ -16,8 +16,8 @@ export const FlexFillWidth = React.memo<PropsWithChildren<IFlexFillWidthProps>>(
   const { wrapClassName, contentClassName, wrapStyle, contentStyle, children } = props;
 
   return (
-    <div className={cx(['container', wrapClassName])} style={wrapStyle}>
-      <div className={cx(['content', contentClassName])} style={contentStyle}>
+    <div className={cx(['flex-fill-wrap', wrapClassName])} style={wrapStyle}>
+      <div className={cx(['flex-fill-content', contentClassName])} style={contentStyle}>
         {children}
       </div>
     </div>
