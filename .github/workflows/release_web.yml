@@ -1,9 +1,6 @@
 name: ReleaseWeb
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -21,6 +18,11 @@ on:
         description: '选择分支'
         required: true
         default: 'main'
+        type: choice
+        options:
+          - main
+          - develop
+          - feat/*
       version:
         description: '版本号'
         required: false
@@ -28,10 +30,11 @@ on:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
       - uses: pnpm/action-setup@v2
         with:
           version: 8
