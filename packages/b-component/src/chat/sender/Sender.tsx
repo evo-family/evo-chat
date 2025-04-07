@@ -26,9 +26,9 @@ import { IFileMeta, MobilePermissionType } from '@evo/types';
 import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
 import { CommonBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
-import { debounce, noop } from 'lodash';
+import { noop } from 'lodash';
 import { useAntdToken } from '../../hooks';
-import { useMemoizedFn } from 'ahooks';
+import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
 const SENDER_ATTACH_STYLES = {
   content: {
@@ -154,8 +154,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
     chatWin.stopResolveMessage(msgId);
   });
 
-  const debouncedCheck = useMemoizedFn(
-    debounce(async (e: React.MouseEvent) => {
+  const debouncedCheck = useDebounceFn(async (e: React.MouseEvent) => {
       if (!mobileHasMicPermission && isMobileApp()) {
         const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([
           MobilePermissionType.microphone,
@@ -176,15 +175,14 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
           console.error('checkMobilePermission error:', error);
         }
       }
-    }, 800)
-  );
+    },{wait: 500});
 
   const preCheckMobilePermission = useMemoizedFn((e: React.MouseEvent) => {
     if (isMobileApp()) {
       e.preventDefault();
       e.stopPropagation();
 
-      debouncedCheck(e);
+      debouncedCheck.run(e);
     }
   });
 
