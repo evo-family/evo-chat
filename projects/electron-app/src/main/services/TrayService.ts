@@ -1,10 +1,8 @@
-import { app, Tray, Menu, BrowserWindow, nativeTheme, systemPreferences } from 'electron'
+import { app, Tray, Menu, nativeTheme, systemPreferences } from 'electron'
 import path from 'path'
-import { isLinux, isMacOS, isWindows } from '../utils/PlatformUtil'
-import { generateNativeImage } from '../utils/AppUtil';
-import { showMainWindow } from '../MainWindow';
-
-const ImageDir = '../../assets/tray';
+import { isLinux, isMacOS } from '../utils/PlatformUtil'
+import { generateNativeImage, getResourcePath } from '../utils/AppUtil'
+import { showMainWindow } from '../MainWindow'
 
 export class TrayService {
   private tray: Tray | null = null
@@ -17,42 +15,41 @@ export class TrayService {
     //增加系统颜色切换的时候，动态调整图标的状态
     systemPreferences.subscribeNotification('AppleInterfaceThemeChangedNotification', () => {
       setTimeout(() => {
-        let iconImage = this.getIconImage();
-        this.tray?.setImage(iconImage);
-      }, 1000);
-    });
+        const iconImage = this.getIconImage()
+        this.tray?.setImage(iconImage)
+      }, 1000)
+    })
   }
   private getIconImage() {
-    let iconName = 'tray_icon.png';
+    let iconName = 'favicon.png'
     if (isMacOS()) {
       // 判断系统颜色
       if (!nativeTheme.shouldUseDarkColors) {
-        iconName = 'tray_icon_light.png';
+        iconName = 'favicon.png'
       } else {
-        iconName = 'tray_icon_dark.png';
+        iconName = 'favicon_white.png'
       }
     }
-    iconName = path.join(__dirname, ImageDir, iconName);
-
+    const path = getResourcePath(iconName)
     if (isMacOS() || isLinux()) {
       return generateNativeImage({
-        path: iconName
-      });
+        path: path,
+        size: 18
+      })
     }
-    return iconName;
+    return path
   }
 
   private createTray() {
-
-    const iconName = this.getIconImage();
+    const iconName = this.getIconImage()
     // 创建托盘图标
-    this.tray = new Tray(iconName);
+    this.tray = new Tray(iconName)
 
     if (!this.tray) {
-      return;
+      return
     }
 
-    this.subscribeNotification();
+    this.subscribeNotification()
     // 设置托盘图标提示文字
     this.tray.setToolTip('Evo Chat')
 
@@ -64,7 +61,7 @@ export class TrayService {
           showMainWindow()
         }
       },
-      { type: 'separator' },  // 添加分隔线
+      { type: 'separator' }, // 添加分隔线
       {
         label: '退出',
         click: () => {
@@ -81,7 +78,7 @@ export class TrayService {
     })
 
     this.tray.on('click', () => {
-      showMainWindow();
+      showMainWindow()
     })
   }
 
