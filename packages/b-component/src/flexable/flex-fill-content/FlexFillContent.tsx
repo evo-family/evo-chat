@@ -1,23 +1,21 @@
-import React, { PropsWithChildren } from 'react';
+import React, { HTMLAttributes, PropsWithChildren } from 'react';
 
 import cxb from 'classnames/bind';
 import style from './Style.module.scss';
 
 const cx = cxb.bind(style);
 
-export interface IFlexFillContentProps {
+export interface IFlexFillContentProps extends HTMLAttributes<HTMLDivElement> {
   wrapClassName?: string;
-  contentClassName?: string;
   wrapStyle?: React.CSSProperties;
-  contentStyle?: React.CSSProperties;
 }
 
 export const FlexFillContent = React.memo<PropsWithChildren<IFlexFillContentProps>>((props) => {
-  const { wrapClassName, contentClassName, wrapStyle, contentStyle, children } = props;
+  const { wrapClassName, className, wrapStyle, children, ...restContentProps } = props;
 
   return (
     <div className={cx(['container', wrapClassName])} style={wrapStyle}>
-      <div className={cx(['content', contentClassName])} style={contentStyle}>
+      <div className={cx(['content', className])} {...restContentProps}>
         {children}
       </div>
     </div>
