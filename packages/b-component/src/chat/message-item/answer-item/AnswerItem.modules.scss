@@ -2,6 +2,7 @@
   padding: 10px 20px 20px 10px;
   background-color: #fff;
   border-radius: 8px;
+  outline: none;
 
   :global {
     .ant-collapse-content-box {
@@ -16,4 +17,20 @@
     margin-top: 10px;
     border: 1px solid var(--evo-collapse-header-bg);
   }
+}
+
+.maxmize-mode {
+  overflow: auto;
+  position: fixed;
+  z-index: 999;
+  left: 5vw;
+  top: 5vh;
+  width: 90vw;
+  height: 90vh;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 24px;
 }

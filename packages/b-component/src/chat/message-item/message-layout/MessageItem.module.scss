@@ -9,10 +9,15 @@
 
   .name {
     margin-right: 10px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
   }
 
   .time {
     color: #888888de;
+    width: fit-content;
   }
 
   .action-area {

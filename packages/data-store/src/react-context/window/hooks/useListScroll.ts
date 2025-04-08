@@ -1,7 +1,7 @@
-import { useMemoizedFn } from 'ahooks';
-import { IChatWindowContext } from '../types';
-import { useState } from 'react';
 import { DataCell } from '@evo/utils';
+import { IChatWindowContext } from '../types';
+import { useMemoizedFn } from 'ahooks';
+import { useState } from 'react';
 
 export const useListScroll = (params: Pick<IChatWindowContext, 'listDOMRef'>) => {
   const { listDOMRef } = params;
@@ -32,10 +32,20 @@ export const useListScroll = (params: Pick<IChatWindowContext, 'listDOMRef'>) =>
     scrollToBottom();
   });
 
+  const scrollList: IChatWindowContext['scrollList'] = useMemoizedFn((params) => {
+    const dom = listDOMRef.current;
+    if (!dom) return;
+
+    const { direction, distance } = params;
+
+    dom.scrollTop = direction === 'top' ? dom.scrollTop - distance : dom.scrollTop + distance;
+  });
+
   return {
     autoScroll,
     onMsgListScroll,
     scrollToBottom,
     tryScrollToBtmIfNeed,
+    scrollList,
   };
 };
