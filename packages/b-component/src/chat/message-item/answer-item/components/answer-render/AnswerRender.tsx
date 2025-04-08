@@ -1,12 +1,12 @@
-import { Divider } from 'antd';
 import { EModalAnswerStatus, TModelAnswerCell, useChatWinCtx } from '@evo/data-store';
 import React, { useLayoutEffect } from 'react';
-import { useCellValueSelector } from '@evo/utils';
 
 import { AnswerContentRender } from '../answer-content-render/AnswerContentRender';
 import { AnswerToolbar } from '../answer-toolbar/AnswerToolbar';
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
+import { Divider } from 'antd';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
+import { useCellValueSelector } from '@evo/utils';
 
 export interface IAnswerRenderProps {
   answerCell: TModelAnswerCell;

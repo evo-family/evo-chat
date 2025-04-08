@@ -20,12 +20,14 @@ import { ErrorCode, KnowledgeError } from '../utils/errors';
 import { RAGAppManager } from '../rag-manager/ragAppManager';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { PGLiteManager } from '@evo/pglite-manager';
+import { IDepManager } from '../types';
 
 export interface IKnowledgeManagerOptions {
   dbManager: PGLiteManager;
   fileManager: FileManager;
   vectorDBPath: string;
   modelEmbeddingMap: TAvailableModelMap;
+  depManager: IDepManager;
 }
 
 export class KnowledgeManager implements IKnowledgeService {
@@ -33,13 +35,15 @@ export class KnowledgeManager implements IKnowledgeService {
   private fileManager: FileManager;
   private vectorDBPath: string;
   private modelEmbeddingMap: TAvailableModelMap;
+  private depManager: IDepManager;
 
   constructor(options: IKnowledgeManagerOptions) {
-    const { dbManager, fileManager, vectorDBPath, modelEmbeddingMap } = options;
+    const { dbManager, fileManager, vectorDBPath, modelEmbeddingMap, depManager } = options;
     this.dbManager = dbManager;
     this.fileManager = fileManager;
     this.vectorDBPath = vectorDBPath;
     this.modelEmbeddingMap = modelEmbeddingMap;
+    this.depManager = depManager;
   }
 
   public setModelEmbeddingMap = (modelEmbeddingMap: TAvailableModelMap) => {
@@ -275,6 +279,60 @@ export class KnowledgeManager implements IKnowledgeService {
       const result = await rag.search(searchValue);
       return ResultUtil.success(result);
     } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
+
+  async getVectorsByFileId(fileId: string): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
+    try {
+      const sql = `
+        SELECT kv.*
+        FROM knowledge_vector kv
+        WHERE kv.file_id = $1
+        ORDER BY kv.create_time DESC
+      `;
+
+      const result = await this.dbManager.query(sql, [fileId]);
+      return ResultUtil.success(result?.rows || []);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
+
+  async deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>> {
+    try {
+      // 1. 获取向量信息
+      const vectorResult = await this.getVectorsByFileId(fileId);
+      if (!vectorResult.success || !vectorResult.data?.length) {
+        return ResultUtil.error('未找到该文件的向量信息');
+      }
+
+      const vectors = vectorResult.data;
+
+      // 按知识库ID分组
+      const knowledgeVectors = vectors.reduce((acc, vector) => {
+        if (!acc[vector.knowledgeId]) {
+          acc[vector.knowledgeId] = [];
+        }
+        acc[vector.knowledgeId].push(vector);
+        return acc;
+      }, {} as Record<string, IKnowledgeVectorMeta[]>);
+
+      // 2. 遍历每个知识库，删除向量
+      for (const [knowledgeId, vectors] of Object.entries(knowledgeVectors)) {
+        const ragManager = await this.getRagManager(knowledgeId);
+        // 3. 批量删除向量
+        await Promise.all(vectors.map((v) => ragManager.deleteLoader(v.loaderId)));
+      }
+
+      // 4. 从数据库中删除所有记录
+      await this.dbManager.delete('knowledge_vector', {
+        file_id: fileId,
+      });
+
+      return ResultUtil.success(true);
+    } catch (error) {
+      console.error('删除向量失败:', error);
       return ResultUtil.error(error);
     }
   }

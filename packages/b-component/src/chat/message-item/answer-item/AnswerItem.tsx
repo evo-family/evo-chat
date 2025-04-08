@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useMemo, useState } from 'react';
-import { TModelAnswerCell, getModelLogo, useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
+import { TModelAnswerCell, useChatMsgCtx } from '@evo/data-store';
 
 import { AnswerActions } from './components/answer-actions/AnswerActions';
 import { AnswerRender } from './components/answer-render/AnswerRender';
@@ -7,6 +7,7 @@ import { MessageLayout } from '../message-layout/MessageLayout';
 import { ModelAvatar } from '../../../avatar/model/ModelAvatar';
 import { formatChatStringTime } from '../../../utils/format';
 import style from './AnswerItem.modules.scss';
+import { useCellValueSelector } from '@evo/utils';
 import { useGetState } from 'ahooks';
 
 export interface IAnswerItemProps {
@@ -19,27 +20,13 @@ export const AnswerItem = React.memo<IAnswerItemProps>((props) => {
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
 
   const [answerCell, setAnswerCell] = useState<TModelAnswerCell | undefined>();
-  const [createdTime, setCreatedTime, getCreatedTime] = useGetState<number | undefined>();
-  const [model, setModel, getModel] = useGetState(() => answerCell?.get().model);
+
+  const [createdTime] = useCellValueSelector(answerCell, (value) => value?.createdTime);
+  const [model] = useCellValueSelector(answerCell, (value) => value?.model);
 
   useLayoutEffect(() => {
     chatMsg.modelAnswers.getCellUntil({ key: answerId }).then(setAnswerCell);
   }, [chatMsg, answerId]);
-
-  useLayoutEffect(() => {
-    const subscription = answerCell?.listen(
-      (signal) => {
-        const nextCreatedTime = signal.next?.createdTime;
-        const nextModel = signal.next?.model;
-
-        nextCreatedTime !== getCreatedTime() && setCreatedTime(nextCreatedTime);
-        nextModel !== getModel() && setModel(nextModel);
-      },
-      { immediate: true }
-    );
-
-    return subscription?.unsubscribe;
-  }, [answerCell]);
 
   const formatCreatedTime = useMemo(() => formatChatStringTime(createdTime), [createdTime]);
 

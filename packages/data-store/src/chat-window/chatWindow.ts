@@ -145,7 +145,7 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
           await messageIns.ready();
 
           // 有一次初始化的延迟，加timeout
-          setTimeout(() => this.title.set(messageIns.getConfigState('sendMessage')));
+          setTimeout(() => this.title.set(messageIns.getConfigState('sendMessage').slice(0, 100)));
         });
       },
       { keys: ['messageIds'], immediate: true }
