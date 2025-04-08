@@ -1,5 +1,5 @@
-import { Button, Tooltip } from 'antd';
-import { EvoIcon, useAntdToken } from '@evo/component';
+import { Button, Flex, Tooltip } from 'antd';
+import { EvoIcon, FlexFillWidth, useAntdToken } from '@evo/component';
 import { MenuUnfoldOutlined, SettingOutlined } from '@ant-design/icons';
 import React, { FC } from 'react';
 
@@ -33,7 +33,9 @@ export const ChatMessageHeader: FC<IChatMessageHeaderProps> = ({}) => {
           />
         </Tooltip>
       </div>
-      <div className={s.center}>{chatTitle}</div>
+      <FlexFillWidth contentClassName={s.center}>
+        <div className={s['chat-title']}>{chatTitle}</div>
+      </FlexFillWidth>
       <div className={s.right}>
         <Tooltip title="模型设置">
           <Button type="text" icon={<SettingOutlined />} onClick={collapseDrawer} />

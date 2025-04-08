@@ -33,6 +33,10 @@ export function setupFileHandlers(): void {
     return await knowledgeService.fileManager.getFileContent(fileId)
   })
 
+  ipcMain.handle(IpcChannels.DELETE_FILE, (event, params) => {
+    return knowledgeService.fileManager.deleteFile(params)
+  })
+
   ipcMain.handle('set-model-embedding-map', (event, params) => {
     knowledgeService.setModelEmbeddingMap(params)
   })
@@ -91,5 +95,12 @@ export function setupFileHandlers(): void {
 
   ipcMain.handle(IpcChannels.KNOWLEDGE_SEARCH_VECTORS, async (event, params) => {
     return await knowledgeService.knowledgeManager.searchVectors(params)
+  })
+  ipcMain.handle(IpcChannels.KNOWLEDGE_GET_VECTORS_BY_FILE, async (event, params) => {
+    return await knowledgeService.knowledgeManager.getVectorsByFileId(params)
+  })
+
+  ipcMain.handle(IpcChannels.KNOWLEDGE_DELETE_VECTORS_BY_FILE, async (event, params) => {
+    return await knowledgeService.knowledgeManager.deleteVectorByFileId(params)
   })
 }

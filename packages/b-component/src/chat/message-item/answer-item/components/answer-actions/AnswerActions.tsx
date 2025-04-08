@@ -1,7 +1,7 @@
+import { BorderOutlined, XFilled } from '@ant-design/icons';
 import { EModalAnswerStatus, TModelAnswerCell, useChatMsgCtx } from '@evo/data-store';
 import { Flex, Tooltip } from 'antd';
 
-import { BorderOutlined } from '@ant-design/icons';
 import React from 'react';
 import style from './Style.module.scss';
 import { useCellValueSelector } from '@evo/utils';
@@ -26,7 +26,7 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
     return (
       <Flex className={style.container}>
         <Tooltip title="停止内容生成">
-          <BorderOutlined className={style['stop-icon']} onClick={stopModel} />
+          <XFilled className={style['stop-icon']} onClick={stopModel} />
         </Tooltip>
       </Flex>
     );
