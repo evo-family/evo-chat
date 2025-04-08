@@ -8,25 +8,27 @@ import {
 import { Button, GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
 import { CloudUploadOutlined, LinkOutlined, OpenAIFilled, OpenAIOutlined } from '@ant-design/icons';
 import { EModalAnswerStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
-import React, { FC, memo, useLayoutEffect } from 'react';
+import React, { FC, memo, useEffect, useLayoutEffect } from 'react';
 import { SenderProvider, useSenderSelector } from './sender-processor/SenderProvider';
 import {
   getFileExtension,
   getPlatformFileAccept,
   isDocumentFile,
+  isH5,
+  isMobileApp,
   isWeb,
   useCellValue,
 } from '@evo/utils';
 
 import { ActionsRender } from '@ant-design/x/es/sender';
 import { EvoIcon } from '../../icon';
-import { IFileMeta } from '@evo/types';
+import { IFileMeta, MobilePermissionType } from '@evo/types';
 import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
-import { UploadBridgeFactory } from '@evo/platform-bridge';
+import { CommonBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
 import { noop } from 'lodash';
 import { useAntdToken } from '../../hooks';
-import { useMemoizedFn } from 'ahooks';
+import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
 const SENDER_ATTACH_STYLES = {
   content: {
@@ -54,6 +56,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
   const [loading, setLoading] = React.useState(false);
 
   const attachmentsRef = React.useRef<GetRef<typeof Attachments>>(null);
+  const [mobileHasMicPermission, setMobileHasMicPermission] = React.useState(false);
 
   const handleSubmit = useMemoizedFn(async () => {
     const models = (await chatCtrl.getCurWindow())?.getConfigState('models');
@@ -151,13 +154,51 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
     chatWin.stopResolveMessage(msgId);
   });
 
+  const debouncedCheck = useDebounceFn(async (e: React.MouseEvent) => {
+      if (!mobileHasMicPermission && isMobileApp()) {
+        const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([
+          MobilePermissionType.microphone,
+        ]);
+        setMobileHasMicPermission(!!result);
+        if (!result) {
+          return;
+        }
+
+        try {
+          const audioButton = document.querySelector(
+            'button.ant-btn.ant-sender-actions-btn .anticon-audio[aria-label="audio"]'
+          )?.closest('button');
+          if (audioButton instanceof HTMLButtonElement) {
+            audioButton.click();
+          }
+        } catch (error) {
+          console.error('checkMobilePermission error:', error);
+        }
+      }
+    },{wait: 500});
+
+  const preCheckMobilePermission = useMemoizedFn((e: React.MouseEvent) => {
+    if (isMobileApp()) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      debouncedCheck.run(e);
+    }
+  });
+
   const renderActions = useMemoizedFn<ActionsRender>((_, info) => {
     const { SendButton, LoadingButton, ClearButton, SpeechButton } = info.components;
 
     return (
       <Space size="small">
         {/* <ClearButton /> */}
-        <SpeechButton variant="filled" color="default" />
+        <div onClick={preCheckMobilePermission}>
+          <div style={{
+            pointerEvents: isMobileApp() && !mobileHasMicPermission ? 'none' : 'auto'
+          }}>
+            <SpeechButton variant="filled" color="default" />
+          </div>
+        </div>
         {loading ? (
           // icon={<Spin size="small" />}
           <LoadingButton type="default" />
@@ -231,7 +272,13 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
               multiple
             />
           </AntdXSender.Header>
-          <SenderToolbar fileItems={items} fileOpen={fileOpen} setFileOpen={setFileOpen} />
+          <SenderToolbar fileItems={items} fileOpen={fileOpen} setFileOpen={setFileOpen} mobileClickAttachment={() => {
+            // 触发文件上传
+            const uploadInput = document.querySelector('.ant-upload input[type="file"]') as HTMLInputElement;
+            if (uploadInput) {
+              uploadInput.click();
+            }
+          }}  />
         </div>
       }
       onKeyPress={noop}
