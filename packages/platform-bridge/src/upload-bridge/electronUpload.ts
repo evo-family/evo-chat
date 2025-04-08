@@ -1,8 +1,21 @@
-import { BaseResult, IFileMeta, IFileService, IGetFileListParams, IUploadBufferParams, TUploadDirectoryResult, TUploadResult } from "@evo/types";
-import { BaseBridge } from "../common/baseBridge";
+import {
+  BaseResult,
+  IDeleteFileParams,
+  IFileMeta,
+  IFileService,
+  IGetFileListParams,
+  IUploadBufferParams,
+  TUploadDirectoryResult,
+  TUploadResult,
+} from '@evo/types';
+import { BaseBridge } from '../common/baseBridge';
 
 // Electron 环境上传服务
 export class ElectronUpload extends BaseBridge implements IFileService {
+  async deleteFile(params: IDeleteFileParams): Promise<BaseResult<boolean>> {
+    return await window.__ELECTRON__.fileService.deleteFile(params);
+  }
+
   async getFileContent(fileId: string): Promise<BaseResult<string>> {
     return await window.__ELECTRON__.fileService.getFileContent(fileId);
   }
@@ -39,6 +52,4 @@ export class ElectronUpload extends BaseBridge implements IFileService {
       return this.handleError(error);
     }
   }
-
-
 }
