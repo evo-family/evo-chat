@@ -33,7 +33,7 @@ export const ChatMessageHeader: FC<IChatMessageHeaderProps> = ({}) => {
           />
         </Tooltip>
       </div>
-      <FlexFillWidth contentClassName={s.center}>
+      <FlexFillWidth className={s.center}>
         <div className={s['chat-title']}>{chatTitle}</div>
       </FlexFillWidth>
       <div className={s.right}>
