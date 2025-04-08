@@ -7,13 +7,11 @@ import s from './ChatMessage.module.scss';
 export interface IChatMessageProps {}
 
 export const ChatMessage: FC<IChatMessageProps> = memo(({}) => {
-
-
   return (
     <div className={s.container}>
       <ChatMessageHeader />
       <div className={s.content}>
-            <Chat />
+        <Chat />
       </div>
     </div>
   );

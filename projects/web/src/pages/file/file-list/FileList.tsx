@@ -4,12 +4,12 @@ import s from './FileList.module.scss';
 import { ProTable, type ProColumns } from '@ant-design/pro-components';
 import { EResourceType, IFileMeta } from '@evo/types';
 import dayjs from 'dayjs';
-import { UploadBridgeFactory } from '@evo/platform-bridge';
+import { KnowledgeBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
 import { FileAvatar, FilePreview, SearchInput } from '@evo/component';
 import { useFileSelector } from '../file-processor/FileProvider';
 import { Space, Modal } from 'antd';
 import { useContentPanelSelector } from '../../../components';
-import { formatFileSize } from '@evo/utils';
+import { formatFileSize, isElectron } from '@evo/utils';
 
 export interface IFieListProps {}
 
@@ -18,6 +18,52 @@ export const FieList: FC<IFieListProps> = memo((props) => {
   const menuSelectKey = useFileSelector((s) => s.menuSelectKey);
   const tableActionRef = useFileSelector((s) => s.tableActionRef);
   const ToolbarPortal = useContentPanelSelector((s) => s.ToolbarPortal);
+
+  const commonDel = async (record: IFileMeta, isDeleteKnowledge: boolean = false) => {
+    await UploadBridgeFactory.getUpload().deleteFile({
+      fileId: record.id,
+      isDeleteKnowledge,
+    });
+    tableActionRef.current?.reload();
+  };
+
+  const del = (record: IFileMeta) => {
+    Modal.confirm({
+      title: '确认删除',
+      content: `确定要删除文件 "${record.name}" 吗？`,
+      okText: '删除',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk: async () => {
+        if (!isElectron()) {
+          return await commonDel(record);
+        }
+        // 1. 检查文件是否已向量化
+        const vectorResult = await KnowledgeBridgeFactory.getKnowledge().getVectorsByFileId(
+          record.id
+        );
+        if (vectorResult.success && vectorResult?.data && vectorResult?.data?.length > 0) {
+          // 2. 如果已向量化，二次确认是否同时删除向量
+          Modal.confirm({
+            title: '文件已向量化',
+            content: '该文件已添加到知识库，是否同时删除向量内容？',
+            okText: '同时删除',
+            okType: 'danger',
+            cancelText: '仅删除文件',
+            onOk: async () => {
+              await commonDel(record, true);
+            },
+            onCancel: async () => {
+              await commonDel(record);
+            },
+          });
+        } else {
+          // 3. 如果未向量化，直接删除文件
+          await commonDel(record);
+        }
+      },
+    });
+  };
 
   const columns: ProColumns<IFileMeta>[] = [
     {
@@ -78,17 +124,7 @@ export const FieList: FC<IFieListProps> = memo((props) => {
         <a
           key="delete"
           onClick={() => {
-            Modal.confirm({
-              title: '确认删除',
-              content: `确定要删除文件 "${record.name}" 吗？`,
-              okText: '删除',
-              okType: 'danger',
-              cancelText: '取消',
-              onOk: () => {
-                // UploadBridgeFactory.getUpload().
-                console.log('删除文件', record);
-              },
-            });
+            del(record);
           }}
         >
           删除

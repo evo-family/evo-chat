@@ -1,5 +1,6 @@
 import {
   BaseResult,
+  IDeleteFileParams,
   IFileMeta,
   IFileService,
   IGetFileListParams,
@@ -13,6 +14,9 @@ import { fileProcessor } from './FileProcessor';
 
 // Web 环境上传服务
 export class WebUpload extends BaseBridge implements IFileService {
+  async deleteFile(params: IDeleteFileParams): Promise<BaseResult<boolean>> {
+    return await fileProcessor.deleteFile(params);
+  }
   async getFileContent(fileId: string): Promise<BaseResult<string>> {
     return await fileProcessor.getFileContent(fileId);
   }

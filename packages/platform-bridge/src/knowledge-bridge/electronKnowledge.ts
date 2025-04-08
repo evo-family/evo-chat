@@ -1,15 +1,37 @@
-import { BaseResult, IAddFileMetaToVectorParams, IAddFilesMetaToVectorParams, IAddFileToVectorParams, IAddFolderToVectorParams, IKnowledgeMeta, IKnowledgeService, IKnowledgeVectorMeta, IKnowledgeVectorMetaVo, ISearchVectorsByKnowledge, TAvailableModelMap } from "@evo/types";
-import { ExtractChunkData } from "@llm-tools/embedjs-interfaces";
-import { BaseBridge } from "../common/baseBridge";
+import {
+  BaseResult,
+  IAddFileMetaToVectorParams,
+  IAddFilesMetaToVectorParams,
+  IAddFileToVectorParams,
+  IAddFolderToVectorParams,
+  IKnowledgeMeta,
+  IKnowledgeService,
+  IKnowledgeVectorMeta,
+  IKnowledgeVectorMetaVo,
+  ISearchVectorsByKnowledge,
+  TAvailableModelMap,
+} from '@evo/types';
+import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
+import { BaseBridge } from '../common/baseBridge';
 
 export class ElectronKnowledge extends BaseBridge implements IKnowledgeService {
+  getVectorsByFileId(fileId: string): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
+    return window.__ELECTRON__.knowledgeService.getVectorsByFileId(fileId);
+  }
+  deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.knowledgeService.deleteVectorByFileId(fileId);
+  }
   addFolderToVector(params: IAddFolderToVectorParams): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
     return window.__ELECTRON__.knowledgeService.addFolderToVector(params);
   }
-  addFileMetaToVector(params: IAddFileMetaToVectorParams): Promise<BaseResult<IKnowledgeVectorMeta>> {
+  addFileMetaToVector(
+    params: IAddFileMetaToVectorParams
+  ): Promise<BaseResult<IKnowledgeVectorMeta>> {
     return window.__ELECTRON__.knowledgeService.addFileMetaToVector(params);
   }
-  addFilesMetaToVector(params: IAddFilesMetaToVectorParams): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
+  addFilesMetaToVector(
+    params: IAddFilesMetaToVectorParams
+  ): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
     return window.__ELECTRON__.knowledgeService.addFilesMetaToVector(params);
   }
   async searchVectors(params: ISearchVectorsByKnowledge): Promise<BaseResult<ExtractChunkData[]>> {
@@ -19,7 +41,9 @@ export class ElectronKnowledge extends BaseBridge implements IKnowledgeService {
       return this.handleError(error);
     }
   }
-  async getVectorsByKnowledgeId(knowledgeId: string): Promise<BaseResult<IKnowledgeVectorMetaVo[]>> {
+  async getVectorsByKnowledgeId(
+    knowledgeId: string
+  ): Promise<BaseResult<IKnowledgeVectorMetaVo[]>> {
     try {
       return await window.__ELECTRON__.knowledgeService.getVectorsByKnowledgeId(knowledgeId);
     } catch (error) {
@@ -57,5 +81,4 @@ export class ElectronKnowledge extends BaseBridge implements IKnowledgeService {
       return this.handleError(error);
     }
   }
-
 }

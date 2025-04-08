@@ -1,9 +1,9 @@
-.container {
+.flex-fill-wrap {
   flex: 1 1 auto; // flex-grow: 1, flex-shrink: 1, flex-basis: auto
   min-width: 0; // 允许容器在需要时缩小
   width: 0; // 关键：防止容器被子元素撑开
 
-  .content {
+  .flex-fill-content {
     width: 100%;
     min-width: 0; // 允许内容在需要时缩小
   }

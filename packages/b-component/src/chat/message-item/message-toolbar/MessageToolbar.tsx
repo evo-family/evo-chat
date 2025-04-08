@@ -1,5 +1,5 @@
 import { CopyOutlined, DeleteOutlined, SendOutlined, SyncOutlined } from '@ant-design/icons';
-import { Dropdown, MenuProps } from 'antd';
+import { Dropdown, MenuProps, Popconfirm, Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import { useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
 
@@ -70,12 +70,21 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
         key: '3',
         className: style['action-item'],
         label: (
-          <>
+          <Popconfirm
+            title="请确认"
+            description="确定要删除该消息?"
+            onConfirm={removeMessage}
+            okText="删除"
+            okType="danger"
+            okButtonProps={{
+              type: 'primary',
+            }}
+            cancelText="取消"
+          >
             <DeleteOutlined className={style['action-icon']} />
             删除
-          </>
+          </Popconfirm>
         ),
-        onClick: removeMessage,
       },
       {
         key: '4',

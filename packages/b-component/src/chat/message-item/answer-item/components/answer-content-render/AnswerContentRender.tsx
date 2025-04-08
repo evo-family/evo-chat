@@ -1,7 +1,6 @@
-import React, { useLayoutEffect } from 'react';
-import { TModelAnswerCell, useChatWinCtx } from '@evo/data-store';
-
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
+import React from 'react';
+import { TModelAnswerCell } from '@evo/data-store';
 import style from './Style.modules.scss';
 import { useCellValueSelector } from '@evo/utils';
 

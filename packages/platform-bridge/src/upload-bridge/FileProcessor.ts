@@ -7,6 +7,7 @@ import {
 } from '@evo/utils';
 import {
   BaseResult,
+  IDeleteFileParams,
   IFileMeta,
   IFileService,
   IGetFileListParams,
@@ -27,6 +28,18 @@ export class FileProcessor
 {
   constructor() {
     super();
+  }
+  async deleteFile(params: IDeleteFileParams): Promise<BaseResult<boolean>> {
+    const { fileId } = params;
+    try {
+      // 1. 删除文件内容
+      await idbStore.delete(fileId);
+      // 2. 删除文件元数据
+      await idbFileMetaStore.delete(fileId);
+      return ResultUtil.success(true);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
   }
   async getFileContent(fileId: string): Promise<BaseResult<string>> {
     try {

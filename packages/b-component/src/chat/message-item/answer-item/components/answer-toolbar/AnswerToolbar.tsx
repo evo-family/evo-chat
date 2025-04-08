@@ -1,16 +1,15 @@
 import { CopyOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   EModalAnswerStatus,
-  TModelAnswer,
   TModelAnswerCell,
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
-import { Flex, Tooltip } from 'antd';
-import React, { useDeferredValue, useMemo } from 'react';
-import { useCellValue, useCellValueSelector } from '@evo/utils';
+import { Flex, Popconfirm, Tooltip } from 'antd';
 
+import React from 'react';
 import style from './Style.module.scss';
+import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
 export interface IAnswerToolbarProps {
@@ -52,7 +51,19 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
           <CopyOutlined onClick={copyModelAnswer} />
         </Tooltip>
         <Tooltip title="删除">
-          <DeleteOutlined onClick={removeModel} />
+          <Popconfirm
+            title="请确认"
+            description="确定要删除该输出结果?"
+            onConfirm={removeModel}
+            okText="删除"
+            okType="danger"
+            okButtonProps={{
+              type: 'primary',
+            }}
+            cancelText="取消"
+          >
+            <DeleteOutlined />
+          </Popconfirm>
         </Tooltip>
       </Flex>
     );

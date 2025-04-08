@@ -2,18 +2,39 @@ import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { FileUtils } from '../utils/fileUtils';
-import { BaseResult, EResourceType, IFileMeta, IFileService, IGetFileListParams, IUploadBufferParams, TUploadDirectoryResult, TUploadResult } from '@evo/types';
+import {
+  BaseResult,
+  EResourceType,
+  IDeleteFileParams,
+  IFileMeta,
+  IFileService,
+  IGetFileListParams,
+  IUploadBufferParams,
+  TUploadDirectoryResult,
+  TUploadResult,
+} from '@evo/types';
 import { PGLiteManager } from '@evo/pglite-manager';
 import { createBaseMeta, getFileListByType, ResultUtil } from '@evo/utils';
 import { IMG_EXTS, DOCUMENT_EXTS } from '@evo/utils';
-import officeParser from 'officeparser'
+import officeParser from 'officeparser';
+import { IDepManager } from '../types';
+
+export interface IFileManagerOptions {
+  uploadDir: string;
+  dbManager: PGLiteManager;
+  depManager: IDepManager;
+}
+
 export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uploadFile'> {
   private files: IFileMeta[] = [];
   private filesDir: string;
   private dbManager: PGLiteManager;
+  private depManager: IDepManager;
 
-  constructor(uploadDir: string, dbManager: PGLiteManager) {
+  constructor(options: IFileManagerOptions) {
+    const { uploadDir, dbManager, depManager } = options;
     this.filesDir = uploadDir; // path.join(uploadDir, 'files');
+    this.depManager = depManager;
     // 确保文件目录存在
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -26,6 +47,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
 
     this.initialize();
   }
+
   async getFileContent(fileId: string): Promise<BaseResult<string>> {
     try {
       const file = await this.getFile(fileId);
@@ -51,7 +73,6 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       // 其他文件直接读取为文本
       const content = await fs.promises.readFile(file.path, 'utf-8');
       return ResultUtil.success(content);
-
     } catch (error) {
       console.error('获取文件内容错误:', error);
       return ResultUtil.error(error);
@@ -76,7 +97,6 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       return ResultUtil.error(error);
     }
   }
-
 
   /**
    * 初始化数据库和加载文件
@@ -114,7 +134,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
         path: targetPath,
         size: stats.size,
         type: fileType,
-      })
+      });
 
       // 保存到数据库
       const savedFile = await this.dbManager.insert<IFileMeta>('files', file);
@@ -122,17 +142,16 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
 
       return {
         success: true,
-        data: savedFile
+        data: savedFile,
       };
     } catch (error) {
       console.error('文件处理错误:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '未知错误'
+        error: error instanceof Error ? error.message : '未知错误',
       };
     }
   }
-
 
   async uploadBufferFile(params: IUploadBufferParams): Promise<BaseResult<IFileMeta>> {
     try {
@@ -150,7 +169,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
         path: targetPath,
         size: buffer.length,
         type: fileMeta.type,
-      })
+      });
 
       const savedFile = await this.dbManager.insert<IFileMeta>('files', file);
       this.files.push(savedFile);
@@ -170,7 +189,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
     const results = [];
     for (let i = 0; i < filePaths.length; i += limit) {
       const batch = filePaths.slice(i, i + limit);
-      const batchPromises = batch.map(filePath =>
+      const batchPromises = batch.map((filePath) =>
         this.uploadFile(filePath, path.basename(filePath))
       );
       const batchResults = await Promise.all(batchPromises);
@@ -190,8 +209,8 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       const uploadResults = await this.uploadFilesWithLimit(filePaths, 5);
 
       const results = uploadResults
-        .filter(result => result.success && result.data)
-        .map(result => result.data!);
+        .filter((result) => result.success && result.data)
+        .map((result) => result.data!);
 
       return {
         success: true,
@@ -201,7 +220,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       console.error('目录处理错误:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '未知错误'
+        error: error instanceof Error ? error.message : '未知错误',
       };
     }
   }
@@ -257,11 +276,7 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       const files = await fs.promises.readdir(this.filesDir);
       for (let i = 0; i < files.length; i += 10) {
         const batch = files.slice(i, i + 10);
-        await Promise.all(
-          batch.map(file =>
-            fs.promises.unlink(path.join(this.filesDir, file))
-          )
-        );
+        await Promise.all(batch.map((file) => fs.promises.unlink(path.join(this.filesDir, file))));
       }
 
       // 重新加载文件列表
@@ -272,9 +287,34 @@ export class FileManager implements Omit<IFileService, 'uploadDirectory' | 'uplo
       console.error('清除存储错误:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : '未知错误'
+        error: error instanceof Error ? error.message : '未知错误',
       };
     }
   }
 
+  async deleteFile(params: IDeleteFileParams): Promise<BaseResult<boolean>> {
+    const { fileId, isDeleteKnowledge } = params;
+    try {
+      // 获取文件信息
+      const file = await this.getFile(fileId);
+      if (!file) {
+        return ResultUtil.error('文件不存在');
+      }
+      if (isDeleteKnowledge) {
+        await this.depManager.knowledgeManager.deleteVectorByFileId(fileId);
+      }
+      // 删除物理文件
+      await fs.promises.unlink(file.path);
+
+      // 从数据库删除记录
+      await this.dbManager.deleteById('files', fileId);
+
+      // 更新内存中的文件列表
+      this.files = this.files.filter((f) => f.id !== fileId);
+
+      return ResultUtil.success(true);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
 }

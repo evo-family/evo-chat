@@ -134,8 +134,10 @@ export class ChatController<Context = any> extends BaseService<IChatControllerOp
 
   protected initCurWinId() {
     const curWinId = this.curWinId.get();
+    const windLayout = this.windowLayout.get();
+    const isCurWinExist = windLayout.some((id) => id === curWinId);
 
-    if (!curWinId) {
+    if (!isCurWinExist) {
       // 默认取layout的第一个作为选中的chatWindow
       const firstWinId = this.windowLayout.get().at(0);
 

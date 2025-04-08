@@ -10,6 +10,14 @@ export interface IUploadBufferParams {
   fileBuffer: ArrayBuffer;
   fileMeta: Partial<IFileMeta>;
 }
+
+export interface IDeleteFileParams {
+  fileId: string;
+  /**
+   * 是否把知识库一并删除
+   */
+  isDeleteKnowledge?: boolean;
+}
 export interface IFileService {
   uploadFile(): Promise<TUploadResult>;
   uploadDirectory(): Promise<TUploadDirectoryResult>;
@@ -17,6 +25,7 @@ export interface IFileService {
   uploadBufferFile(params: IUploadBufferParams): Promise<BaseResult<IFileMeta>>;
   getFileBuffer(fileId: string): Promise<BaseResult<ArrayBuffer>>;
   getFileContent(fileId: string): Promise<BaseResult<string>>;
+  deleteFile(params: IDeleteFileParams): Promise<BaseResult<boolean>>;
 }
 
 export interface IAddFileToVectorParams {
@@ -103,6 +112,18 @@ export interface IKnowledgeService {
    * @param params
    */
   searchVectors(params: ISearchVectorsByKnowledge): Promise<BaseResult<ExtractChunkData[]>>;
+
+  /**
+   * 根据文件id获取向量信息
+   * @param fileId
+   */
+  getVectorsByFileId(fileId: string): Promise<BaseResult<IKnowledgeVectorMeta[]>>;
+
+  /**
+   * 根据文件id删除向量信息
+   * @param fileId
+   */
+  deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>>;
 }
 
 export interface ICommonService {
