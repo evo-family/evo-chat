@@ -3,6 +3,7 @@ import { FileManager } from './file-manager/fileManager';
 import { TAvailableModelMap, TUploadDirectoryResult, TUploadResult } from '@evo/types';
 import { KnowledgeManager } from './knowledge-manager/knowledgeManager';
 import { SchemaManager } from '@evo/pglite-manager';
+import { IDepManager } from './types';
 
 interface KnowledgeServiceOptions {
   uploadDir?: string;
@@ -37,24 +38,31 @@ export class KnowledgeService {
   constructor(options: KnowledgeServiceOptions) {
     this.options = options;
     const uploadDir = options.uploadDir || path.join(process.cwd(), 'uploads');
-    this.vectorDBPath = options.vectorDBPath || path.join(process.cwd(), 'vector.db');;
+    this.vectorDBPath = options.vectorDBPath || path.join(process.cwd(), 'vector.db');
     this.pgDBPath = options.pgDBPath || path.join(process.cwd(), 'db.sqlite');
 
     this.modelEmbeddingMap = options.modelEmbeddingMap;
     this.schemaManager = SchemaManager.getInstance(this.pgDBPath);
-
+    const depManager = {} as IDepManager;
     const dbManager = this.schemaManager.getDbManager();
-    this.internalFileManager = new FileManager(uploadDir, dbManager);
+    this.internalFileManager = new FileManager({
+      uploadDir,
+      dbManager,
+      depManager,
+    });
     this.internalKnowledgeManager = new KnowledgeManager({
       fileManager: this.internalFileManager,
       dbManager: dbManager,
       vectorDBPath: this.vectorDBPath,
-      modelEmbeddingMap: this.modelEmbeddingMap!
-    })
+      modelEmbeddingMap: this.modelEmbeddingMap!,
+      depManager,
+    });
+    depManager.fileManager = this.internalFileManager;
+    depManager.knowledgeManager = this.internalKnowledgeManager;
   }
 
   get setModelEmbeddingMap() {
-    return this.internalKnowledgeManager.setModelEmbeddingMap
+    return this.internalKnowledgeManager.setModelEmbeddingMap;
   }
 
   get fileManager() {
@@ -65,13 +73,10 @@ export class KnowledgeService {
     return this.internalKnowledgeManager;
   }
 
-
-
   /**
- * 关闭数据库连接
- */
+   * 关闭数据库连接
+   */
   public async close(): Promise<void> {
     await this.schemaManager.close();
   }
 }
-
