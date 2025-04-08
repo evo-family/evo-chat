@@ -26,6 +26,7 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
         <Tooltip title="文件">
           <Badge dot={fileItems.length > 0 && !open}>
             <Button
+
               onClick={async () => {
                 if (isMobileApp()){
                   const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([MobilePermissionType.camera, MobilePermissionType.microphone, MobilePermissionType.mediaLibrary])

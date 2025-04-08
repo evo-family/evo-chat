@@ -1,5 +1,6 @@
 import React from 'react';
 import { createFromIconfontCN } from '@ant-design/icons';
+import { isMobileApp } from '@evo/utils';
 
 // @ts-ignore
 import iconFontUrl from './evo-font.js';

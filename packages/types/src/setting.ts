@@ -52,4 +52,3 @@ export enum MobilePermissionType {
   microphone = 'microphone',
   mediaLibrary = 'mediaLibrary',
 }
-

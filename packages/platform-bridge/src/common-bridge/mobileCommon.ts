@@ -22,12 +22,12 @@ export class MobileCommon extends BaseBridge implements ICommonService {
     sendMessageToRN('openExternal', {url});
   }
 
+
   getVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
       sendMessageToRN('getAppVersion');
       // @ts-ignore
       window.getAppVersion = (data) => {
-        console.debug('getAppVersion h5 resultdata:', data);
         resolve(data as string);
       }
     });
@@ -38,7 +38,7 @@ export class MobileCommon extends BaseBridge implements ICommonService {
       sendMessageToRN('checkMobilePermission', {permissionArr: permissions});
       // @ts-ignore
       window.checkMobilePermission = (data:string) => {
-        // data数组的长度和permissions的长度一致 即为同意了
+        // data数组的长度和permissions的长度一致 即为同意了权限
         try {
           const dataArr = JSON.parse(data);
           if (dataArr.length === permissions.length) {

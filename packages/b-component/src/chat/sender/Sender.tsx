@@ -26,7 +26,7 @@ import { IFileMeta, MobilePermissionType } from '@evo/types';
 import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
 import { CommonBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
-import { debounce, noop } from 'lodash';
+import { noop } from 'lodash';
 import { useAntdToken } from '../../hooks';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
@@ -175,7 +175,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
           console.error('checkMobilePermission error:', error);
         }
       }
-    }, {wait: 500});
+    },{wait: 500});
 
   const preCheckMobilePermission = useMemoizedFn((e: React.MouseEvent) => {
     if (isMobileApp()) {
@@ -273,12 +273,12 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
             />
           </AntdXSender.Header>
           <SenderToolbar fileItems={items} fileOpen={fileOpen} setFileOpen={setFileOpen} mobileClickAttachment={() => {
-              // 触发文件上传
-              const uploadInput = document.querySelector('.ant-upload input[type="file"]') as HTMLInputElement;
-              if (uploadInput) {
-                uploadInput.click();
-              }
-            }}  />
+            // 触发文件上传
+            const uploadInput = document.querySelector('.ant-upload input[type="file"]') as HTMLInputElement;
+            if (uploadInput) {
+              uploadInput.click();
+            }
+          }}  />
         </div>
       }
       onKeyPress={noop}
