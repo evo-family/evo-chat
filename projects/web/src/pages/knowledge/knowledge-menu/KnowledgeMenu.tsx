@@ -7,6 +7,7 @@ import { useKnowledgeSelector } from '../knowledge-processor/KnowledgeProvider';
 import { MenuItem } from '@evo/component';
 import Item from 'antd/es/list/Item';
 import { useGlobalCtx } from '@evo/data-store';
+import { isElectron } from '@evo/utils';
 
 export interface IKnowledgeMenuProps {
   onMenuClick?: (key: string) => void;
@@ -19,7 +20,9 @@ export const KnowledgeMenu: FC<IKnowledgeMenuProps> = ({ onMenuClick, selectable
   const selectKnowledge = useKnowledgeSelector((s) => s.selectKnowledge);
   const setSelectKnowledge = useKnowledgeSelector((s) => s.setSelectKnowledge);
   useEffect(() => {
-    getKnowledgeList();
+    if (isElectron()) {
+      getKnowledgeList();
+    }
   }, []);
 
   const dropdownMenu: MenuProps = useMemo(() => {
