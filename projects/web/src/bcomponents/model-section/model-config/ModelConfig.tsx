@@ -7,23 +7,20 @@ import { IModel } from '@evo/types';
 import { DeleteOutlined, EditOutlined, LinkOutlined } from '@ant-design/icons';
 import { formatModelHost, openUrl } from '@evo/utils';
 import { ModelList } from '../model-list/ModelList';
-import { ModelType } from '@evo/component';
-interface IModelConfigProps {
-}
+import { Label, ModelType } from '@evo/component';
+interface IModelConfigProps {}
 
 export const ModelConfig: FC<IModelConfigProps> = () => {
   const [form] = Form.useForm();
   const [testing, setTesting] = useState(false);
-  const [
-    selectModel,
-    testModelConnect,
-    changeModel,
-    removeModel
-  ] = useModelSelector(s => [
-    s.selectModel, s.testModelConnect, s.changeModel, s.removeModel,
-  ])
+  const [selectModel, testModelConnect, changeModel, removeModel] = useModelSelector((s) => [
+    s.selectModel,
+    s.testModelConnect,
+    s.changeModel,
+    s.removeModel,
+  ]);
 
-  const modelDialog = useModelSelector(s => s.modelDialog)
+  const modelDialog = useModelSelector((s) => s.modelDialog);
 
   useEffect(() => {
     if (selectModel) {
@@ -35,7 +32,7 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
   }, [selectModel]);
 
   const onValuesChange = (changedValues: any, allValues: any) => {
-    changeModel({ apiInfo: changedValues })
+    changeModel({ apiInfo: changedValues });
   };
 
   const handleTest = async () => {
@@ -47,7 +44,13 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
         apiKey: values.key,
         apiUrl: values.url,
         model: selectModel?.groups?.[0].models?.[0]!,
-      })
+      });
+
+      console.log('q=>info', {
+        apiKey: values.key,
+        apiUrl: values.url,
+        model: selectModel?.groups?.[0].models?.[0]!,
+      });
 
       if (isConnection) {
         message.success('连接成功');
@@ -63,29 +66,26 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
   };
 
   if (!selectModel) {
-    return <></>
+    return <></>;
   }
-
 
   return (
     <div>
-      <h3>
+      <Label size="large" bold style={{ marginBottom: 6 }}>
         {selectModel?.name} 配置
-
-        {
-          selectModel.webSite?.official && <Tooltip title='官网'>
+        {selectModel.webSite?.official && (
+          <Tooltip title="官网">
             <Button
               type="link"
               onClick={() => {
-                openUrl(selectModel.webSite?.official)
+                openUrl(selectModel.webSite?.official);
               }}
-              style={{ marginLeft: 8, fontSize: 14 }}
+              style={{ fontSize: 14 }}
               icon={<LinkOutlined />}
             />
           </Tooltip>
-        }
-
-      </h3>
+        )}
+      </Label>
       <Form<IModel>
         form={form}
         layout="vertical"
@@ -94,15 +94,17 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
       >
         <Form.Item
           label="API Key"
-          name='key'
+          name="key"
           rules={[{ required: true, message: '请输入 API Key' }]}
           extra={
             <Button
               type="link"
               onClick={() => {
-                openUrl(selectModel.webSite?.models)
+                openUrl(selectModel.webSite?.models);
               }}
-            >点击获取密钥</Button>
+            >
+              点击获取密钥
+            </Button>
           }
         >
           <Input.Password
@@ -114,7 +116,6 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
               </Button>
             }
           />
-
         </Form.Item>
 
         <Form.Item
@@ -135,22 +136,24 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
           <Input style={{ width: '100%' }} placeholder="请输入 API 地址" />
         </Form.Item>
 
-        <Form.Item
-          label="模型"
-        >
-          {
-            selectModel?.groups?.map(group => {
-              return <SettingGroup key={group.groupName} title={group.groupName}>
-                {
-                  group?.models?.map(model => {
-                    return <SettingGroup.Item key={model.id} title={
-                      <>
-                        <Avatar size={'small'} src={<img src={getModelLogo(model.id)} alt="avatar" />} />
-                        {
-                          model.id
-                        }
-                      </>
-                    }>
+        <Form.Item label="模型">
+          {selectModel?.groups?.map((group) => {
+            return (
+              <SettingGroup key={group.groupName} title={group.groupName}>
+                {group?.models?.map((model) => {
+                  return (
+                    <SettingGroup.Item
+                      key={model.id}
+                      title={
+                        <>
+                          <Avatar
+                            size={'small'}
+                            src={<img src={getModelLogo(model.id)} alt="avatar" />}
+                          />
+                          {model.id}
+                        </>
+                      }
+                    >
                       <>
                         <ModelType types={model.type} />
                         <Button
@@ -163,8 +166,8 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
                               data: {
                                 groupName: group.groupName,
                                 ...model,
-                              }
-                            })
+                              },
+                            });
                           }}
                         />
                         <Button
@@ -177,11 +180,11 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
                         />
                       </>
                     </SettingGroup.Item>
-                  })
-                }
+                  );
+                })}
               </SettingGroup>
-            })
-          }
+            );
+          })}
         </Form.Item>
       </Form>
 

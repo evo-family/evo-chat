@@ -12,3 +12,4 @@ export * from './flexable/flex-fill-width/FlexFillWidth';
 export * from './menu-item';
 export * from './search';
 export * from './provider/WrapperProvider';
+export * from './label/Label';

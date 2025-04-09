@@ -19,7 +19,7 @@ export const MainLayout: FC<IMainLayoutProps> = (props) => {
 
   // token.colorBgContainer
   return (
-    <div style={{ backgroundColor: themColor }} className={s.layout}>
+    <div style={{ backgroundColor: themColor }} className={classNames(s.layout, 'app-region-drag')}>
       <div className={classNames(s.left, 'app-region-drag')}>
         <LayoutMenu />
       </div>
@@ -28,7 +28,7 @@ export const MainLayout: FC<IMainLayoutProps> = (props) => {
           backgroundColor: token.colorBgContainer,
           // backgroundColor: layout === ELayout.l2 ? token.colorBgContainer : token.colorBgLayout,
         }}
-        className={s.right}
+        className={classNames(s.right, 'app-region-no-drag')}
       >
         <Outlet />
       </div>
