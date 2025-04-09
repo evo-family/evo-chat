@@ -55,7 +55,6 @@ export const MessageItem = React.memo<IMessageItemProps>((props) => {
       <div className={style.container}>
         <MessageLayout
           avatar={null}
-          // name={'just test name'}
           className={style.question}
           time={createdTime}
           actionArea={<MessageToolbar />}
@@ -79,7 +78,7 @@ export const MessageItem = React.memo<IMessageItemProps>((props) => {
         </div>
         <Flex className={style['answers-wrap']}>
           {answerIds.map((ansId) => (
-            <div key={ansId} className={style.flex_container}>
+            <div key={ansId} className={style['answer-item-container']}>
               <AnswerItem answerId={ansId} />
             </div>
           ))}
