@@ -14,15 +14,18 @@ export const useLatestMessage = (curWindowCell: IChatWindowContext['chatWin']) =
 
       if (!chatWin) return;
 
-      chatWin.configState.listen(
+      const subscription = chatWin.configState.listen(
         (msgIdsSignal) => {
           const latestMsgId = msgIdsSignal.cellInfo?.next?.at(-1);
+
           if (!latestMsgId) return;
 
           chatWin.getMessage(latestMsgId).then((msgIns) => latestMsg.set(msgIns));
         },
-        { keys: ['messageIds'] }
+        { keys: ['messageIds'], immediate: true }
       );
+
+      return () => subscription.unsubscribe();
     });
   }, [latestMsg, curWindowCell]);
 
