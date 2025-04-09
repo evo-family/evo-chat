@@ -76,7 +76,13 @@ export const AnswerItem = React.memo<IAnswerItemProps>((props) => {
         avatar={<ModelAvatar modelName={model} />}
         name={model}
         time={formatCreatedTime}
-        actionArea={<AnswerActions answerCell={answerCell} onExpandClick={handleExpandClick} />}
+        actionArea={
+          <AnswerActions
+            answerCell={answerCell}
+            showMaximize={showMaximize}
+            onExpandClick={handleExpandClick}
+          />
+        }
         onKeyDownCapture={handleWrapKeyDown}
       >
         <AnswerRender answerCell={answerCell} />

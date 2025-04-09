@@ -10,11 +10,12 @@ import { useMemoizedFn } from 'ahooks';
 
 export interface IAnswerActionsProps {
   answerCell: TModelAnswerCell;
+  showMaximize?: boolean;
   onExpandClick?: (event: MouseEvent) => any;
 }
 
 export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
-  const { answerCell, onExpandClick } = props;
+  const { answerCell, showMaximize, onExpandClick } = props;
 
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
   const [status] = useCellValueSelector(answerCell, (value) => value.status);
@@ -38,7 +39,7 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
         )}
       </div>
       <div>
-        <Tooltip title="最大化">
+        <Tooltip title={showMaximize ? '最小化' : '最大化'}>
           <ArrowsAltOutlined className={style['expand-icon']} onClick={onExpandClick} />
         </Tooltip>
       </div>
