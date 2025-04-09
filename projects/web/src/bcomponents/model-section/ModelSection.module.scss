@@ -1,20 +1,26 @@
 .container {
   display: flex;
-  height: calc(100vh - 180px); //
+  overflow: hidden;
+  flex: 1;
 }
 
 .modelList {
   width: 250px;
-
   border-right: 1px solid var(--evo-color-border);
+  padding-right: 20px;
 }
 
 .modelItem {
-
   display: flex;
   align-items: center;
   width: 100%;
   cursor: move;
+  border-radius: 8px;
+  margin-bottom: 4px;
+
+  &:hover {
+    background-color: var(--evo-color-fill-secondary);
+  }
 
   .dragHandle {
     padding: 0 8px;
@@ -22,22 +28,24 @@
 
   .content {
     flex: 1;
-    padding: 8px;
+    padding: 8px 8px 8px 0px;
     cursor: pointer;
+    color: var(--evo-color-text);
+
+    .item {
+      display: flex;
+      align-items: center;
+
+      .label {
+        margin-left: 4px;
+        flex: 1
+      }
+    }
   }
+}
 
-
-  // padding: 12px 16px;
-  // cursor: pointer;
-  // transition: background-color 0.3s;
-
-  // &:hover {
-  //   background-color: var(--evo-color-bg-elevated);
-  // }
-
-  // &.active {
-  //   background-color: var(--evo-color-primary-bg);
-  // }
+.active {
+  background-color: var(--evo-color-fill-secondary);
 }
 
 .icon {
@@ -46,6 +54,6 @@
 
 .configArea {
   flex: 1;
-  padding: 20px;
+  padding: 0 20px;
   overflow: auto;
 }
