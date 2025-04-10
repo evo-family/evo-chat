@@ -1,5 +1,11 @@
-import { CopyOutlined, DeleteOutlined, SendOutlined, SyncOutlined } from '@ant-design/icons';
-import { Dropdown, MenuProps, Popconfirm, Tooltip } from 'antd';
+import {
+  CopyOutlined,
+  DeleteOutlined,
+  EllipsisOutlined,
+  SendOutlined,
+  SyncOutlined,
+} from '@ant-design/icons';
+import { Dropdown, MenuProps, Popconfirm, Tooltip, message } from 'antd';
 import React, { useMemo } from 'react';
 import { useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
 
@@ -14,12 +20,6 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
 
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
-
-  const buttonsRender = useMemoizedFn<Required<DropdownButtonProps>['buttonsRender']>(
-    (originNode) => {
-      return [null, originNode?.at(1)];
-    }
-  );
 
   const resendMessage = useMemoizedFn(() => {
     chatWin.resendMessage({ msgId: chatMsg.getConfigState('id') });
@@ -38,7 +38,9 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
   const copyMessageText = useMemoizedFn(() => {
     const sendMessage = chatMsg.getConfigState('sendMessage');
 
-    navigator.clipboard.writeText(sendMessage);
+    navigator.clipboard.writeText(sendMessage).then(() => {
+      message.success('复制成功');
+    });
   });
 
   const items = useMemo(() => {
@@ -81,8 +83,10 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
             }}
             cancelText="取消"
           >
-            <DeleteOutlined className={style['action-icon']} />
-            删除
+            <div onClick={(e) => e.stopPropagation()}>
+              <DeleteOutlined className={style['action-icon']} />
+              删除
+            </div>
           </Popconfirm>
         ),
       },
@@ -102,14 +106,11 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
   }, []);
 
   return (
-    <>
-      <Dropdown.Button
-        type="text"
-        size="small"
-        menu={{ items }}
-        // 只渲染三个点就行
-        buttonsRender={buttonsRender}
-      ></Dropdown.Button>
-    </>
+    <Dropdown
+      menu={{ items }}
+      // 只渲染三个点就行
+    >
+      <EllipsisOutlined className={style['msg-toolbar-btn']} />
+    </Dropdown>
   );
 });

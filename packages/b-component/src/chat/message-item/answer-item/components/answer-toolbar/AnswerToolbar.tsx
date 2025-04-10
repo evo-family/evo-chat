@@ -5,7 +5,7 @@ import {
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
-import { Flex, Popconfirm, Tooltip } from 'antd';
+import { Flex, Popconfirm, Tooltip, message } from 'antd';
 
 import React from 'react';
 import style from './Style.module.scss';
@@ -36,10 +36,30 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   });
 
   const copyModelAnswer = useMemoizedFn(() => {
-    const answerContent = answerCell.get().content;
+    const { content: answerContent, errorMessage, status } = answerCell.get();
 
-    navigator.clipboard.writeText(answerContent);
+    let clipContent = '';
+
+    switch (status) {
+      case EModalAnswerStatus.SUCCESS:
+        clipContent = answerContent;
+        break;
+      case EModalAnswerStatus.ERROR:
+        clipContent = errorMessage;
+        break;
+
+      default:
+        break;
+    }
+
+    if (clipContent) {
+      navigator.clipboard.writeText(clipContent).then(() => {
+        message.success('复制成功');
+      });
+    }
   });
+
+  console.log(status);
 
   if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
     return (

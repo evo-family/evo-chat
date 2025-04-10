@@ -162,7 +162,7 @@ export class ChatController<Context = any> extends BaseService<IChatControllerOp
 
     const storeRecord: IChatCtrlWindowRecord = { initialConfig };
 
-    this.windowLayout.set([...this.windowLayout.get(), newWindowId]);
+    this.windowLayout.set([newWindowId, ...this.windowLayout.get()]);
     this.windowInfoRecords.setCellValueSync(newWindowId, storeRecord);
 
     const chatWindow = await this.windowStore.getCellValueUntil(newWindowId);

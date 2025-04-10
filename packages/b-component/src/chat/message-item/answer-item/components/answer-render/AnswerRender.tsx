@@ -48,24 +48,24 @@ export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
     );
   }
 
-  if (status === EModalAnswerStatus.ERROR) {
-    return (
-      <BubbleChat
-        contents={[
-          {
-            key: 2,
-            role: 'error',
-            content: errorMessage,
-          },
-        ]}
-      />
-    );
-  }
-
   return (
     <>
-      <ReasoningRender answerCell={answerCell} />
-      <AnswerContentRender answerCell={answerCell} />
+      {status === EModalAnswerStatus.ERROR ? (
+        <BubbleChat
+          contents={[
+            {
+              key: 2,
+              role: 'error',
+              content: errorMessage,
+            },
+          ]}
+        />
+      ) : (
+        <>
+          <ReasoningRender answerCell={answerCell} />
+          <AnswerContentRender answerCell={answerCell} />
+        </>
+      )}
       <Divider />
       <AnswerToolbar answerCell={answerCell} />
       <AnswerScrollTrigger answerCell={answerCell} />
