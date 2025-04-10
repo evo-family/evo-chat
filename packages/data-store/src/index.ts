@@ -17,3 +17,4 @@ export * from './react-context/window/context';
 export * from './react-context/message';
 export * from './glob-state/agent';
 export * from './hooks/agent/useAgentLogic';
+export * from './hooks/chat-list/useChatList';
