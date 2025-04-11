@@ -10,6 +10,7 @@ export * from './utils/metaUtil';
 export * from './utils/resultUtil';
 export * from './utils/url';
 export * from './utils/electron';
+export * from './utils/date';
 export * from './base-idb-store/store';
 export * from './hook-executor/types';
 export * from './hook-executor/executor';
