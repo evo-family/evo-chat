@@ -12,10 +12,10 @@ export interface IMcpMeta extends IBaseMeta {
   description?: string;
   categoryId: string;
   type: EMcpType;
-  runCommand: string;
+  config: string;
 }
 
 export enum EMcpType {
-  STUDIO = 'Stdio',
+  STDIO = 'Stdio',
   SSE = 'sse',
 }

@@ -46,12 +46,6 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
         model: selectModel?.groups?.[0].models?.[0]!,
       });
 
-      console.log('q=>info', {
-        apiKey: values.key,
-        apiUrl: values.url,
-        model: selectModel?.groups?.[0].models?.[0]!,
-      });
-
       if (isConnection) {
         message.success('连接成功');
       } else {

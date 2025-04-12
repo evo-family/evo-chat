@@ -47,6 +47,8 @@ export const EnvCheck: FC = () => {
     handleCheck();
   }, []);
 
+  const isSuccess = bunStatus === 'success' && uvStatus === 'success';
+
   return (
     <>
       <Tooltip title="检查 Bun 和 UV 命令是否已安装">
@@ -59,8 +61,8 @@ export const EnvCheck: FC = () => {
           }}
         >
           <Badge
-            status={bunStatus === 'success' && uvStatus === 'success' ? 'success' : 'error'}
-            text="环境检查"
+            status={isSuccess ? 'success' : 'error'}
+            text={isSuccess ? '环境可用' : '环境异常'}
           />
         </Button>
       </Tooltip>

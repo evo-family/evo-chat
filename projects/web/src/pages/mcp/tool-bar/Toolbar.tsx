@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { useContentPanelSelector } from '../../../components';
 import { EnvCheck } from './env-check/EnvCheck';
+import { AddMcp } from './add-mcp/AddMcp';
 
 export interface IToolbarProps {}
 
@@ -9,7 +10,10 @@ export const Toolbar: FC<IToolbarProps> = (props) => {
 
   return (
     <ToolbarPortal>
-      <EnvCheck />
+      <>
+        <EnvCheck />
+        <AddMcp />
+      </>
     </ToolbarPortal>
   );
 };
