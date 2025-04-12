@@ -1,5 +1,12 @@
 import { EResourceType, IVectorProgress, TUploadDirectoryResult, TUploadResult } from './file';
-import { IFileMeta, IKnowledgeMeta, IKnowledgeVectorMeta, IKnowledgeVectorMetaVo } from './meta';
+import {
+  IFileMeta,
+  IKnowledgeMeta,
+  IKnowledgeVectorMeta,
+  IKnowledgeVectorMetaVo,
+  IMcpCategoryMeta,
+  IMcpMeta,
+} from './meta';
 
 import { BaseResult } from './common';
 import { EThemeMode, MobilePermissionType } from './setting';
@@ -142,9 +149,20 @@ export interface ICliService {
 }
 
 export interface IMcpService {
-  startService(): Promise<BaseResult<boolean>>;
-  stopService(): Promise<BaseResult<boolean>>;
-  getServiceStatus(): Promise<BaseResult<boolean>>;
+  // 分类相关方法
+  createCategory(meta: Partial<IMcpCategoryMeta>): Promise<BaseResult<IMcpCategoryMeta>>;
+  updateCategory(meta: IMcpCategoryMeta): Promise<BaseResult<IMcpCategoryMeta>>;
+  deleteCategory(id: string): Promise<BaseResult<boolean>>;
+  getCategoryList(): Promise<BaseResult<IMcpCategoryMeta[]>>;
+  getCategoryById(id: string): Promise<BaseResult<IMcpCategoryMeta | null>>;
+
+  // MCP 项目相关方法
+  createMcp(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>>;
+  updateMcp(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>>;
+  deleteMcp(id: string): Promise<BaseResult<boolean>>;
+  getMcpList(): Promise<BaseResult<IMcpMeta[]>>;
+  getMcpById(id: string): Promise<BaseResult<IMcpMeta | null>>;
+  getMcpListByCategoryId(categoryId: string): Promise<BaseResult<IMcpMeta[]>>;
 }
 
 export interface IGetFileListParams {

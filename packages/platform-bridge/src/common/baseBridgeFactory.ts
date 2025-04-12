@@ -1,15 +1,18 @@
-import {isElectron, isMobileApp} from "@evo/utils";
+import { isElectron, isMobileApp } from '@evo/utils';
 
 export abstract class BaseBridgeFactory<T> {
   protected abstract createElectronBridge(): T;
-  protected abstract createMobileBridge(): T;
+  protected createMobileBridge?(): T;
   protected abstract createWebBridge(): T;
 
   protected createBridge(): T {
     if (isElectron()) {
       return this.createElectronBridge();
     } else if (isMobileApp()) {
-      return this.createMobileBridge();
+      if (this.createMobileBridge) {
+        return this.createMobileBridge();
+      }
+      return this.createWebBridge();
     } else {
       return this.createWebBridge();
     }

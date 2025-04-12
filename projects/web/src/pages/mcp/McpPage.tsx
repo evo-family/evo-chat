@@ -3,13 +3,14 @@ import { ContentPanel } from '../../components';
 import { McpProvider, useMcpSelector } from './mcp-processor/McpProvider';
 import { McpList } from './mcp-list/McpList';
 import { Toolbar } from './tool-bar/Toolbar';
+import { McpMenu } from './mcp-menu/McpMenu';
 
 export interface IMcpPageContentProps {}
 
 export const McpPageContent: FC<IMcpPageContentProps> = memo(() => {
   const leftContent = (
     <>
-      <McpList />
+      <McpMenu />
     </>
   );
 

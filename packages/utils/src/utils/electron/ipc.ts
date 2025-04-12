@@ -43,6 +43,22 @@ export const IPC_EVENTS = {
 
   // MCP 相关
   MCP: {
+    // 分类相关
+    CREATE_CATEGORY: 'mcp-create-category',
+    UPDATE_CATEGORY: 'mcp-update-category',
+    DELETE_CATEGORY: 'mcp-delete-category',
+    GET_CATEGORY_LIST: 'mcp-get-category-list',
+    GET_CATEGORY_BY_ID: 'mcp-get-category-by-id',
+
+    // MCP 项目相关
+    CREATE_MCP: 'mcp-create-mcp',
+    UPDATE_MCP: 'mcp-update-mcp',
+    DELETE_MCP: 'mcp-delete-mcp',
+    GET_MCP_LIST: 'mcp-get-mcp-list',
+    GET_MCP_BY_ID: 'mcp-get-mcp-by-id',
+    GET_MCP_LIST_BY_CATEGORY: 'mcp-get-mcp-list-by-category',
+
+    // 服务控制相关
     START_SERVICE: 'mcp-start-service',
     STOP_SERVICE: 'mcp-stop-service',
     GET_SERVICE_STATUS: 'mcp-get-service-status',
