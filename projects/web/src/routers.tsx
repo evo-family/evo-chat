@@ -7,6 +7,7 @@ import { KnowledgePage } from './pages/knowledge/KnowledgePage';
 import { FilePage } from './pages/file/FilePage';
 import { AssistantPage } from './pages/assistant/AssistantPage';
 import { SettingPage } from './pages/settings/SettingPage';
+import { McpPage } from './pages/mcp/McpPage';
 export const router = createHashRouter([
   {
     path: '/',
@@ -35,6 +36,10 @@ export const router = createHashRouter([
       {
         path: 'assistant',
         element: <AssistantPage />,
+      },
+      {
+        path: 'mcp',
+        element: <McpPage />,
       },
       {
         path: 'settings',

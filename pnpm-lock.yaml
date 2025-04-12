@@ -349,6 +349,21 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
 
+  packages/mcp-service:
+    dependencies:
+      '@evo/pglite-manager':
+        specifier: workspace:*
+        version: link:../pglite-manager
+      '@evo/types':
+        specifier: workspace:*
+        version: link:../types
+      '@evo/utils':
+        specifier: workspace:*
+        version: link:../utils
+      which:
+        specifier: ^5.0.0
+        version: 5.0.0
+
   packages/pglite-manager:
     dependencies:
       '@electric-sql/pglite':
@@ -444,6 +459,9 @@ importers:
       '@evo/knowledge-service':
         specifier: workspace:*
         version: link:../../packages/knowledge-service
+      '@evo/mcp-service':
+        specifier: workspace:*
+        version: link:../../packages/mcp-service
       '@evo/pglite-manager':
         specifier: workspace:*
         version: link:../../packages/pglite-manager
@@ -456,6 +474,9 @@ importers:
       '@libsql/client':
         specifier: 0.15.1
         version: 0.15.1
+      '@types/which':
+        specifier: ^3.0.4
+        version: 3.0.4
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -2361,6 +2382,9 @@ packages:
 
   '@types/verror@1.10.11':
     resolution: {integrity: sha512-RlDm9K7+o5stv0Co8i8ZRGxDbrTxhJtgjqjFyVh/tXQyl/rYtTKlnTvZ88oSTeYREWurwx20Js4kTuKCsFkUtg==}
+
+  '@types/which@3.0.4':
+    resolution: {integrity: sha512-liyfuo/106JdlgSchJzXEQCVArk0CvevqPote8F8HgWgJ3dRCcTHgJIsLDuee0kxk/mhbInzIZk3QWSZJ8R+2w==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -4590,6 +4614,10 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+
+  isexe@3.1.1:
+    resolution: {integrity: sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==}
+    engines: {node: '>=16'}
 
   isomorphic-rslog@0.0.6:
     resolution: {integrity: sha512-HM0q6XqQ93psDlqvuViNs/Ea3hAyGDkIdVAHlrEocjjAwGrs1fZ+EdQjS9eUPacnYB7Y8SoDdSY3H8p3ce205A==}
@@ -7430,6 +7458,11 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
+  which@5.0.0:
+    resolution: {integrity: sha512-JEdGzHwwkrbWoGOlIHqQ5gtprKGOenpDHpxE9zVR1bWbOtYRyPPHMe9FaP6x61CmNaTThSkb0DAJte5jD+DmzQ==}
+    engines: {node: ^18.17.0 || >=20.5.0}
+    hasBin: true
+
   wide-align@1.1.5:
     resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
 
@@ -9628,6 +9661,8 @@ snapshots:
 
   '@types/verror@1.10.11':
     optional: true
+
+  '@types/which@3.0.4': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -12465,6 +12500,8 @@ snapshots:
   isbinaryfile@5.0.4: {}
 
   isexe@2.0.0: {}
+
+  isexe@3.1.1: {}
 
   isomorphic-rslog@0.0.6: {}
 
@@ -15916,6 +15953,10 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  which@5.0.0:
+    dependencies:
+      isexe: 3.1.1
 
   wide-align@1.1.5:
     dependencies:
