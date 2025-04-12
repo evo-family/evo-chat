@@ -1,0 +1,16 @@
+// .checkButton {
+//   display: flex;
+//   align-items: center;
+//   gap: 4px;
+
+//   &:hover {
+//     background-color: rgba(0, 0, 0, 0.04);
+//   }
+// }
+
+.path {
+  color: var(--evo-text-color-secondary);
+  font-size: 12px;
+  margin-top: 4px;
+  font-family: monospace;
+}

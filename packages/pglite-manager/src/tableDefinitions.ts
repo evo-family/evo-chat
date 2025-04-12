@@ -8,25 +8,27 @@ export const tableDefinitions: Record<string, ITableDefinition> = {
     name: 'files',
     schema: `
       id VARCHAR(64) PRIMARY KEY,
+      user_id VARCHAR(64) NULL,
       name VARCHAR(255) NOT NULL,
       path VARCHAR(1024) NOT NULL,
       size INTEGER NOT NULL,
       type VARCHAR(50) NOT NULL,
       create_time BIGINT NOT NULL,
       modified_time BIGINT NOT NULL
-    `
+    `,
   },
   knowledge: {
     name: 'knowledge',
     schema: `
       id VARCHAR(64) PRIMARY KEY,
+      user_id VARCHAR(64) NULL,
       name VARCHAR(255) NOT NULL,
       description TEXT,
       model_id VARCHAR(64) NOT NULL,
       model_provider_id VARCHAR(64) NOT NULL,
       create_time BIGINT NOT NULL,
       modified_time BIGINT NOT NULL
-    `
+    `,
   },
   knowledge_vector: {
     name: 'knowledge_vector',
@@ -38,6 +40,33 @@ export const tableDefinitions: Record<string, ITableDefinition> = {
       knowledge_id VARCHAR(64) NOT NULL,
       create_time BIGINT NOT NULL,
       modified_time BIGINT NOT NULL
-    `
-  }
+    `,
+  },
+
+  mcp_category: {
+    name: 'mcp_category',
+    schema: `
+      id VARCHAR(64) PRIMARY KEY,
+      user_id VARCHAR(64) NULL,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      create_time BIGINT NOT NULL,
+      modified_time BIGINT NOT NULL
+    `,
+  },
+
+  mcp: {
+    name: 'mcp',
+    schema: `
+      id VARCHAR(64) PRIMARY KEY,
+      user_id VARCHAR(64) NULL,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      category_id VARCHAR(64) NOT NULL,
+      type VARCHAR(50) NOT NULL,
+      config TEXT NOT NULL,
+      create_time BIGINT NOT NULL,
+      modified_time BIGINT NOT NULL
+    `,
+  },
 };
