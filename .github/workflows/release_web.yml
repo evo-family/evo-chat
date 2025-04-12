@@ -26,7 +26,14 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - run: pnpm install
+      - name: Install Dependencies
+        run: |
+          pnpm config set electron_mirror https://npmmirror.com/mirrors/electron/
+          pnpm config set electron_builder_binaries_mirror https://npmmirror.com/mirrors/electron-builder-binaries/
+          pnpm install
+        env:
+          ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
+          ELECTRON_BUILDER_BINARIES_MIRROR: https://npmmirror.com/mirrors/electron-builder-binaries/
       - run: pnpm run build:web
 
       - name: Deploy to Server
