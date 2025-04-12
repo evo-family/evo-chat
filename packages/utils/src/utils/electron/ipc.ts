@@ -32,6 +32,21 @@ export const IPC_EVENTS = {
     SAVE_FILE: 'dialog-save-file',
     MESSAGE_BOX: 'dialog-message-box',
   },
+
+  // CLI 相关
+  CLI: {
+    CHECK_BUN_COMMAND: 'cli-check-bun-command',
+    CHECK_UV_COMMAND: 'cli-check-uv-command',
+    GET_COMMAND_PATH: 'cli-get-command-path',
+    INSTALL_COMMAND: 'cli-install-command',
+  },
+
+  // MCP 相关
+  MCP: {
+    START_SERVICE: 'mcp-start-service',
+    STOP_SERVICE: 'mcp-stop-service',
+    GET_SERVICE_STATUS: 'mcp-get-service-status',
+  },
 } as const;
 
 // 类型导出
@@ -40,3 +55,5 @@ export type UpdateEvents = IpcEvents['UPDATE'];
 export type WindowEvents = IpcEvents['WINDOW'];
 export type SystemEvents = IpcEvents['SYSTEM'];
 export type DialogEvents = IpcEvents['DIALOG'];
+export type CliEvents = IpcEvents['CLI'];
+export type McpEvents = IpcEvents['MCP'];

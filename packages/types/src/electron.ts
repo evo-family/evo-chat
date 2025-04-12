@@ -134,6 +134,19 @@ export interface ICommonService {
   checkMobilePermission?(permissions: MobilePermissionType[]): Promise<boolean>;
 }
 
+export interface ICliService {
+  checkBunCommand(): Promise<BaseResult<boolean>>;
+  checkUvCommand(): Promise<BaseResult<boolean>>;
+  getCommandPath(command: string): Promise<BaseResult<string | null>>;
+  installCommand(command: string): Promise<BaseResult<boolean>>;
+}
+
+export interface IMcpService {
+  startService(): Promise<BaseResult<boolean>>;
+  stopService(): Promise<BaseResult<boolean>>;
+  getServiceStatus(): Promise<BaseResult<boolean>>;
+}
+
 export interface IGetFileListParams {
   type: EResourceType;
   search?: string;

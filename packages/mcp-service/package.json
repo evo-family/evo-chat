@@ -1,0 +1,29 @@
+{
+  "name": "@evo/mcp-service",
+  "version": "1.0.0",
+  "description": "",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./build/index.d.ts",
+      "build": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@evo/pglite-manager": "workspace:*",
+    "@evo/types": "workspace:*",
+    "@evo/utils": "workspace:*",
+    "which": "^5.0.0"
+  },
+  "devDependencies": {}
+}
