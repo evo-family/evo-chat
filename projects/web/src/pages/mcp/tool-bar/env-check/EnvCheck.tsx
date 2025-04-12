@@ -17,8 +17,7 @@ export const EnvCheck: FC = () => {
         CliBridgeFactory.getInstance().checkUvCommand(),
       ]);
 
-      setBunStatus('error');
-      // setBunStatus(bunResult.success && bunResult.data ? 'success' : 'error');
+      setBunStatus(bunResult.success && bunResult.data ? 'success' : 'error');
       setUvStatus(uvResult.success && uvResult.data ? 'success' : 'error');
 
       // 重置路径状态

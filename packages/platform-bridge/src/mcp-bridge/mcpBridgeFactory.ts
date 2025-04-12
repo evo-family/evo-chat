@@ -8,10 +8,6 @@ export class McpBridgeFactory extends BaseBridgeFactory<IMcpService> {
     return new ElectronMcp();
   }
 
-  protected createMobileBridge(): IMcpService {
-    return new WebMcp();
-  }
-
   protected createWebBridge(): IMcpService {
     return new WebMcp();
   }
