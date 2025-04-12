@@ -4,7 +4,10 @@ import { McpBridgeFactory } from '@evo/platform-bridge';
 import { BaseResult, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
 
 export class McpProcessor extends BaseProcessor {
+  // 弹窗管理
+  addOrUpdateMcpDialog: DialogProcessor;
   addOrUpdateCategoryDialog: DialogProcessor;
+
   mcpService: IMcpService;
   categoryListResult: DataCell<BaseResult<IMcpCategoryMeta[]>>;
   mcpListResult: DataCell<BaseResult<IMcpMeta[]>>;
@@ -26,11 +29,29 @@ export class McpProcessor extends BaseProcessor {
   constructor() {
     super();
     this.addOrUpdateCategoryDialog = DialogProcessor.create().processor;
+    this.addOrUpdateMcpDialog = DialogProcessor.create().processor;
     this.mcpService = McpBridgeFactory.getInstance();
     this.categoryListResult = new DataCell({} as any);
     this.mcpListResult = new DataCell({} as any);
     this.selectCategory = new DataCell(null as any);
   }
+
+  // MCP 相关方法
+  createMcp = async (meta: IMcpMeta) => {
+    const res = await this.mcpService.createMcp(meta);
+    if (res.success) {
+      await this.getMcpListByCategoryId(meta.categoryId);
+    }
+    return res;
+  };
+
+  updateMcp = async (meta: IMcpMeta) => {
+    const res = await this.mcpService.updateMcp(meta);
+    if (res.success) {
+      await this.getMcpListByCategoryId(meta.categoryId);
+    }
+    return res;
+  };
 
   setSelectCategory = (category: IMcpCategoryMeta) => {
     this.selectCategory.set(category);
