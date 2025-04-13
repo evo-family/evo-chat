@@ -25,6 +25,28 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
   const updateMcp = useMcpSelector((s) => s.updateMcp);
   const selectCategory = useMcpSelector((s) => s.selectCategory);
 
+  const getInitialValues = () => {
+    const defaultValues = {
+      type: EMcpType.STDIO,
+      command: 'npx',
+      args: '',
+      env: '',
+    };
+
+    if (dialogData.type === 'create') {
+      return defaultValues;
+    }
+
+    const config = JSON.parse(dialogData.data?.config || '{}');
+    return {
+      ...dialogData.data,
+      type: dialogData.data?.type,
+      command: config.command,
+      args: config.args?.join(' '),
+      env: config.env,
+    };
+  };
+
   return (
     <ModalForm<IFormData>
       title={dialogData.type === 'create' ? '创建 MCP' : '编辑 MCP'}
@@ -44,15 +66,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
       layout="horizontal"
       labelCol={{ span: 4 }}
       wrapperCol={{ span: 20 }}
-      initialValues={{
-        ...dialogData.data,
-        type: EMcpType.STDIO,
-        config: {
-          command: 'npx',
-          args: [],
-          env: {},
-        },
-      }}
+      initialValues={getInitialValues()}
       onFinish={async (values) => {
         const { command, args, env, ...otherValues } = values;
         try {
@@ -60,17 +74,12 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
             command: values.command,
             // @ts-ignore
             args: values.args?.split(' ').filter(Boolean) || [],
-            env: values.env || {},
+            env: values.env,
           };
 
           if (dialogData.type === 'create') {
             const res = await createMcp({
               ...otherValues,
-              categoryId: selectCategory!.id,
-              config: JSON.stringify(config),
-            });
-            console.log('evo=>data', {
-              ...values,
               categoryId: selectCategory!.id,
               config: JSON.stringify(config),
             });
@@ -80,10 +89,12 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
               message.error(res.error);
             }
           } else {
-            const res = await updateMcp({
+            const { command, args, env, categoryName, ...otherValues } = {
               ...dialogData.data,
               ...values,
-            });
+              config: JSON.stringify(config),
+            };
+            const res = await updateMcp(otherValues);
             if (res.success) {
               message.success('更新成功');
             } else {
@@ -138,13 +149,6 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
         label="环境变量"
         placeholder="请输入环境变量 JSON"
         fieldProps={{ rows: 3 }}
-        transform={(value: any) => {
-          try {
-            return JSON.parse(value);
-          } catch {
-            return {};
-          }
-        }}
       />
     </ModalForm>
   );

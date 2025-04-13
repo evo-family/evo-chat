@@ -53,15 +53,19 @@ export class ElectronMcp extends BaseBridge implements IMcpService {
   }
 
   // 服务控制方法
-  async startService(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.START_SERVICE);
+  async startService(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.START_SERVICE, mcpId);
   }
 
-  async stopService(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.STOP_SERVICE);
+  async stopService(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.STOP_SERVICE, mcpId);
   }
 
-  async getServiceStatus(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_SERVICE_STATUS);
+  async getServiceStatus(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_SERVICE_STATUS, mcpId);
+  }
+
+  async getTools(mcpId: string): Promise<BaseResult<any[]>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_TOOLS, mcpId);
   }
 }

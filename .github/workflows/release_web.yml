@@ -30,7 +30,10 @@ jobs:
         run: |
           pnpm config set electron_mirror https://npmmirror.com/mirrors/electron/
           pnpm config set electron_builder_binaries_mirror https://npmmirror.com/mirrors/electron-builder-binaries/
-          pnpm install
+          export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+          export ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
+          export ELECTRON_CUSTOM_DIR="{{ version }}"
+          pnpm install --no-optional
         env:
           ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
           ELECTRON_BUILDER_BINARIES_MIRROR: https://npmmirror.com/mirrors/electron-builder-binaries/

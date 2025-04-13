@@ -31,7 +31,7 @@ export class MCPManager {
         ...meta,
         modifiedTime: Date.now(),
       };
-      await this.depManager.dbManager.update('mcp', { id: meta.id }, updateData);
+      const res = await this.depManager.dbManager.update('mcp', updateData, { id: meta.id });
       return ResultUtil.success(updateData);
     } catch (error) {
       return ResultUtil.error(error);
