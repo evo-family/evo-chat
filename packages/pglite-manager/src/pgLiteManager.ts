@@ -155,10 +155,11 @@ export class PGLiteManager {
       UPDATE ${tableName}
       SET ${setClause}
       WHERE ${whereClause}
+      RETURNING *
     `;
 
     const result = await this.db.query(query, [...dataValues, ...conditionValues]);
-    return result.affectedRows!;
+    return result.affectedRows || 0;
   }
 
   /**

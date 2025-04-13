@@ -53,6 +53,14 @@ export class McpProcessor extends BaseProcessor {
     return res;
   };
 
+  deleteMcp = async (id: string) => {
+    const res = await this.mcpService.deleteMcp(id);
+    if (res.success) {
+      await this.getMcpListByCategoryId(this.selectCategory.get()!.id);
+    }
+    return res;
+  };
+
   setSelectCategory = (category: IMcpCategoryMeta) => {
     this.selectCategory.set(category);
     this.getMcpListByCategoryId(category.id);

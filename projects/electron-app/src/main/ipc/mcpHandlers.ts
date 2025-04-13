@@ -1,10 +1,10 @@
 import { ipcMain } from 'electron';
-import { IPC_EVENTS } from '@evo/utils';
+import { IPC_EVENTS, ResultUtil } from '@evo/utils';
 import { BaseResult, IMcpCategoryMeta, IMcpMeta } from '@evo/types';
 import { managerService } from '../services/ManagerService';
 
 export function setupMcpHandlers() {
-  const { MCPCategoryManager, MCPManager } = managerService.MCPService;
+  const { MCPCategoryManager, MCPManager, MCPClientManager } = managerService.MCPService;
   // 分类相关处理器
   ipcMain.handle(
     IPC_EVENTS.MCP.CREATE_CATEGORY,
@@ -79,15 +79,33 @@ export function setupMcpHandlers() {
   );
 
   // 服务控制相关处理器
-  // ipcMain.handle(IPC_EVENTS.MCP.START_SERVICE, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().startService();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.START_SERVICE,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      const res = await MCPClientManager.startClient(mcpId);
+      if (res.success) {
+        return ResultUtil.success(true);
+      } else {
+        return ResultUtil.error(false);
+      }
+    }
+  );
 
-  // ipcMain.handle(IPC_EVENTS.MCP.STOP_SERVICE, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().stopService();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.STOP_SERVICE,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      return await MCPClientManager.stopClient(mcpId);
+    }
+  );
 
-  // ipcMain.handle(IPC_EVENTS.MCP.GET_SERVICE_STATUS, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().getServiceStatus();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.GET_SERVICE_STATUS,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      return MCPClientManager.isClientRunning(mcpId);
+    }
+  );
+
+  ipcMain.handle(IPC_EVENTS.MCP.GET_TOOLS, async (_, mcpId: string): Promise<BaseResult<any[]>> => {
+    return MCPClientManager.getTools(mcpId);
+  });
 }

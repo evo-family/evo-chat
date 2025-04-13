@@ -12,6 +12,7 @@ import { BaseResult } from './common';
 import { EThemeMode, MobilePermissionType } from './setting';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { TAvailableModelMap } from './model';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export interface IUploadBufferParams {
   fileBuffer: ArrayBuffer;
@@ -163,6 +164,14 @@ export interface IMcpService {
   getMcpList(): Promise<BaseResult<IMcpMeta[]>>;
   getMcpById(id: string): Promise<BaseResult<IMcpMeta | null>>;
   getMcpListByCategoryId(categoryId: string): Promise<BaseResult<IMcpMeta[]>>;
+
+  // 服务控制方法
+  startService(mcpId: string): Promise<BaseResult<boolean>>;
+  stopService(mcpId: string): Promise<BaseResult<boolean>>;
+  getServiceStatus(mcpId: string): Promise<BaseResult<boolean>>;
+
+  // 工具方法
+  getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
 }
 
 export interface IGetFileListParams {

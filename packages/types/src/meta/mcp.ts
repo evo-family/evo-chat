@@ -6,6 +6,19 @@ export interface IMcpCategoryMeta extends IBaseMeta {
   description?: string;
 }
 
+export interface IMcpStdioConfig {
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
+  packageRegistry?: string;
+}
+
+export interface IMcpSseConfig {
+  url: string;
+}
+
+export type IMcpConfig = IMcpStdioConfig | IMcpSseConfig;
+
 export interface IMcpMeta extends IBaseMeta {
   userId: string;
   name: string;
@@ -16,6 +29,6 @@ export interface IMcpMeta extends IBaseMeta {
 }
 
 export enum EMcpType {
-  STDIO = 'Stdio',
+  STDIO = 'stdio',
   SSE = 'sse',
 }
