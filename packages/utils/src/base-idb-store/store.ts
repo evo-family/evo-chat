@@ -1,4 +1,6 @@
 import Dexie, { IndexableType } from 'dexie';
+import { PromiseWrap, asyncBufferThrottle, bufferDebounce } from '@/utils/common';
+import { bufferCount, bufferTime } from 'rxjs';
 
 /**
  * IndexedDB 存储选项接口
@@ -208,6 +210,50 @@ export class BaseIDBStore<T = any> {
   }
 
   /**
+   * 单个入参形式，但批量机制去获取数据
+   * @param key 键
+   * @param tableName 表名，默认为默认表
+   * @returns 数据
+   */
+  public bufferedGet = asyncBufferThrottle<[key: string, tableName?: string], T | undefined>(
+    (bufferedParams) => {
+      const grouped: Record<string, [{ key: string; task: PromiseWrap<any> }]> = {};
+      const proxyGrouped = new Proxy(grouped, {
+        get: (target, tableName) => {
+          let value = Reflect.get(target, tableName);
+
+          if (!value) {
+            value = [];
+            Reflect.set(target, tableName, value);
+          }
+
+          return value;
+        },
+      });
+
+      bufferedParams.forEach((bufferedItem) => {
+        const { params, task } = bufferedItem;
+        const [key, tableName = this.defaultTable] = params;
+
+        if (!key) return task.resolve(undefined);
+
+        proxyGrouped[tableName].push({ key, task });
+      });
+
+      Object.entries(grouped).forEach(([tableName, getParams]) => {
+        this.dispatch(tableName, async (storeTable) => {
+          const bulkKeys = getParams.map((item) => item.key);
+
+          const data = await storeTable.bulkGet(bulkKeys);
+
+          data.forEach((item, index) => getParams[index]?.task.resolve(item?.data));
+        });
+      });
+    },
+    50
+  );
+
+  /**
    * 设置数据
    * @param key 键
    * @param value 值
@@ -227,6 +273,48 @@ export class BaseIDBStore<T = any> {
       );
     });
   }
+
+  /**
+   * 单个入参形式，但批量机制去设置数据
+   * @param key 键
+   * @param tableName 表名，默认为默认表
+   * @returns 数据
+   */
+  public bufferedSet = asyncBufferThrottle<
+    [key: string, value: T, tableName?: string],
+    T | undefined
+  >((bufferedParams) => {
+    const grouped: Record<string, [{ id: string; data: T }]> = {};
+    const proxyGrouped = new Proxy(grouped, {
+      get: (target, tableName) => {
+        let value = Reflect.get(target, tableName);
+
+        if (!value) {
+          value = [];
+          Reflect.set(target, tableName, value);
+        }
+
+        return value;
+      },
+    });
+
+    bufferedParams.forEach((bufferedItem) => {
+      const { params, task } = bufferedItem;
+      const [key, value, tableName = this.defaultTable] = params;
+
+      if (!key) return task.resolve(undefined);
+
+      proxyGrouped[tableName].push({ id: key, data: value });
+    });
+
+    const asyncTasks = Object.entries(grouped).map(([tableName, getParams]) =>
+      this.dispatch(tableName, async (storeTable) => storeTable.bulkPut(getParams))
+    );
+
+    Promise.allSettled(asyncTasks).then(() => {
+      bufferedParams.forEach((item) => item.task.resolve(undefined));
+    });
+  }, 50);
 
   /**
    * 删除数据

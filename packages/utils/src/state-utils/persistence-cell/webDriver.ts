@@ -7,27 +7,30 @@ export type TDataCellWebStorageCache = Map<any, any>;
 
 const PERSISTENCE_IDB_KEY = '_data_cell_persistence_';
 
-const SYNC_DINSTANCE = 1e3;
-
 const driverIDBStore = new BaseIDBStore(PERSISTENCE_IDB_KEY);
 
 const WEB_DRIVER: DataCellWithStorageDriver = {
+  get: async <T = any>(cacheKey: string) => {
+    const cacheData = await driverIDBStore.bufferedGet(cacheKey);
+
+    return cacheData as T;
+  },
   has: async (cacheKey) => {
-    const cacheData = await driverIDBStore.get<TDataCellWebStorageCache>(cacheKey);
+    const cacheData = await driverIDBStore.bufferedGet(cacheKey);
 
     return !!cacheData;
   },
   init: async (cacheKey, dataCell) => {
-    const cacheData = await driverIDBStore.get<TDataCellWebStorageCache>(cacheKey);
+    const cacheData = await driverIDBStore.bufferedGet(cacheKey);
 
     if (cacheData) {
       dataCell.set(cacheData);
     } else {
-      await driverIDBStore.set(cacheKey, dataCell.get());
+      await driverIDBStore.bufferedSet(cacheKey, dataCell.get());
     }
   },
   update: async (cacheKey, dataCell, signal) => {
-    await driverIDBStore.set(cacheKey, dataCell.get());
+    await driverIDBStore.bufferedSet(cacheKey, dataCell.get());
   },
   destroy: (cacheKey) => {
     driverIDBStore.delete(cacheKey);

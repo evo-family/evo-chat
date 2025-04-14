@@ -12,7 +12,7 @@ const driverIDBStore = new BaseIDBStore(PERSISTENCE_IDB_KEY);
 
 const WEB_DRIVER: StateTissueWithStorageDriver = {
   init: async (cacheKey, stateTissueIns) => {
-    const cacheData = await driverIDBStore.get<TStateTissueWebStorageCache>(cacheKey);
+    const cacheData = await driverIDBStore.bufferedGet(cacheKey);
 
     if (cacheData) {
       for (const [key, value] of cacheData.entries()) {
@@ -21,13 +21,18 @@ const WEB_DRIVER: StateTissueWithStorageDriver = {
     } else {
       const allValuesMap = stateTissueIns.getCellsValue({ all: true }).map;
 
-      await driverIDBStore.set(cacheKey, allValuesMap);
+      await driverIDBStore.bufferedSet(cacheKey, allValuesMap);
     }
+  },
+  get: async <T = any>(cacheKey: string) => {
+    const cacheData = await driverIDBStore.bufferedGet(cacheKey);
+
+    return cacheData as T;
   },
   update: async (cacheKey, stateTissueIns) => {
     const allValuesMap = stateTissueIns.getCellsValue({ all: true }).map;
 
-    await driverIDBStore.set(cacheKey, allValuesMap);
+    await driverIDBStore.bufferedSet(cacheKey, allValuesMap);
   },
   destroy: (cacheKey, stateTissueIns) => {
     driverIDBStore.delete(cacheKey);

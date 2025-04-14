@@ -120,3 +120,5 @@ export const persistenceTissueSync = <
     >;
   }
 };
+
+export const getPersistenceTissueDriverIns = () => __storage_driver;

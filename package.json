@@ -83,8 +83,7 @@
   "engines": {
     "npm": "only-allow-pnpm",
     "yarn": "only-allow-pnpm",
-    "node": ">= 18 < 21",
-    "pnpm": ">= 8 < 10"
+    "node": ">= 18 < 21"
   },
   "pnpm": {
     "overrides": {
