@@ -2,7 +2,7 @@ import path from 'path';
 import { FileManager } from './file-manager/fileManager';
 import { TAvailableModelMap, TUploadDirectoryResult, TUploadResult } from '@evo/types';
 import { KnowledgeManager } from './knowledge-manager/knowledgeManager';
-import { PGLiteManager, SchemaManager } from '@evo/pglite-manager';
+import { PGLiteManager } from '@evo/pglite-manager';
 import { IDepManager } from './types';
 
 interface KnowledgeServiceOptions {

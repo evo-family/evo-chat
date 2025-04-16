@@ -174,6 +174,10 @@ export interface IMcpService {
   getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
 }
 
+export interface ISystemService {
+  clearLocalData(): Promise<BaseResult<boolean>>;
+}
+
 export interface IGetFileListParams {
   type: EResourceType;
   search?: string;

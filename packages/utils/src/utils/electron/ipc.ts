@@ -24,6 +24,7 @@ export const IPC_EVENTS = {
     OPEN_EXTERNAL: 'open-external-link',
     SHOW_ITEM_IN_FOLDER: 'show-item-in-folder',
     GET_PATH: 'get-system-path',
+    CLEAN_LOCAL_DATA: 'clean-local-data',
   },
 
   // 对话框相关

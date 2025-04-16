@@ -3,8 +3,8 @@ import { IPC_EVENTS, ResultUtil } from '@evo/utils';
 import { BaseResult, IMcpCategoryMeta, IMcpMeta } from '@evo/types';
 import { managerService } from '../services/ManagerService';
 
-export function setupMcpHandlers() {
-  const { MCPCategoryManager, MCPManager, MCPClientManager } = managerService.MCPService;
+export async function setupMcpHandlers() {
+  const { MCPCategoryManager, MCPManager, MCPClientManager } = (await managerService).MCPService;
   // 分类相关处理器
   ipcMain.handle(
     IPC_EVENTS.MCP.CREATE_CATEGORY,

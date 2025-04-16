@@ -91,6 +91,7 @@ export class MCPClientManager {
       const mcp = await this.getMcpInfo(mcpId);
       const client = (await this.startClient(mcp.id))?.data!;
       const toolsResult = await client.listTools();
+      console.log('evo=>toolsResult', toolsResult);
       return ResultUtil.success(toolsResult.tools);
     } catch (error) {
       return ResultUtil.error(error);
