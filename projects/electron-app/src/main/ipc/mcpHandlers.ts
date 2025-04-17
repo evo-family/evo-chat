@@ -81,8 +81,20 @@ export async function setupMcpHandlers() {
   // 服务控制相关处理器
   ipcMain.handle(
     IPC_EVENTS.MCP.START_SERVICE,
+    async (_, mcp: IMcpMeta): Promise<BaseResult<boolean>> => {
+      const res = await MCPClientManager.startClient(mcp);
+      if (res.success) {
+        return ResultUtil.success(true);
+      } else {
+        return ResultUtil.error(false);
+      }
+    }
+  );
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.START_SERVICE_BY_MCP_ID,
     async (_, mcpId: string): Promise<BaseResult<boolean>> => {
-      const res = await MCPClientManager.startClient(mcpId);
+      const res = await MCPClientManager.startClientByMcpId(mcpId);
       if (res.success) {
         return ResultUtil.success(true);
       } else {

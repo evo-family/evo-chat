@@ -11,6 +11,10 @@ export async function setupCliHandlers() {
     return await cliService.checkUvCommand();
   });
 
+  ipcMain.handle(IPC_EVENTS.CLI.CHECK_NPX_COMMAND, async () => {
+    return await cliService.checkNpxCommand();
+  });
+
   ipcMain.handle(IPC_EVENTS.CLI.GET_COMMAND_PATH, async (_, command: string) => {
     return await cliService.getCommandPath(command);
   });

@@ -3,6 +3,10 @@ import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
 
 export class ElectronCli extends BaseBridge implements ICliService {
+  async checkNpxCommand(): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.CLI.CHECK_NPX_COMMAND);
+  }
+
   async checkBunCommand(): Promise<BaseResult<boolean>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.CLI.CHECK_BUN_COMMAND);
   }

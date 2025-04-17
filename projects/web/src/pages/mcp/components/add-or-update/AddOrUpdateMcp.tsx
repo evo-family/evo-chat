@@ -7,8 +7,10 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { EMcpType, IMcpMeta } from '@evo/types';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { useMcpSelector } from '../../mcp-processor/McpProvider';
+import { McpBridgeFactory } from '@evo/platform-bridge';
+import { useRequest } from 'ahooks';
 
 export interface IAddOrUpdateMcpProps {}
 
@@ -16,6 +18,7 @@ export interface IFormData extends IMcpMeta {
   command: string;
   args: [];
   env: [];
+  categoryName?: string;
 }
 
 export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
@@ -47,6 +50,40 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
     };
   };
 
+  const getFormValues = (values: IFormData) => {
+    const { command, args, env, categoryName, ...otherValues } = values;
+    const config = {
+      command: values.command,
+      // @ts-ignore
+      args: values.args?.split(' ').filter(Boolean) || [],
+      env: values.env,
+    };
+
+    const result = {
+      ...otherValues,
+      categoryId: selectCategory!.id,
+      config: JSON.stringify(config),
+    };
+
+    return result;
+  };
+
+  const { loading, run: testConnection } = useRequest(
+    async (values: IFormData) => {
+      const formValue = getFormValues(values);
+      const res = await McpBridgeFactory.getInstance().startService(formValue);
+      if (res.success) {
+        message.success('连接测试成功');
+      } else {
+        message.error(res.error || '连接测试失败');
+      }
+      return res;
+    },
+    {
+      manual: true,
+    }
+  );
+
   return (
     <ModalForm<IFormData>
       title={dialogData.type === 'create' ? '创建 MCP' : '编辑 MCP'}
@@ -55,6 +92,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
       modalProps={{
         destroyOnClose: true,
         onCancel: closeDialog,
+        style: { top: 40 },
         bodyStyle: {
           maxHeight: 'calc(100vh - 200px)',
           overflow: 'auto',
@@ -68,44 +106,59 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
       wrapperCol={{ span: 20 }}
       initialValues={getInitialValues()}
       onFinish={async (values) => {
-        const { command, args, env, ...otherValues } = values;
         try {
-          const config = {
-            command: values.command,
-            // @ts-ignore
-            args: values.args?.split(' ').filter(Boolean) || [],
-            env: values.env,
-          };
-
+          const formValue = getFormValues(values);
           if (dialogData.type === 'create') {
-            const res = await createMcp({
-              ...otherValues,
-              categoryId: selectCategory!.id,
-              config: JSON.stringify(config),
-            });
+            const res = await createMcp(formValue);
             if (res.success) {
               message.success('创建成功');
+              closeDialog();
             } else {
               message.error(res.error);
             }
           } else {
-            const { command, args, env, categoryName, ...otherValues } = {
-              ...dialogData.data,
-              ...values,
-              config: JSON.stringify(config),
-            };
-            const res = await updateMcp(otherValues);
+            const id = dialogData.data?.id! as string;
+            const res = await updateMcp({ ...formValue, id });
             if (res.success) {
               message.success('更新成功');
+              closeDialog();
             } else {
               message.error(res.error);
             }
           }
-          closeDialog();
         } catch (error: any) {
           message.error(error?.message);
           return false;
         }
+      }}
+      submitter={{
+        render: (props) => {
+          return [
+            <Button key="cancel" onClick={closeDialog}>
+              取消
+            </Button>,
+            <Button
+              key="test"
+              loading={loading}
+              onClick={() => {
+                const values = props.form?.getFieldsValue();
+                testConnection(values);
+              }}
+            >
+              测试连接
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              {...props.submitButtonProps}
+              onClick={() => {
+                props.submit?.();
+              }}
+            >
+              保存
+            </Button>,
+          ];
+        },
       }}
     >
       <ProFormText

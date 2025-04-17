@@ -45,11 +45,8 @@ export class McpProcessor extends BaseProcessor {
     return res;
   };
 
-  updateMcp = async (meta: IMcpMeta) => {
+  updateMcp = async (meta: Partial<IMcpMeta>) => {
     const res = await this.mcpService.updateMcp(meta);
-    if (res.success) {
-      await this.getMcpListByCategoryId(meta.categoryId);
-    }
     return res;
   };
 

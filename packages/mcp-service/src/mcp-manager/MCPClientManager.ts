@@ -34,12 +34,22 @@ export class MCPClientManager {
     throw new McpError(ErrorCode.MCP_NOT_FOUND);
   }
 
-  async startClient(mcpId: string): Promise<BaseResult<Client>> {
+  async startClientByMcpId(mcpId: string): Promise<BaseResult<Client>> {
+    const mcp = await this.getMcpInfo(mcpId);
+    return this.startClient(mcp, true);
+  }
+
+  async startClient(mcp: IMcpMeta, hasCache: boolean = false): Promise<BaseResult<Client>> {
     try {
-      const mcp = await this.getMcpInfo(mcpId);
-      const isRun = await this.isClientRunning(mcp.id);
-      if (isRun?.data) {
-        return ResultUtil.success(this.clients.get(mcp.id)!);
+      // 如果启用缓存，检查是否有运行中的客户端
+      if (hasCache) {
+        const isRun = await this.isClientRunning(mcp.id);
+        if (isRun?.data) {
+          return ResultUtil.success(this.clients.get(mcp.id)!);
+        }
+      } else {
+        // 不使用缓存，先停止已存在的客户端
+        await this.stopClient(mcp.id);
       }
 
       const client = new Client({ name: 'evo chat', version: this.appVersion || '1.0.0' });
@@ -89,7 +99,11 @@ export class MCPClientManager {
   async getTools(mcpId: string): Promise<BaseResult<Tool[]>> {
     try {
       const mcp = await this.getMcpInfo(mcpId);
-      const client = (await this.startClient(mcp.id))?.data!;
+      const startResult = await this.startClientByMcpId(mcp.id);
+      if (!startResult.success) {
+        return ResultUtil.error(startResult.error);
+      }
+      const client = startResult?.data!;
       const toolsResult = await client.listTools();
       console.log('evo=>toolsResult', toolsResult);
       return ResultUtil.success(toolsResult.tools);

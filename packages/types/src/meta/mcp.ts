@@ -24,8 +24,11 @@ export interface IMcpMeta extends IBaseMeta {
   name: string;
   description?: string;
   categoryId: string;
+  categoryName?: string;
   type: EMcpType;
   config: string;
+  closeTools: string;
+  enable: number;
 }
 
 export enum EMcpType {

@@ -38,6 +38,7 @@ export class MCPService {
 
     depManager.MCPManager = this.internalMCPManager;
     depManager.MCPCategoryManager = this.internalMCPCategoryManager;
+    depManager.MCPClientManager = this.MCPClientManager;
   }
 
   get cliManager() {

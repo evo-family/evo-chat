@@ -3,9 +3,13 @@ import { BaseBridge } from '../common/baseBridge';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export class WebMcp extends BaseBridge implements IMcpService {
-  startService(mcpId: string): Promise<BaseResult<boolean>> {
+  startClientByMcpId(mcpId: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }
+  startService(mcp: IMcpMeta): Promise<BaseResult<boolean>> {
+    throw new Error('Method not implemented.');
+  }
+
   stopService(mcpId: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }
