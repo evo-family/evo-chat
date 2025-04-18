@@ -1,5 +1,7 @@
-.container {
+.answer-actions {
   margin-left: 8px;
+  display: flex;
+  justify-content: space-between;
 
   .stop-icon {
     cursor: pointer;
@@ -19,6 +21,9 @@
       transform: translate(-50%, -50%);
       animation: ripple 0.8s linear infinite; // 将1.5s改为0.8s
     }
+  }
+
+  .expand-icon {
   }
 }
 

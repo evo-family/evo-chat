@@ -26,5 +26,5 @@ export const IpcChannels = {
   COMMON_OPEN_EXTERNAL: 'common-open-external', // 打开外部链接
 
   // 检查更新
-  UPDATA_CHECK: 'updata-check'
-} as const
+  UPDATA_CHECK: 'updata-check',
+} as const;

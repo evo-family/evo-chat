@@ -6,22 +6,43 @@ import {
   ContentPanelProvider,
   useContentPanelSelector,
 } from './content-panel-processor/ContentPanelProvider';
+import classNames from 'classnames';
 
 interface IContentPanelContentProps {
   title: string;
   subTitle?: string;
   toolbar?: React.ReactElement;
+  className?: string;
+  style?: React.CSSProperties;
   leftContent?: React.ReactNode;
   leftStyle?: React.CSSProperties;
+  leftClassName?: string;
+  rightStyle?: React.CSSProperties;
+  rightClassName?: string;
+  contentClassName?: string;
+  contentStyle?: React.CSSProperties;
   children?: React.ReactNode;
 }
 
 const ContentPanelContent: FC<IContentPanelContentProps> = memo((props) => {
-  const { title, toolbar, leftContent, children, leftStyle } = props;
+  const {
+    title,
+    toolbar,
+    leftContent,
+    children,
+    leftStyle,
+    leftClassName,
+    rightStyle,
+    rightClassName,
+    className,
+    style,
+    contentClassName,
+    contentStyle,
+  } = props;
   const setToolbarElement = useContentPanelSelector((s) => s.setToolbarElement);
   const token = useAntdToken();
   return (
-    <div className={s.container}>
+    <div className={classNames(s.container, className)} style={style}>
       <div className={`${s.toolbar} app-region-drag`}>
         <Flex justify="space-between" align="center">
           <div>
@@ -33,14 +54,15 @@ const ContentPanelContent: FC<IContentPanelContentProps> = memo((props) => {
           </div>
         </Flex>
       </div>
-      <div className={s.content}>
-        <div style={leftStyle} className={s.left}>
+      <div style={contentStyle} className={classNames(s.content, contentClassName)}>
+        <div style={leftStyle} className={`${s.left} ${leftClassName || ''}`}>
           {leftContent}
         </div>
         <div
-          className={s.right}
+          className={`${s.right} ${rightClassName || ''}`}
           style={{
             backgroundColor: token.colorBgContainer,
+            ...rightStyle,
           }}
         >
           {children}

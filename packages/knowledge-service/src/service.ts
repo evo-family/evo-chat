@@ -2,7 +2,7 @@ import path from 'path';
 import { FileManager } from './file-manager/fileManager';
 import { TAvailableModelMap, TUploadDirectoryResult, TUploadResult } from '@evo/types';
 import { KnowledgeManager } from './knowledge-manager/knowledgeManager';
-import { SchemaManager } from '@evo/pglite-manager';
+import { PGLiteManager } from '@evo/pglite-manager';
 import { IDepManager } from './types';
 
 interface KnowledgeServiceOptions {
@@ -21,6 +21,8 @@ interface KnowledgeServiceOptions {
    * 可用的嵌入模型列表
    */
   modelEmbeddingMap?: TAvailableModelMap;
+
+  dbManager: PGLiteManager;
 }
 
 /**
@@ -29,30 +31,26 @@ interface KnowledgeServiceOptions {
 export class KnowledgeService {
   private options: KnowledgeServiceOptions;
   private internalFileManager: FileManager;
-  private schemaManager: SchemaManager;
   private internalKnowledgeManager: KnowledgeManager;
   private modelEmbeddingMap?: TAvailableModelMap;
   private vectorDBPath: string;
-  private pgDBPath: string;
 
   constructor(options: KnowledgeServiceOptions) {
+    const { dbManager } = options;
     this.options = options;
     const uploadDir = options.uploadDir || path.join(process.cwd(), 'uploads');
     this.vectorDBPath = options.vectorDBPath || path.join(process.cwd(), 'vector.db');
-    this.pgDBPath = options.pgDBPath || path.join(process.cwd(), 'db.sqlite');
 
     this.modelEmbeddingMap = options.modelEmbeddingMap;
-    this.schemaManager = SchemaManager.getInstance(this.pgDBPath);
     const depManager = {} as IDepManager;
-    const dbManager = this.schemaManager.getDbManager();
     this.internalFileManager = new FileManager({
       uploadDir,
-      dbManager,
+      dbManager: options.dbManager,
       depManager,
     });
     this.internalKnowledgeManager = new KnowledgeManager({
       fileManager: this.internalFileManager,
-      dbManager: dbManager,
+      dbManager,
       vectorDBPath: this.vectorDBPath,
       modelEmbeddingMap: this.modelEmbeddingMap!,
       depManager,
@@ -71,12 +69,5 @@ export class KnowledgeService {
 
   get knowledgeManager() {
     return this.internalKnowledgeManager;
-  }
-
-  /**
-   * 关闭数据库连接
-   */
-  public async close(): Promise<void> {
-    await this.schemaManager.close();
   }
 }

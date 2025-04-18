@@ -8,25 +8,26 @@ import { useKnowledgeSelector } from '../../knowledge-processor/KnowledgeProvide
 const { Search } = Input;
 const { Text } = Typography;
 
-export interface ISearchVectorsProps {
-}
+export interface ISearchVectorsProps {}
 
 export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const selectKnowledge = useKnowledgeSelector(s => s.selectKnowledge)
+  const selectKnowledge = useKnowledgeSelector((s) => s.selectKnowledge);
 
-  const searchVectors = useKnowledgeSelector(s => s.searchVectors)
-  const searchVectorsResult = useKnowledgeSelector(s => s.searchVectorsResult)
+  const searchVectors = useKnowledgeSelector((s) => s.searchVectors);
+  const searchVectorsResult = useKnowledgeSelector((s) => s.searchVectorsResult);
 
   const handleSearch = (value: string) => {
     setSearched(true);
     searchVectors({
       knowledgeId: selectKnowledge?.id!,
       searchValue: value,
-    })
+    });
   };
+
+  console.log('evo-data', searchVectorsResult?.data);
 
   return (
     <div className={s.container}>
@@ -63,7 +64,7 @@ export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
           className={s.resultList}
           dataSource={searchVectorsResult?.data || []}
           locale={{
-            emptyText: searched ? '暂无搜索结果' : '请输入搜索内容'
+            emptyText: searched ? '暂无搜索结果' : '请输入搜索内容',
           }}
           renderItem={(item, index) => (
             <List.Item className={s.item}>
@@ -91,4 +92,3 @@ export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
     </div>
   );
 });
-

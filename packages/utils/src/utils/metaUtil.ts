@@ -13,3 +13,13 @@ export const createBaseMeta = <T extends IBaseMeta>(data: Omit<T, keyof IBaseMet
     ...data,
   } as T;
 };
+
+/**
+ * 修改基础实体数据
+ */
+export const updateBaseMeta = <T extends IBaseMeta>(data: Omit<T, keyof IBaseMeta>): T => {
+  return {
+    modifiedTime: Date.now(),
+    ...data,
+  } as T;
+};

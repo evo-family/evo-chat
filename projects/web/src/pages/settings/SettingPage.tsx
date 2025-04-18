@@ -17,6 +17,7 @@ import { ModelSection } from '../../bcomponents';
 import { ShortcutContent } from './setting-container/shortcut-content/ShortcutContent';
 import classNames from 'classnames';
 import s from './SettingPage.module.scss';
+import { useNavigate } from 'react-router';
 
 const menuItems = [
   {
@@ -50,13 +51,12 @@ const menuItems = [
     label: '关于我们',
   },
 ];
-export interface ISettingPageProps {
-  onClose?: () => void;
-}
+export interface ISettingPageProps {}
 
-export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
+export const SettingPage: FC<ISettingPageProps> = () => {
   const [selectedKey, setSelectedKey] = useState('model');
   const contentRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const handleMenuSelect = (key: string) => {
     setSelectedKey(key);
@@ -64,6 +64,11 @@ export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleClose = () => {
+    // 先跳转到首页
+    navigate('/');
   };
 
   const handleScroll = () => {
@@ -92,7 +97,7 @@ export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
         type="text"
         className="app-region-no-drag"
         icon={<CloseOutlined />}
-        onClick={onClose}
+        onClick={handleClose}
       />
     </>
   );
@@ -116,30 +121,30 @@ export const SettingPage: FC<ISettingPageProps> = ({ onClose }) => {
         onScroll={handleScroll}
       >
         {selectedKey === 'model' ? (
-          <section className={s['option-group']}>
-            <h2>模型设置</h2>
+          <>
+            {/* <span className={s.label}>模型设置</span> */}
             <ModelSection />
-          </section>
+          </>
         ) : (
           <>
             {/* <section id="account">
               <h2>账号与安全</h2>
             </section> */}
             <section id="general" className={s['option-group']}>
-              <h2>通用</h2>
+              <span className={s.label}>通用</span>
               <GeneralContent />
             </section>
 
             <section id="data" className={s['option-group']}>
-              <h2>数据设置</h2>
+              <span className={s.label}>数据设置</span>
               <DataContent />
             </section>
             <section id="shortcut" className={s['option-group']}>
-              <h2>快捷键</h2>
+              <span className={s.label}>快捷键</span>
               <ShortcutContent />
             </section>
             <section id="about" className={s['option-group']}>
-              <h2>关于我们</h2>
+              <span className={s.label}>关于我们</span>
               <AboutContent />
             </section>
           </>

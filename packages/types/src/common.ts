@@ -21,6 +21,10 @@ export interface IBaseMeta {
    * 修改时间
    */
   modifiedTime: number;
+
+  createUser: string;
+
+  updateUser: string;
 }
 
 export type OmitBaseMeta<T> = Omit<T, keyof IBaseMeta>;

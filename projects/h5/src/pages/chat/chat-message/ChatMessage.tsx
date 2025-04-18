@@ -1,5 +1,4 @@
-import { Drawer, Splitter } from 'antd';
-import React, { FC, memo, useEffect, useState } from 'react';
+import React, { FC, memo } from 'react';
 
 import { Chat } from '@evo/component';
 import { ChatMessageHeader } from './chat-message-header/ChatMessageHeader';

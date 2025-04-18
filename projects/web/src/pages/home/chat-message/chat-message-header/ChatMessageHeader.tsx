@@ -22,7 +22,7 @@ export const ChatMessageHeader: FC<IChatMessageHeaderProps> = ({}) => {
 
   return (
     <div className={classNames(s.header, 'app-region-drag')}>
-      <div className={s.left}>
+      <div className={classNames(s.left, 'app-region-no-drag')}>
         <Tooltip title="展开侧边栏">
           <Button
             style={{ color: token.colorTextTertiary }}
@@ -33,10 +33,10 @@ export const ChatMessageHeader: FC<IChatMessageHeaderProps> = ({}) => {
           />
         </Tooltip>
       </div>
-      <FlexFillWidth contentClassName={s.center}>
-        <div className={s['chat-title']}>{chatTitle}</div>
+      <FlexFillWidth className={s.center}>
+        <div className={classNames(s['chat-title'], 'app-region-no-drag')}>{chatTitle}</div>
       </FlexFillWidth>
-      <div className={s.right}>
+      <div className={classNames(s.right, 'app-region-no-drag')}>
         <Tooltip title="模型设置">
           <Button type="text" icon={<SettingOutlined />} onClick={collapseDrawer} />
         </Tooltip>

@@ -1,6 +1,6 @@
-import { resolve } from 'path'
+import { resolve } from 'path';
 // 需要先安装 electron-vite 依赖: npm install electron-vite --save-dev
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
 
 export default defineConfig({
   main: {
@@ -12,6 +12,7 @@ export default defineConfig({
           '@evo/demo',
           '@evo/pglite-manager',
           '@evo/knowledge-service',
+          '@evo/mcp-service',
           '@llm-tools/embedjs',
           '@llm-tools/embedjs-openai',
           '@llm-tools/embedjs-loader-web',
@@ -23,17 +24,18 @@ export default defineConfig({
           '@llm-tools/embedjs-loader-sitemap',
           '@llm-tools/embedjs-libsql',
           '@llm-tools/embedjs-loader-image',
-          '@llm-tools/embedjs-interfaces'
-        ]
-      })
+          '@llm-tools/embedjs-interfaces',
+        ],
+      }),
     ],
     resolve: {
       alias: {
         '@evo/pglite-manager': resolve('../../packages/pglite-manager/src'),
         '@evo/knowledge-service': resolve('../../packages/knowledge-service/src'),
+        '@evo/mcp-service': resolve('../../packages/mcp-service/src'),
         '@evo/types': resolve('../../packages/types/src'),
-        '@evo/utils': resolve('../../packages/utils/src')
-      }
+        '@evo/utils': resolve('../../packages/utils/src'),
+      },
     },
     build: {
       rollupOptions: {
@@ -44,11 +46,11 @@ export default defineConfig({
           /pdf-parse\/.*$/,
           '@libsql/darwin-arm64',
           '@llm-tools/embedjs-loader-sitemap',
-          'officeparser'
-        ]
+          'officeparser',
+        ],
       },
       commonjsOptions: {
-        transformMixedEsModules: true
+        transformMixedEsModules: true,
         // ignore: ['pdf-parse'],
         // include: [/node_modules/, /packages/],
         // ignore: ['officeparser'],
@@ -57,12 +59,12 @@ export default defineConfig({
         //   '/Users/qiaojie/Code/gitee.com/evo-chat/node_modules/pdf-parse/lib/**/*.js'
         // ],
         // dynamicRequireRoot: '/Users/qiaojie/Code/gitee.com/evo-chat/node_modules'
-      }
-    }
+      },
+    },
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
-  }
+    plugins: [externalizeDepsPlugin()],
+  },
   // renderer: {
   //   resolve: {
   //     alias: {
@@ -71,4 +73,4 @@ export default defineConfig({
   //   },
   //   plugins: [react()]
   // }
-})
+});

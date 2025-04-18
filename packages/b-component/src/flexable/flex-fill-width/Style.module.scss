@@ -4,7 +4,6 @@
   width: 0; // 关键：防止容器被子元素撑开
 
   .flex-fill-content {
-    width: 100%;
     min-width: 0; // 允许内容在需要时缩小
   }
 }

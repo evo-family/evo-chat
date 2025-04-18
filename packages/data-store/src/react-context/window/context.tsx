@@ -36,9 +36,10 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
   const listDOMRef = useRef<HTMLDivElement>(null);
 
   const latestMsg = useLatestMessage(curWindowCell);
-  const { autoScroll, onMsgListScroll, scrollToBottom, tryScrollToBtmIfNeed } = useListScroll({
-    listDOMRef,
-  });
+  const { autoScroll, onMsgListScroll, scrollToBottom, tryScrollToBtmIfNeed, scrollList } =
+    useListScroll({
+      listDOMRef,
+    });
 
   const handlePostMessage: IChatWindowContext['handlePostMessage'] = useMemoizedFn(
     (message, params) => {
@@ -65,6 +66,7 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
       tryScrollToBtmIfNeed,
       scrollToBottom,
       handlePostMessage,
+      scrollList,
     };
   }, [
     curWindowCell,
@@ -75,6 +77,7 @@ export const ChatWinContextProvider = React.memo<PropsWithChildren<{}>>((props) 
     onMsgListScroll,
     tryScrollToBtmIfNeed,
     handlePostMessage,
+    scrollList,
   ]);
 
   // 每次curWinId变化时，重新获取chatWin并进行初始化逻辑，期间不渲染内容
