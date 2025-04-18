@@ -458,10 +458,10 @@ importers:
         version: 0.2.17
       '@electron-toolkit/preload':
         specifier: ^3.0.1
-        version: 3.0.1(electron@35.1.2)
+        version: 3.0.1(electron@35.0.3)
       '@electron-toolkit/utils':
         specifier: ^4.0.0
-        version: 4.0.0(electron@35.1.2)
+        version: 4.0.0(electron@35.0.3)
       '@evo/knowledge-service':
         specifier: workspace:*
         version: link:../../packages/knowledge-service
@@ -518,8 +518,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(vite@6.2.4(@types/node@22.13.14)(jiti@2.4.2)(less@4.2.2)(sass-embedded@1.86.1)(sass@1.86.1)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1))
       electron:
-        specifier: ^35.0.3
-        version: 35.1.2
+        specifier: 35.0.3
+        version: 35.0.3
       electron-builder:
         specifier: ^25.1.8
         version: 25.1.8(electron-builder-squirrel-windows@25.1.8)
@@ -3543,8 +3543,8 @@ packages:
       '@swc/core':
         optional: true
 
-  electron@35.1.2:
-    resolution: {integrity: sha512-ipYSDZEV3+PpHfJ8/oWlpMCvxwutX6xLvBz2HRPgEzSFzgLmGO7YXTjEow4DhDtCpGE+b95NTGoJaRAVQi5n7A==}
+  electron@35.0.3:
+    resolution: {integrity: sha512-kjQAYEWXSr2TyK19IZoF85dzFIBaYuX7Yp/C+34b5Y/jmI2z270CGie+RjmEGMMitsy0G8YJKftukhYMuWlK6g==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
@@ -8190,17 +8190,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron-toolkit/preload@3.0.1(electron@35.1.2)':
+  '@electron-toolkit/preload@3.0.1(electron@35.0.3)':
     dependencies:
-      electron: 35.1.2
+      electron: 35.0.3
 
   '@electron-toolkit/tsconfig@1.0.1(@types/node@22.13.14)':
     dependencies:
       '@types/node': 22.13.14
 
-  '@electron-toolkit/utils@4.0.0(electron@35.1.2)':
+  '@electron-toolkit/utils@4.0.0(electron@35.0.3)':
     dependencies:
-      electron: 35.1.2
+      electron: 35.0.3
 
   '@electron/asar@3.3.1':
     dependencies:
@@ -9576,11 +9576,11 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/bonjour@3.5.13':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/cacheable-request@6.0.3':
     dependencies:
@@ -9592,17 +9592,17 @@ snapshots:
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
       '@types/express-serve-static-core': 5.0.6
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/cookie@0.6.0': {}
 
   '@types/cors@2.8.17':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/debug@4.1.12':
     dependencies:
@@ -9628,14 +9628,14 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.6':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
       '@types/qs': 6.9.18
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
   '@types/express-serve-static-core@5.0.6':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
       '@types/qs': 6.9.18
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -9650,7 +9650,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/fs-extra@9.0.13':
     dependencies:
@@ -9670,13 +9670,13 @@ snapshots:
 
   '@types/http-proxy@1.17.16':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/json-schema@7.0.15': {}
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/katex@0.16.7': {}
 
@@ -9701,7 +9701,7 @@ snapshots:
 
   '@types/node-forge@1.3.11':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/node@18.19.84':
     dependencies:
@@ -9753,7 +9753,7 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/serve-index@1.9.4':
     dependencies:
@@ -9762,12 +9762,12 @@ snapshots:
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
       '@types/send': 0.17.4
 
   '@types/sockjs@0.3.36':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/tapable@2.2.7':
     dependencies:
@@ -9786,7 +9786,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
 
   '@types/yauzl@2.10.3':
     dependencies:
@@ -11218,7 +11218,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron@35.1.2:
+  electron@35.0.3:
     dependencies:
       '@electron/get': 2.0.3
       '@types/node': 22.13.14
@@ -11250,7 +11250,7 @@ snapshots:
   engine.io@6.6.4:
     dependencies:
       '@types/cors': 2.8.17
-      '@types/node': 20.17.28
+      '@types/node': 22.13.14
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.7.2
