@@ -45,7 +45,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd projects/web
-          pnpm install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile --ignore-workspace-root-check
 
       - run: pnpm run build:web
 
