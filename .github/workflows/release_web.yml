@@ -26,17 +26,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - name: Install Dependencies
-        run: |
-          pnpm config set electron_mirror https://npmmirror.com/mirrors/electron/
-          pnpm config set electron_builder_binaries_mirror https://npmmirror.com/mirrors/electron-builder-binaries/
-          export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
-          export ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
-          export ELECTRON_CUSTOM_DIR="35.0.3"
-          pnpm install --no-frozen-lockfile
-        env:
-          ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
-          ELECTRON_BUILDER_BINARIES_MIRROR: https://npmmirror.com/mirrors/electron-builder-binaries/
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm run build:web
 
       - name: Deploy to Server
