@@ -58,6 +58,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: 'projects/web/build/*'
           target: '/data/evo/chat/'
-          strip_components: 1
+          strip_components: 3
           # debug: true
           # timeout: 60s
