@@ -43,7 +43,9 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          cd projects/web
+          pnpm install --no-frozen-lockfile
 
       - run: pnpm run build:web
 
