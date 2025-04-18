@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm install
       - run: pnpm run build:web
 
       - name: Deploy to Server
