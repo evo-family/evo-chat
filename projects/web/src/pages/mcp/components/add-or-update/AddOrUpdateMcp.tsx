@@ -7,18 +7,22 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import { EMcpType, IMcpMeta } from '@evo/types';
-import { Button, message } from 'antd';
+import { Button, Form, message } from 'antd';
 import { useMcpSelector } from '../../mcp-processor/McpProvider';
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { useRequest } from 'ahooks';
+import { parseKeyValueText, stringifyKeyValueText } from '@evo/utils';
 
 export interface IAddOrUpdateMcpProps {}
 
 export interface IFormData extends IMcpMeta {
   command: string;
-  args: [];
-  env: [];
+  args: string;
+  env: string;
   categoryName?: string;
+
+  url?: string;
+  headers: string;
 }
 
 export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
@@ -41,23 +45,42 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
     }
 
     const config = JSON.parse(dialogData.data?.config || '{}');
-    return {
-      ...dialogData.data,
-      type: dialogData.data?.type,
-      command: config.command,
-      args: config.args?.join(' '),
-      env: config.env,
-    };
+    const type = dialogData.data?.type;
+    if (type === EMcpType.STDIO) {
+      return {
+        ...dialogData.data,
+        type,
+        command: config.command,
+        args: config.args?.join(' '),
+        env: stringifyKeyValueText(config.env),
+      };
+    }
+    if (type === EMcpType.SSE) {
+      return {
+        ...dialogData.data,
+        type,
+        url: config.url,
+        headers: stringifyKeyValueText(config.headers),
+      };
+    }
   };
 
   const getFormValues = (values: IFormData) => {
-    const { command, args, env, categoryName, ...otherValues } = values;
-    const config = {
-      command: values.command,
-      // @ts-ignore
-      args: values.args?.split(' ').filter(Boolean) || [],
-      env: values.env,
-    };
+    const { command, args, env, url, headers, categoryName, ...otherValues } = values;
+    let config = {};
+    if (otherValues.type === EMcpType.STDIO) {
+      config = {
+        command: values.command,
+        args: values.args?.split(' ').filter(Boolean) || [],
+        env: parseKeyValueText(values.env),
+      };
+    }
+    if (otherValues.type === EMcpType.SSE) {
+      config = {
+        url: url,
+        headers: parseKeyValueText(headers),
+      };
+    }
 
     const result = {
       ...otherValues,
@@ -183,26 +206,54 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
         ]}
         initialValue={EMcpType.STDIO}
       />
-      <ProFormSelect
-        name="command"
-        label="命令"
-        placeholder="请选择命令"
-        rules={[{ required: true, message: '请选择命令' }]}
-        options={[
-          { label: 'npx', value: 'npx' },
-          { label: 'uvx', value: 'uvx' },
-        ]}
-        fieldProps={{
-          allowClear: false,
+
+      <Form.Item noStyle shouldUpdate>
+        {(form) => {
+          const type = form.getFieldValue('type');
+          if (type === EMcpType.SSE) {
+            return (
+              <>
+                <ProFormText
+                  name="url"
+                  label="地址"
+                  placeholder="请输入服务器地址"
+                  rules={[{ required: true, message: '请输入服务器地址' }]}
+                />
+                <ProFormTextArea
+                  name="headers"
+                  label="请求头"
+                  placeholder="请输入http得请求头"
+                  fieldProps={{ rows: 3 }}
+                />
+              </>
+            );
+          }
+          return (
+            <>
+              <ProFormSelect
+                name="command"
+                label="命令"
+                placeholder="请选择命令"
+                rules={[{ required: true, message: '请选择命令' }]}
+                options={[
+                  { label: 'npx', value: 'npx' },
+                  { label: 'uvx', value: 'uvx' },
+                ]}
+                fieldProps={{
+                  allowClear: false,
+                }}
+              />
+              <ProFormText name="args" label="参数" placeholder="请输入参数，以空格分隔" />
+              <ProFormTextArea
+                name="env"
+                label="环境变量"
+                placeholder="请输入环境变量 JSON"
+                fieldProps={{ rows: 3 }}
+              />
+            </>
+          );
         }}
-      />
-      <ProFormText name="args" label="参数" placeholder="请输入参数，以空格分隔" />
-      <ProFormTextArea
-        name="env"
-        label="环境变量"
-        placeholder="请输入环境变量 JSON"
-        fieldProps={{ rows: 3 }}
-      />
+      </Form.Item>
     </ModalForm>
   );
 });

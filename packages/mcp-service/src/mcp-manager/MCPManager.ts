@@ -69,6 +69,7 @@ export class MCPManager {
         SELECT m.*, mc.name as category_name
         FROM mcp m
         LEFT JOIN mcp_category mc ON m.category_id = mc.id
+        WHERE m.enable = 1
         ORDER BY m.create_time DESC
       `;
       const result = await this.depManager.dbManager.query(sql);

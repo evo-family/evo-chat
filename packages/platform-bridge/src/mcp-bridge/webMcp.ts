@@ -1,8 +1,20 @@
-import { BaseResult, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
+import {
+  BaseResult,
+  IMCPCallToolResponse,
+  IMcpCategoryMeta,
+  IMcpMeta,
+  IMcpService,
+} from '@evo/types';
 import { BaseBridge } from '../common/baseBridge';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export class WebMcp extends BaseBridge implements IMcpService {
+  callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>> {
+    throw new Error('Method not implemented.');
+  }
+  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
+    throw new Error('Method not implemented.');
+  }
   startClientByMcpId(mcpId: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }

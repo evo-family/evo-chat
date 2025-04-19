@@ -18,7 +18,6 @@ export const McpList: FC = () => {
   const deleteMcp = useMcpSelector((s) => s.deleteMcp);
 
   const [mcpService] = useState(McpBridgeFactory.getInstance());
-
   const getList = () => {
     getMcpListByCategoryId(selectCategory?.id!);
   };
@@ -32,9 +31,11 @@ export const McpList: FC = () => {
   if (!selectCategory) {
     return <Empty description="请先选择分类" />;
   }
+  console.log('evo=>mcp-list', mcpList?.data);
   return (
     <div className={s.container}>
       <ProList
+        rowClassName="ant-pro-list-item"
         dataSource={mcpList?.data || []}
         metas={{
           title: {
@@ -54,12 +55,7 @@ export const McpList: FC = () => {
             render: (_, record) => {
               return (
                 <Space split={<Divider type="vertical" />} size={0}>
-                  <McpEnableSwitch
-                    record={record}
-                    onUpdateSuccess={() => {
-                      getList();
-                    }}
-                  />
+                  <McpEnableSwitch record={record} onUpdateSuccess={() => {}} />
                   <McpTools record={record} />
                   <a
                     key="edit"

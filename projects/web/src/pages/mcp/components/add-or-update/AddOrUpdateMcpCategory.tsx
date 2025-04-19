@@ -50,9 +50,8 @@ export const AddOrUpdateMcpCategory: FC<IAddOrUpdateMcpCategoryProps> = memo(() 
                 ...values,
               });
             }
-
             if (res.success) {
-              message.success(dialogData.type === 'create' ? '创建成功' : '更新成功');
+              message.success(dialogData.type === 'create' ? '创建成功' : '更新成功1');
               closeDialog();
               return true;
             } else {

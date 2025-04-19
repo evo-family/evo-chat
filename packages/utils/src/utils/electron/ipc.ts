@@ -66,6 +66,8 @@ export const IPC_EVENTS = {
     STOP_SERVICE: 'mcp-stop-service',
     GET_SERVICE_STATUS: 'mcp-get-service-status',
     GET_TOOLS: 'mcp-get-tools',
+    GET_MCP_PROMPT: 'mcp-get-prompt',
+    CALL_TOOL: 'mcp-call-tool',
   },
 } as const;
 
