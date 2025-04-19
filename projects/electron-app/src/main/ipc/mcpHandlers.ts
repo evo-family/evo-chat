@@ -120,4 +120,18 @@ export async function setupMcpHandlers() {
   ipcMain.handle(IPC_EVENTS.MCP.GET_TOOLS, async (_, mcpId: string): Promise<BaseResult<any[]>> => {
     return MCPClientManager.getTools(mcpId);
   });
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.GET_MCP_PROMPT,
+    async (_, mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> => {
+      return MCPClientManager.getMcpPrompt(mcpIds, userPrompt);
+    }
+  );
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.CALL_TOOL,
+    async (_, mcpId: string, name: string, args: any): Promise<BaseResult<any>> => {
+      return MCPClientManager.callTool(mcpId, name, args);
+    }
+  );
 }

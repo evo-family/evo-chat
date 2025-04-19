@@ -1,4 +1,5 @@
 import { DebounceSettingsLeading, debounce, isFunction, mergeWith } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import { DataCell } from '../data-cell/cell';
 
@@ -205,3 +206,33 @@ export function setPartialDataCell<T>(cell: DataCell<T>, partialData: Partial<T>
     ...partialData,
   });
 }
+
+/**
+ * 生成uuid内容
+ * @param prefix
+ * @returns
+ */
+export const generateUUID = (prefix: string = ''): string => {
+  return prefix + uuidv4();
+};
+
+export const parseKeyValueText = (text?: string) => {
+  if (!text) return {};
+  return text
+    .split('\n')
+    .filter(Boolean)
+    .reduce((acc, line) => {
+      const [key, value] = line.split('=').map((item) => item.trim());
+      if (key && value) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+};
+
+export const stringifyKeyValueText = (obj?: Record<string, string>) => {
+  if (!obj) return '';
+  return Object.entries(obj)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('\n');
+};

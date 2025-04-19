@@ -102,7 +102,7 @@ export const getCommandEnv = (config: IMcpStdioConfig) => {
   return {
     ...getDefaultEnvironment(),
     PATH: getEnhancedPath(process.env.PATH || ''),
-    GITHUB_PERSONAL_ACCESS_TOKEN: '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',
-    // ...env,
+    // GITHUB_PERSONAL_ACCESS_TOKEN: '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',
+    ...env,
   };
 };

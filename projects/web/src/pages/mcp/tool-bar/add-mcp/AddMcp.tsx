@@ -6,7 +6,7 @@ import { useGlobalCtx } from '@evo/data-store';
 import { AddOrUpdateMcp } from '../../components/add-or-update/AddOrUpdateMcp';
 
 export const AddMcp: FC = () => {
-  const openDialog = useMcpSelector((s) => s.addOrUpdateMcpDialog.openDialog);
+  const setCreateModalData = useMcpSelector((s) => s.addOrUpdateMcpDialog.setCreateModalData);
   const selectCategory = useMcpSelector((s) => s.selectCategory);
   const [isElectron] = useGlobalCtx((s) => s.envProcessor?.isElectron);
 
@@ -19,7 +19,7 @@ export const AddMcp: FC = () => {
       message.info('请先选择分类');
       return;
     }
-    openDialog();
+    setCreateModalData();
   };
 
   return (
