@@ -10,6 +10,7 @@ import { isElectron, isH5, isMobile, isMobileApp } from '@evo/utils';
 import s from './SenderToolbar.module.scss';
 import { CommonBridgeFactory } from '@evo/platform-bridge';
 import { MobilePermissionType } from '@evo/types';
+import { McpSelectToolbar } from './toolbar/McpSelectToolbar';
 
 export interface ISenderToolbarProps {
   fileOpen: boolean;
@@ -20,25 +21,29 @@ export interface ISenderToolbarProps {
 
 export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
   const { setFileOpen, fileOpen, fileItems, mobileClickAttachment } = props;
+  const isEl = isElectron();
   return (
     <div className={s.toolbar}>
       <Space size={2} align="center">
         <Tooltip title="文件">
           <Badge dot={fileItems.length > 0 && !open}>
             <Button
-
               onClick={async () => {
-                if (isMobileApp()){
-                  const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([MobilePermissionType.camera, MobilePermissionType.microphone, MobilePermissionType.mediaLibrary])
+                if (isMobileApp()) {
+                  const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([
+                    MobilePermissionType.camera,
+                    MobilePermissionType.microphone,
+                    MobilePermissionType.mediaLibrary,
+                  ]);
                   if (result) {
-                    mobileClickAttachment()
+                    mobileClickAttachment();
                   }
-                  return
+                  return;
                 } else if (isH5()) {
-                  mobileClickAttachment()
-                  return
+                  mobileClickAttachment();
+                  return;
                 }
-                setFileOpen(!fileOpen)
+                setFileOpen(!fileOpen);
               }}
               className={classNames('evo-button-icon')}
               size="small"
@@ -58,10 +63,8 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
             />
           </Badge>
         </Tooltip>
-        {isElectron() && <KnowledgeToolbar />}
-        {/* <Tooltip title="提及">
-          <Button className={classNames('evo-button-icon')} size='small' type='text' icon={<EvoIcon size={'small'} type='icon-mention' />} />
-        </Tooltip> */}
+        {isEl && <KnowledgeToolbar />}
+        {isEl && <McpSelectToolbar />}
         <Divider type="vertical" style={{ margin: '0 10px' }} />
       </Space>
       <ModelSelectToolbar />

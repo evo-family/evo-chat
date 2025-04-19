@@ -43,36 +43,9 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
 
   const handleChange = async (values: string[]) => {
     // 始终只取最后选择的那个值
-    // const lastValue = values[values.length - 1];
-    // lastValue ? [lastValue] : []
     setSelectValues(values);
     chatWin.updateConfigKnowledgeIds(values);
-    setKnowledgeSelectOpen(false);
-    senderRef.current?.focus();
-  };
-
-  const tagRender: SelectProps['tagRender'] = (props) => {
-    const { label, value, closable, onClose } = props;
-    const onPreventMouseDown = (event: React.MouseEvent<HTMLSpanElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-
-    const knowledge = knowledgeList?.find((k) => k.id === value);
-
-    return (
-      <Tag
-        onMouseDown={onPreventMouseDown}
-        closable={closable}
-        onClose={onClose}
-        style={{ marginInlineEnd: 4 }}
-        bordered={false}
-      >
-        <Space size={2} align="center">
-          {knowledge?.name}
-        </Space>
-      </Tag>
-    );
+    // senderRef.current?.focus();
   };
 
   React.useEffect(() => {
@@ -120,7 +93,7 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
         ref={selectRef}
         style={{ width: 0 }}
         mode="multiple"
-        tagRender={tagRender}
+        tagRender={() => <></>}
         maxCount={4}
         maxTagCount={'responsive'}
         suffixIcon={null}
@@ -137,7 +110,7 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
         dropdownStyle={{ width: 200, left: -30 }}
         variant="borderless"
         dropdownRender={(menu) => (
-          <div>
+          <>
             <div style={{ padding: '8px' }}>
               <Input
                 placeholder="搜索知识库"
@@ -147,7 +120,7 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
               />
             </div>
             {menu}
-          </div>
+          </>
         )}
       />
     </div>
