@@ -19,6 +19,8 @@ export const McpPageContent: FC<IMcpPageContentProps> = memo(() => {
       title="MCP服务"
       subTitle="管理和监控MCP服务状态，支持服务启停和参数配置"
       leftContent={leftContent}
+      contentStyle={{ position: 'relative', height: '100%' }}
+      contentClassName="mcp-container"
     >
       <Toolbar />
       <McpList />

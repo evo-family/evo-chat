@@ -1,8 +1,28 @@
-import { BaseResult, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
+import {
+  BaseResult,
+  IMCPCallToolResponse,
+  IMcpCategoryMeta,
+  IMcpMeta,
+  IMcpService,
+} from '@evo/types';
 import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
 
 export class ElectronMcp extends BaseBridge implements IMcpService {
+  async callTool(
+    mcpId: string,
+    name: string,
+    args: any
+  ): Promise<BaseResult<IMCPCallToolResponse>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.CALL_TOOL, mcpId, name, args);
+  }
+  async getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(
+      IPC_EVENTS.MCP.GET_MCP_PROMPT,
+      mcpIds,
+      userPrompt
+    );
+  }
   // 分类相关方法
   async createCategory(meta: Partial<IMcpCategoryMeta>): Promise<BaseResult<IMcpCategoryMeta>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.CREATE_CATEGORY, meta);
@@ -53,15 +73,23 @@ export class ElectronMcp extends BaseBridge implements IMcpService {
   }
 
   // 服务控制方法
-  async startService(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.START_SERVICE);
+  async startService(mcp: IMcpMeta): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.START_SERVICE, mcp);
   }
 
-  async stopService(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.STOP_SERVICE);
+  async startClientByMcpId(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.START_SERVICE_BY_MCP_ID, mcpId);
   }
 
-  async getServiceStatus(): Promise<boolean> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_SERVICE_STATUS);
+  async stopService(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.STOP_SERVICE, mcpId);
+  }
+
+  async getServiceStatus(mcpId: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_SERVICE_STATUS, mcpId);
+  }
+
+  async getTools(mcpId: string): Promise<BaseResult<any[]>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_TOOLS, mcpId);
   }
 }

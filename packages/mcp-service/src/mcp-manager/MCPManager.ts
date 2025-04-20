@@ -1,5 +1,5 @@
 import { BaseResult, IMcpMeta } from '@evo/types';
-import { createBaseMeta, ResultUtil } from '@evo/utils';
+import { createBaseMeta, ResultUtil, updateBaseMeta } from '@evo/utils';
 import { IDepManager } from '../types/common';
 
 export interface IMCPManagerOptions {
@@ -13,11 +13,27 @@ export class MCPManager {
     this.depManager = options.depManager;
   }
 
+  /**
+   * 修改mcp状态
+   * @param mcp
+   * @returns
+   */
+  private async updateMcpEnable(mcp: IMcpMeta): Promise<IMcpMeta> {
+    const startClientResult = await this.depManager.MCPClientManager.startClient(mcp);
+    if (startClientResult.success) {
+      mcp.enable = 1;
+    } else {
+      mcp.enable = 0;
+    }
+    return mcp;
+  }
+
   async create(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>> {
     try {
       const mcp: IMcpMeta = createBaseMeta({
         ...meta,
       });
+      await this.updateMcpEnable(mcp);
       await this.depManager.dbManager.insert('mcp', mcp);
       return ResultUtil.success(mcp);
     } catch (error) {
@@ -27,11 +43,11 @@ export class MCPManager {
 
   async update(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>> {
     try {
-      const updateData = {
-        ...meta,
-        modifiedTime: Date.now(),
-      };
-      await this.depManager.dbManager.update('mcp', { id: meta.id }, updateData);
+      const updateData = updateBaseMeta<IMcpMeta>(meta);
+      if (!('enable' in meta)) {
+        await this.updateMcpEnable(updateData);
+      }
+      const res = await this.depManager.dbManager.update('mcp', updateData, { id: meta.id });
       return ResultUtil.success(updateData);
     } catch (error) {
       return ResultUtil.error(error);
@@ -53,6 +69,7 @@ export class MCPManager {
         SELECT m.*, mc.name as category_name
         FROM mcp m
         LEFT JOIN mcp_category mc ON m.category_id = mc.id
+        WHERE m.enable = 1
         ORDER BY m.create_time DESC
       `;
       const result = await this.depManager.dbManager.query(sql);

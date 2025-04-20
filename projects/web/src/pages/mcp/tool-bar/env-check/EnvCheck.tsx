@@ -5,37 +5,36 @@ import { CliBridgeFactory } from '@evo/platform-bridge';
 
 export const EnvCheck: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bunStatus, setBunStatus] = useState<'success' | 'error'>('error');
+  const [npxStatus, setNpxStatus] = useState<'success' | 'error'>('error');
   const [uvStatus, setUvStatus] = useState<'success' | 'error'>('error');
-  const [bunPath, setBunPath] = useState<string | null>(null);
+  const [npxPath, setNpxPath] = useState<string | null>(null);
   const [uvPath, setUvPath] = useState<string | null>(null);
 
   const handleCheck = async () => {
     try {
-      const [bunResult, uvResult] = await Promise.all([
-        CliBridgeFactory.getInstance().checkBunCommand(),
+      const [npxResult, uvResult] = await Promise.all([
+        CliBridgeFactory.getInstance().checkNpxCommand(),
         CliBridgeFactory.getInstance().checkUvCommand(),
       ]);
 
-      setBunStatus(bunResult.success && bunResult.data ? 'success' : 'error');
+      setNpxStatus(npxResult.success && npxResult.data ? 'success' : 'error');
       setUvStatus(uvResult.success && uvResult.data ? 'success' : 'error');
 
-      // 重置路径状态
-      setBunPath(null);
+      setNpxPath(null);
       setUvPath(null);
     } catch (error) {
       console.error('环境检查失败:', error);
-      setBunStatus('error');
+      setNpxStatus('error');
       setUvStatus('error');
-      setBunPath(null);
+      setNpxPath(null);
       setUvPath(null);
     }
   };
 
   const handleGetPaths = async () => {
-    if (bunStatus === 'success') {
-      const bunPathResult = await CliBridgeFactory.getInstance().getCommandPath('bun');
-      setBunPath(bunPathResult.success && bunPathResult.data ? bunPathResult.data : null);
+    if (npxStatus === 'success') {
+      const npxPathResult = await CliBridgeFactory.getInstance().getCommandPath('npx');
+      setNpxPath(npxPathResult.success && npxPathResult.data ? npxPathResult.data : null);
     }
     if (uvStatus === 'success') {
       const uvPathResult = await CliBridgeFactory.getInstance().getCommandPath('uv');
@@ -47,11 +46,11 @@ export const EnvCheck: FC = () => {
     handleCheck();
   }, []);
 
-  const isSuccess = bunStatus === 'success' && uvStatus === 'success';
+  const isSuccess = npxStatus === 'success' && uvStatus === 'success';
 
   return (
     <>
-      <Tooltip title="检查 Bun 和 UV 命令是否已安装">
+      <Tooltip title="检查 npx 和 UV 命令是否已安装">
         <Button
           type="text"
           onClick={async () => {
@@ -75,13 +74,13 @@ export const EnvCheck: FC = () => {
       >
         <Space direction="vertical" style={{ width: '100%' }}>
           <Descriptions column={1}>
-            <Descriptions.Item label="Bun">
+            <Descriptions.Item label="npx">
               <Space>
-                <Badge status={bunStatus} text={bunStatus === 'success' ? '已安装' : '未安装'} />
-                {bunStatus === 'success' && bunPath && <div className={s.path}>{bunPath}</div>}
-                {bunStatus === 'error' && (
-                  <a href="https://bun.sh" target="_blank" rel="noopener noreferrer">
-                    点击安装 Bun
+                <Badge status={npxStatus} text={npxStatus === 'success' ? '已安装' : '未安装'} />
+                {npxStatus === 'success' && npxPath && <div className={s.path}>{npxPath}</div>}
+                {npxStatus === 'error' && (
+                  <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">
+                    点击安装 Node.js
                   </a>
                 )}
               </Space>

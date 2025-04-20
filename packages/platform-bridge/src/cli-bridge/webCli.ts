@@ -2,6 +2,9 @@ import { BaseResult, ICliService } from '@evo/types';
 import { BaseBridge } from '../common/baseBridge';
 
 export class WebCli extends BaseBridge implements ICliService {
+  checkNpxCommand(): Promise<BaseResult<boolean>> {
+    throw new Error('Method not implemented.');
+  }
   checkBunCommand(): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }

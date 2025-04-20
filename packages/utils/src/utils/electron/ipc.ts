@@ -24,6 +24,7 @@ export const IPC_EVENTS = {
     OPEN_EXTERNAL: 'open-external-link',
     SHOW_ITEM_IN_FOLDER: 'show-item-in-folder',
     GET_PATH: 'get-system-path',
+    CLEAN_LOCAL_DATA: 'clean-local-data',
   },
 
   // 对话框相关
@@ -37,6 +38,7 @@ export const IPC_EVENTS = {
   CLI: {
     CHECK_BUN_COMMAND: 'cli-check-bun-command',
     CHECK_UV_COMMAND: 'cli-check-uv-command',
+    CHECK_NPX_COMMAND: 'cli-check-npx-command',
     GET_COMMAND_PATH: 'cli-get-command-path',
     INSTALL_COMMAND: 'cli-install-command',
   },
@@ -60,8 +62,12 @@ export const IPC_EVENTS = {
 
     // 服务控制相关
     START_SERVICE: 'mcp-start-service',
+    START_SERVICE_BY_MCP_ID: 'mcp-start-service-by-mcp-id',
     STOP_SERVICE: 'mcp-stop-service',
     GET_SERVICE_STATUS: 'mcp-get-service-status',
+    GET_TOOLS: 'mcp-get-tools',
+    GET_MCP_PROMPT: 'mcp-get-prompt',
+    CALL_TOOL: 'mcp-call-tool',
   },
 } as const;
 

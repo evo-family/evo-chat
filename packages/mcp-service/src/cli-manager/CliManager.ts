@@ -14,6 +14,15 @@ export class CliManager implements ICliService {
     this.depManager = options.depManager;
   }
 
+  async checkNpxCommand(): Promise<BaseResult<boolean>> {
+    try {
+      const installed = await checkCommand('npx');
+      return ResultUtil.success(installed);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
+
   async getCommandPath(command: string): Promise<BaseResult<string | null>> {
     try {
       const path = await getCliPath(command);

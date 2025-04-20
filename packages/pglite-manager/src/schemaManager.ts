@@ -43,12 +43,15 @@ export class SchemaManager {
    */
   private async isTableExists(tableName: string): Promise<boolean> {
     try {
-      const result = await this.dbManager.query(`
+      const result = await this.dbManager.query(
+        `
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = 'public'
         AND table_name = $1
-      `, [tableName]);
+      `,
+        [tableName]
+      );
 
       return result.rows.length > 0;
     } catch (error) {
@@ -92,7 +95,7 @@ export class SchemaManager {
    * 关闭数据库连接
    */
   public async close(): Promise<void> {
-    await this.dbManager.close();
     SchemaManager.instances.delete(this.dbPath);
+    await this.dbManager.close();
   }
 }

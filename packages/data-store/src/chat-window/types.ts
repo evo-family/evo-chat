@@ -21,6 +21,11 @@ export interface IChatWindowConfig {
    * 当前窗口使用的知识库列表
    */
   knowledgeIds?: string[];
+
+  /**
+   * 当前窗口使用的MCP工具列表
+   */
+  mcpIds: string[];
   /**
    * 当前窗口使用的助手列表
    */

@@ -1,10 +1,10 @@
 import { ipcMain } from 'electron';
-import { IPC_EVENTS } from '@evo/utils';
+import { IPC_EVENTS, ResultUtil } from '@evo/utils';
 import { BaseResult, IMcpCategoryMeta, IMcpMeta } from '@evo/types';
 import { managerService } from '../services/ManagerService';
 
-export function setupMcpHandlers() {
-  const { MCPCategoryManager, MCPManager } = managerService.MCPService;
+export async function setupMcpHandlers() {
+  const { MCPCategoryManager, MCPManager, MCPClientManager } = (await managerService).MCPService;
   // 分类相关处理器
   ipcMain.handle(
     IPC_EVENTS.MCP.CREATE_CATEGORY,
@@ -79,15 +79,59 @@ export function setupMcpHandlers() {
   );
 
   // 服务控制相关处理器
-  // ipcMain.handle(IPC_EVENTS.MCP.START_SERVICE, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().startService();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.START_SERVICE,
+    async (_, mcp: IMcpMeta): Promise<BaseResult<boolean>> => {
+      const res = await MCPClientManager.startClient(mcp);
+      if (res.success) {
+        return ResultUtil.success(true);
+      } else {
+        return ResultUtil.error(false);
+      }
+    }
+  );
 
-  // ipcMain.handle(IPC_EVENTS.MCP.STOP_SERVICE, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().stopService();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.START_SERVICE_BY_MCP_ID,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      const res = await MCPClientManager.startClientByMcpId(mcpId);
+      if (res.success) {
+        return ResultUtil.success(true);
+      } else {
+        return ResultUtil.error(false);
+      }
+    }
+  );
 
-  // ipcMain.handle(IPC_EVENTS.MCP.GET_SERVICE_STATUS, async (): Promise<boolean> => {
-  //   return McpManager.getInstance().getServiceStatus();
-  // });
+  ipcMain.handle(
+    IPC_EVENTS.MCP.STOP_SERVICE,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      return await MCPClientManager.stopClient(mcpId);
+    }
+  );
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.GET_SERVICE_STATUS,
+    async (_, mcpId: string): Promise<BaseResult<boolean>> => {
+      return MCPClientManager.isClientRunning(mcpId);
+    }
+  );
+
+  ipcMain.handle(IPC_EVENTS.MCP.GET_TOOLS, async (_, mcpId: string): Promise<BaseResult<any[]>> => {
+    return MCPClientManager.getTools(mcpId);
+  });
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.GET_MCP_PROMPT,
+    async (_, mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> => {
+      return MCPClientManager.getMcpPrompt(mcpIds, userPrompt);
+    }
+  );
+
+  ipcMain.handle(
+    IPC_EVENTS.MCP.CALL_TOOL,
+    async (_, mcpId: string, name: string, args: any): Promise<BaseResult<any>> => {
+      return MCPClientManager.callTool(mcpId, name, args);
+    }
+  );
 }

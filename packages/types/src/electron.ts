@@ -4,6 +4,7 @@ import {
   IKnowledgeMeta,
   IKnowledgeVectorMeta,
   IKnowledgeVectorMetaVo,
+  IMCPCallToolResponse,
   IMcpCategoryMeta,
   IMcpMeta,
 } from './meta';
@@ -12,6 +13,7 @@ import { BaseResult } from './common';
 import { EThemeMode, MobilePermissionType } from './setting';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { TAvailableModelMap } from './model';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export interface IUploadBufferParams {
   fileBuffer: ArrayBuffer;
@@ -144,6 +146,7 @@ export interface ICommonService {
 export interface ICliService {
   checkBunCommand(): Promise<BaseResult<boolean>>;
   checkUvCommand(): Promise<BaseResult<boolean>>;
+  checkNpxCommand(): Promise<BaseResult<boolean>>;
   getCommandPath(command: string): Promise<BaseResult<string | null>>;
   installCommand(command: string): Promise<BaseResult<boolean>>;
 }
@@ -158,11 +161,26 @@ export interface IMcpService {
 
   // MCP 项目相关方法
   createMcp(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>>;
-  updateMcp(meta: IMcpMeta): Promise<BaseResult<IMcpMeta>>;
+  updateMcp(meta: Partial<IMcpMeta>): Promise<BaseResult<IMcpMeta>>;
   deleteMcp(id: string): Promise<BaseResult<boolean>>;
   getMcpList(): Promise<BaseResult<IMcpMeta[]>>;
   getMcpById(id: string): Promise<BaseResult<IMcpMeta | null>>;
   getMcpListByCategoryId(categoryId: string): Promise<BaseResult<IMcpMeta[]>>;
+
+  // 服务控制方法
+  startClientByMcpId(mcpId: string): Promise<BaseResult<boolean>>;
+  startService(mcp: IMcpMeta): Promise<BaseResult<boolean>>;
+  stopService(mcpId: string): Promise<BaseResult<boolean>>;
+  getServiceStatus(mcpId: string): Promise<BaseResult<boolean>>;
+
+  // 工具方法
+  getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
+  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>>;
+  callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>>;
+}
+
+export interface ISystemService {
+  clearLocalData(): Promise<BaseResult<boolean>>;
 }
 
 export interface IGetFileListParams {

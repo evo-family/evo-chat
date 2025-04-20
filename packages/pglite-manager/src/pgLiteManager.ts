@@ -155,10 +155,11 @@ export class PGLiteManager {
       UPDATE ${tableName}
       SET ${setClause}
       WHERE ${whereClause}
+      RETURNING *
     `;
 
     const result = await this.db.query(query, [...dataValues, ...conditionValues]);
-    return result.affectedRows!;
+    return result.affectedRows || 0;
   }
 
   /**
@@ -313,8 +314,19 @@ export class PGLiteManager {
    * 关闭数据库连接
    */
   async close(): Promise<void> {
-    if (this.initialized) {
-      await this.db.close();
+    if (!this.initialized) return;
+    
+    try {
+      // 先将状态设置为未初始化，防止重复调用
+      this.initialized = false;
+      // 确保数据库实例存在
+      if (this.db) {
+        await this.db.query('SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid()');
+        await this.db.close();
+      }
+    } catch (error) {
+      console.error('关闭数据库连接失败:', error);
+      // 即使出错也保持未初始化状态
       this.initialized = false;
     }
   }

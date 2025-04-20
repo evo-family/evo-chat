@@ -1,19 +1,21 @@
-import { ipcMain, shell } from 'electron'
-import { IpcChannels } from '../constants/ipcChannels'
-import { CommonService } from '../services/CommonService'
+import { ipcMain, shell } from 'electron';
+import { IpcChannels } from '../constants/ipcChannels';
+import { CommonService } from '../services/CommonService';
+import { IPC_EVENTS } from '@evo/utils';
+import { ResourceService } from '../services/ResourceService';
 
-const commonService = new CommonService()
+const commonService = new CommonService();
 
 export function setupCommonHandlers() {
   ipcMain.handle(IpcChannels.COMMON_GET_NATIVE_THEME, async (event) => {
-    return commonService.getTheme()
-  })
+    return commonService.getTheme();
+  });
 
   ipcMain.handle(IpcChannels.COMMON_ON_NATIVE_THEME_CHANGE, async (event, params) => {
-    return commonService.onThemeChange(params)
-  })
+    return commonService.onThemeChange(params);
+  });
 
   ipcMain.handle(IpcChannels.COMMON_OPEN_EXTERNAL, async (event, url, options) => {
-    commonService.openExternal(url, options)
-  })
+    commonService.openExternal(url, options);
+  });
 }

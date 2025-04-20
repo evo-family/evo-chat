@@ -3,8 +3,8 @@ import { ElectronFileService } from '../services/ElectronFileService';
 import { IpcChannels } from '../constants/ipcChannels';
 import { managerService } from '../services/ManagerService';
 
-export function setupFileHandlers(): void {
-  const knowledgeService = managerService.knowledgeService;
+export async function setupFileHandlers() {
+  const knowledgeService = (await managerService).knowledgeService;
   const fileService = new ElectronFileService(knowledgeService);
   // 文件相关
   ipcMain.handle(IpcChannels.UPLOAD_FILE, () => fileService.uploadFile());
