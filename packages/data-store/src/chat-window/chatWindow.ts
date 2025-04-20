@@ -182,6 +182,10 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
     return this.setConfigState('knowledgeIds', knowledgeIds);
   }
 
+  getMessageSync(id: string) {
+    return this.messageStore.getCellValueSync(id);
+  }
+
   updateConfigMCPIds(mcpIds: IChatWindowConfig['mcpIds']) {
     return this.setConfigState('mcpIds', mcpIds);
   }

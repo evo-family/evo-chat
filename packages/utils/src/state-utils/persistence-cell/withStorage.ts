@@ -113,3 +113,5 @@ export const isPersistenceCellExist = (cacheKey: string) => {
 export const clearPersistenceCell = (cacheKey: string) => {
   return __storage_driver?.destroy(cacheKey);
 };
+
+export const getPersistenceCellDriverIns = () => __storage_driver;

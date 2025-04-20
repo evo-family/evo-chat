@@ -10,14 +10,16 @@ export interface IFlexFillContentProps extends HTMLAttributes<HTMLDivElement> {
   wrapStyle?: React.CSSProperties;
 }
 
-export const FlexFillContent = React.memo<PropsWithChildren<IFlexFillContentProps>>((props) => {
-  const { wrapClassName, className, wrapStyle, children, ...restContentProps } = props;
+export const FlexFillContent = React.memo(
+  React.forwardRef<any, PropsWithChildren<IFlexFillContentProps>>((props, ref) => {
+    const { wrapClassName, className, wrapStyle, children, ...restContentProps } = props;
 
-  return (
-    <div className={cx(['container', wrapClassName])} style={wrapStyle}>
-      <div className={cx(['content', className])} {...restContentProps}>
-        {children}
+    return (
+      <div className={cx(['container', wrapClassName])} style={wrapStyle}>
+        <div className={cx(['content', className])} {...restContentProps} ref={ref}>
+          {children}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  })
+);

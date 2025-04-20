@@ -1,7 +1,14 @@
-import { DebounceSettingsLeading, debounce, isFunction, mergeWith } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  DebounceSettingsLeading,
+  ThrottleSettings,
+  debounce,
+  isFunction,
+  mergeWith,
+  throttle,
+} from 'lodash';
 
 import { DataCell } from '../data-cell/cell';
+import { v4 as uuidv4 } from 'uuid';
 
 export const isPromise = (data: any): data is Promise<any> => data instanceof Promise;
 
@@ -111,6 +118,32 @@ export const asyncBufferDebounce = <ParamsBufferItem extends Array<any> = any[],
   };
 };
 
+export const asyncBufferThrottle = <ParamsBufferItem extends Array<any> = any[], T = undefined>(
+  func: (bufferedParams: BufferedParamsWrap<ParamsBufferItem, T>[]) => void,
+  wait: number | undefined,
+  options?: ThrottleSettings
+) => {
+  let bufferedParams: BufferedParamsWrap<ParamsBufferItem, T>[] = [];
+
+  const debounceMethods = throttle(
+    () => {
+      func(bufferedParams);
+      bufferedParams = [];
+    },
+    wait,
+    options
+  );
+
+  return (...params: ParamsBufferItem) => {
+    const task = generatePromiseWrap<T>();
+    bufferedParams.push({ params, task });
+
+    debounceMethods();
+
+    return task.promise;
+  };
+};
+
 export interface BufferedParamsWrap<Params, ResultData> {
   params: Params;
   task: PromiseWrap<ResultData>;
@@ -124,6 +157,28 @@ export const bufferDebounce = <ParamsBufferItem extends Array<any> = any[], T = 
   let bufferedParams: Omit<BufferedParamsWrap<ParamsBufferItem, T>, 'task'>[] = [];
 
   const debounceMethods = debounce(
+    () => {
+      func(bufferedParams);
+      bufferedParams = [];
+    },
+    wait,
+    options
+  );
+
+  return (...params: ParamsBufferItem) => {
+    bufferedParams.push({ params });
+    debounceMethods();
+  };
+};
+
+export const bufferThrottle = <ParamsBufferItem extends Array<any> = any[], T = undefined>(
+  func: (bufferedParams: Omit<BufferedParamsWrap<ParamsBufferItem, T>, 'task'>[]) => void,
+  wait: number | undefined,
+  options?: ThrottleSettings
+) => {
+  let bufferedParams: Omit<BufferedParamsWrap<ParamsBufferItem, T>, 'task'>[] = [];
+
+  const debounceMethods = throttle(
     () => {
       func(bufferedParams);
       bufferedParams = [];

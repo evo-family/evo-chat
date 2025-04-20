@@ -1,20 +1,15 @@
-import { persistenceTissue, persistenceTissueSync } from '@evo/utils';
+import { StateTissue, persistenceTissue } from '@evo/utils';
 
 import { IAssistant } from '@evo/types';
 
 const AGENT_CACHE_KEY = `__agent_cache_key__`;
 
-export const agentsData = persistenceTissueSync<Record<string, IAssistant>>(AGENT_CACHE_KEY);
+let initAgentData: Promise<StateTissue<Record<string, IAssistant>>> | undefined = undefined;
 
-export const agentsDataInit = persistenceTissue<Record<string, IAssistant>>(AGENT_CACHE_KEY);
-
-const initOrDiffAgentData = async () => {
+const initOrDiffAgentData = async (cacheTissue: StateTissue<Record<string, IAssistant>>) => {
   try {
     // 初始化并与本地缓存数据进行比较和修正
-    const [cacheTissue, result] = await Promise.all([
-      agentsDataInit,
-      import('../constants/agent/agents.json'),
-    ]);
+    const result = await import('../constants/agent/agents.json');
 
     if (!result?.default?.length) return;
 
@@ -47,11 +42,22 @@ const initOrDiffAgentData = async () => {
   }
 };
 
-agentsDataInit.then((cacheTissue) => {
-  // 如果缓存数据为空，立即进行初始化，如果不为空，延迟2秒后进行diff操作.（减少首屏初始化的压力）
-  if (cacheTissue.getCellsValue({ all: true }).array.length) {
-    setTimeout(initOrDiffAgentData, 2e3);
-  } else {
-    initOrDiffAgentData();
+// 惰性初始化数据，减少首屏加载压力
+export const getAgentsData = () => {
+  if (!initAgentData) {
+    initAgentData = persistenceTissue<Record<string, IAssistant>>(AGENT_CACHE_KEY).then(
+      async (cacheTissue) => {
+        // 如果缓存数据为空，立即进行初始化，如果不为空，延迟2秒后进行diff操作.（减少首屏初始化的压力）
+        if (cacheTissue.getCellsValue({ all: true }).array.length) {
+          setTimeout(() => initOrDiffAgentData(cacheTissue), 2e3);
+        } else {
+          await initOrDiffAgentData(cacheTissue);
+        }
+
+        return cacheTissue;
+      }
+    );
   }
-});
+
+  return initAgentData;
+};

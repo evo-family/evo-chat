@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useState } from 'react';
 
 import { IAssistant } from '@evo/types';
-import { agentsData } from '../../glob-state/agent';
+import { getAgentsData } from '../../glob-state/agent';
 
 export const useAgentLogic = (params: { searchText: string; selectedTag: string }) => {
   const { searchText, selectedTag } = params;
@@ -57,13 +57,27 @@ export const useAgentLogic = (params: { searchText: string; selectedTag: string 
   }, [searchText, selectedTag, tags, agents]);
 
   useLayoutEffect(() => {
-    agentsData.globListen(
-      (signal) => {
-        setAgents(agentsData.getCellsValue({ all: true, getArray: true }).array as IAssistant[]);
-      },
-      { immediate: true, debounceTime: 20 }
-    );
-  }, [agentsData]);
+    let cleanUpHandler: undefined | (() => any) = undefined;
+    let unmounted = false;
+
+    getAgentsData().then((agentsData) => {
+      if (unmounted) return;
+
+      const subscription = agentsData.globListen(
+        (signal) => {
+          setAgents(agentsData.getCellsValue({ all: true, getArray: true }).array as IAssistant[]);
+        },
+        { immediate: true, debounceTime: 100 }
+      );
+
+      cleanUpHandler = () => subscription.unsubscribe();
+    });
+
+    return () => {
+      unmounted = true;
+      cleanUpHandler && cleanUpHandler();
+    };
+  }, [getAgentsData]);
 
   return { tags, agents, filteredAgents };
 };

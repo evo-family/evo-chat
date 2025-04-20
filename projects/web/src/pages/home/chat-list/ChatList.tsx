@@ -24,7 +24,6 @@ export const ChatList: FC<IChatListProps> = memo((props) => {
   const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
   const [curWinId] = useGlobalCtx((ctx) => ctx.curWinId);
   const defaultMessageModel = useSettingSelector((s) => s.defaultMessageModel);
-  const collapseSlider = useHomeSelector((s) => s.collapseSlider);
 
   const { groupedChatList } = useChatList();
 
@@ -52,10 +51,6 @@ export const ChatList: FC<IChatListProps> = memo((props) => {
     const { key } = info;
 
     chatCtrl.setCurrentWin(key);
-  });
-
-  const handleSearch = useMemoizedFn(() => {
-    console.log('打开搜索');
   });
 
   const handleNewChat = useMemoizedFn(async () => {
@@ -99,11 +94,7 @@ export const ChatList: FC<IChatListProps> = memo((props) => {
 
   return (
     <div className={s.container}>
-      <ChatListHeader
-        onSearch={handleSearch}
-        onNewChat={handleNewChat}
-        onCollapse={collapseSlider}
-      />
+      <ChatListHeader onNewChat={handleNewChat} />
       <Menu
         className={'evo-menu'}
         mode="inline"
