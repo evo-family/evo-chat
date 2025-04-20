@@ -7,4 +7,5 @@ export interface DataCellWithStorageDriver {
   get: <T = any>(cacheKey: string) => Promise<T>;
   update: (cacheKey: string, cellIns: DataCell, notice: DataCellSignal) => any;
   destroy: (cacheKey: string, cellIns?: DataCell) => any;
+  bulkGet: <T = any>(cacheKeys: string[]) => Promise<Array<T | undefined>>;
 }

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { Button } from 'antd';
 import { EvoIcon } from '@evo/component';
-import { SearchChat } from '../search-chat/SearchChat';
+import { SearchChat } from '../chat-search/ChatSearch';
 import classNames from 'classnames';
 import s from './ChatListHeader.module.scss';
 

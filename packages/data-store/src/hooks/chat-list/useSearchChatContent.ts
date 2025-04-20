@@ -1,51 +1,76 @@
-import { DataCell, getPersistenceCellDriverIns, getPersistenceTissueDriverIns } from '@evo/utils';
+import {
+  DataCell,
+  generatePromiseWrap,
+  getPersistenceCellDriverIns,
+  getPersistenceTissueDriverIns,
+} from '@evo/utils';
 import { IMessageConfig, TModelAnswer } from '@/chat-message/types';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
+import { useRef, useState } from 'react';
 
+import { IChatWindowConfig } from '@/chat-window/types';
 import execAll from 'execall';
 import { useGlobalCtx } from '@/react-context/global';
-import { useState } from 'react';
 
 interface ISearchChatParams {
-  searchText: string;
+  keywords: string[];
 }
 
 export interface ISearchAnswerResultItem {
   matchText: string;
+  answerConfig: TModelAnswer;
+  type: 'answer';
 }
 
 export interface ISearchMsgResultItem {
   matchText: string;
+  msgConfig: IMessageConfig;
   answersResult: Array<ISearchAnswerResultItem>;
+  type: 'message';
 }
 
 export interface ISearchChatResultItem {
   chatWinId: string;
+  chatConfig: IChatWindowConfig;
+  title: string;
   matchText: string;
   msgsResult: Array<ISearchMsgResultItem>;
+  type: 'chat';
 }
 const getMatchedRange = (text: string, keywords: string[]) => {
   if (!text || !keywords.length) return null;
+  let matchedSomething = false;
 
   const matches = keywords.map((keyword) => {
     const regex = new RegExp(keyword, 'gi');
-    return execAll(regex, text);
+    const execResult = execAll(regex, text);
+
+    if (!matchedSomething) {
+      matchedSomething = !!execResult.length;
+    }
+
+    return execResult;
   });
 
-  let firstIndex = 0;
-  let latestIndex = 0;
+  // 检查是否有任何匹配结果
+  if (!matchedSomething) return null;
+
+  let minStartIndex = Infinity;
+  let maxEndIndex = -1;
 
   matches.forEach((matchResult) => {
-    const firstMatch = matchResult.at(0);
-    const latestMatch = matchResult.at(-1);
-
-    firstMatch.index < firstIndex && (firstIndex = firstMatch.index);
-    latestMatch.index > latestIndex && (latestIndex = firstMatch.index);
+    matchResult.forEach((match) => {
+      minStartIndex = Math.min(minStartIndex, match.index);
+      maxEndIndex = Math.max(maxEndIndex, match.index + match.match.length);
+    });
   });
 
+  if (minStartIndex === Infinity || maxEndIndex === -1) {
+    return null;
+  }
+
   return {
-    matchedText: text.slice(firstIndex, latestIndex),
-    range: { start: firstIndex, end: latestIndex },
+    range: { start: minStartIndex, end: maxEndIndex },
   };
 };
 
@@ -54,43 +79,114 @@ export const useSearchChatContent = () => {
 
   const [searchResult, setSearchResult] = useState<Array<ISearchChatResultItem>>([]);
 
+  const currentTaskInfo = useRef<{ flag: Symbol }>(undefined);
+
   const { run: searchChatConent } = useDebounceFn(
     async (params: ISearchChatParams) => {
-      const cellDriver = getPersistenceCellDriverIns();
+      let chatSearchResult: ISearchChatResultItem[] = [];
 
-      if (!cellDriver) return;
+      const curTaskSymbol = Symbol();
+      let lastTickTime = Date.now();
+      currentTaskInfo.current = { flag: curTaskSymbol };
 
-      const { searchText } = params;
+      try {
+        const cellDriver = getPersistenceCellDriverIns();
 
-      const winList = await chatCtrl.getWindowList();
+        if (!cellDriver) return;
 
-      const winTasks = winList.map(async (winIns) => {
-        await winIns.ready();
+        const { keywords } = params;
 
-        const winConfig = winIns.getConfigState();
-        const msgConfigs = await Promise.all(
-          winConfig.messageIds.map((msgId) => cellDriver.get<IMessageConfig>(msgId))
-        );
+        if (!keywords?.length) return;
 
-        msgConfigs.map(async (msgConfig) => {
-          const asnwers = await Promise.all(
-            msgConfig.answerIds.map((answerId) => cellDriver.get<TModelAnswer>(answerId))
-          );
+        const winList = await chatCtrl.getWindowList();
 
-          asnwers.forEach((answerConfig) => {
-            console.log(333, answerConfig.content);
+        const winTasks = winList.map((winIns) => async () => {
+          await winIns.ready();
 
-            const result = getMatchedRange(answerConfig.content, [searchText]);
-            console.log(result);
+          const chatConfig = winIns.getConfigState();
+          const winTitle = winIns.title.get();
+
+          const msgConfigs = await cellDriver.bulkGet<IMessageConfig>(chatConfig.messageIds);
+
+          const msgSearchResult: ISearchMsgResultItem[] = [];
+          const msgTasks = msgConfigs.map(async (msgConfig) => {
+            if (!msgConfig) return;
+
+            const asnwers = await cellDriver.bulkGet<TModelAnswer>(msgConfig.answerIds);
+
+            const answerSearchResult: ISearchAnswerResultItem[] = [];
+
+            asnwers.forEach((answerConfig) => {
+              if (!answerConfig) return;
+
+              const result = getMatchedRange(answerConfig.content, keywords);
+
+              if (result) {
+                const start = Math.max(result.range.start - 8, 0);
+                const end = result.range.end + 8;
+                const matchContent = answerConfig.content.slice(start, end);
+
+                answerSearchResult.push({ matchText: matchContent, answerConfig, type: 'answer' });
+              }
+            });
+
+            if (
+              answerSearchResult.length ||
+              keywords.some((word) => msgConfig.sendMessage.includes(word))
+            ) {
+              msgSearchResult.push({
+                msgConfig,
+                type: 'message',
+                matchText: msgConfig.sendMessage,
+                answersResult: answerSearchResult,
+              });
+            }
           });
+
+          await Promise.all(msgTasks);
+
+          if (msgSearchResult.length || keywords.some((word) => winTitle.includes(word))) {
+            chatSearchResult.push({
+              chatConfig,
+              type: 'chat',
+              title: winTitle,
+              chatWinId: chatConfig.id,
+              matchText: winTitle,
+              msgsResult: msgSearchResult,
+            });
+          }
         });
 
-        console.log(msgConfigs);
-      });
+        for await (const handler of winTasks) {
+          const nowTime = Date.now();
 
-      Promise.all(winTasks);
+          if (currentTaskInfo.current?.flag !== curTaskSymbol) {
+            chatSearchResult = [];
+            return;
+          }
+
+          const timeDiff = nowTime - lastTickTime;
+
+          // 保证至少每16毫秒有一次渲染
+          if (timeDiff > 16) {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 16);
+            });
+            lastTickTime = Date.now();
+          }
+
+          await handler();
+        }
+      } catch (error) {
+      } finally {
+        if (currentTaskInfo.current?.flag === curTaskSymbol) {
+          setSearchResult(chatSearchResult);
+        }
+
+        currentTaskInfo.current = undefined;
+      }
     },
-    { wait: 500 }
+    { wait: 0 }
   );
 
   return { searchResult, searchChatConent };

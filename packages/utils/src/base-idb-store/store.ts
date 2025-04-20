@@ -355,6 +355,18 @@ export class BaseIDBStore<T = any> {
     );
   }
 
+  public async bulkGet<D extends T>(
+    keys: Array<string>,
+    tableName = this.defaultTable
+  ): Promise<Array<D | undefined>> {
+    if (!keys.length) return [];
+
+    return this.dispatch<D>(tableName, async (storeTable) => {
+      const result = await storeTable.bulkGet(keys);
+      return result.map((item) => item?.data);
+    });
+  }
+
   /**
    * 批量设置数据
    * @param items 键值对数组

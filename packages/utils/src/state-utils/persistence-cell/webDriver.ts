@@ -35,6 +35,9 @@ const WEB_DRIVER: DataCellWithStorageDriver = {
   destroy: (cacheKey) => {
     driverIDBStore.delete(cacheKey);
   },
+  bulkGet: (cacheKeys: string[]) => {
+    return driverIDBStore.bulkGet(cacheKeys);
+  },
 };
 
 export const initDataCellStorageWithWeb = () => {

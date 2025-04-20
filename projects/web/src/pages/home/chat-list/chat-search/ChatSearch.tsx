@@ -1,12 +1,11 @@
-import { Button, Input, Modal, Tooltip } from 'antd';
-import { EvoIcon, useAntdToken } from '@evo/component';
+import { Button, Flex, Modal, Tooltip } from 'antd';
+import { EvoIcon, GlobalSearch, SearchInput, useAntdToken } from '@evo/component';
 import React, { useState } from 'react';
+import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
 import Style from './Style.module.scss';
 import classNames from 'classnames';
 import cxb from 'classnames/bind';
-import { useMemoizedFn } from 'ahooks';
-import { useSearchChatContent } from '@evo/data-store';
 
 const cx = cxb.bind(Style);
 
@@ -15,17 +14,25 @@ export interface ISearchChatProps {}
 export const SearchChat = React.memo<ISearchChatProps>((props) => {
   const token = useAntdToken();
 
-  const [showSearchModal, setShowSearchModal] = useState(true);
-
-  const { searchResult, searchChatConent } = useSearchChatContent();
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchKeywords, setSearchKeywords] = useState<string[]>([]);
 
   const openSearchModal = useMemoizedFn(() => {
     setShowSearchModal(true);
   });
 
-  const handleSearch = useMemoizedFn((event) => {
-    searchChatConent(event.target.value);
-  });
+  const { run: handleSearch } = useDebounceFn(
+    (value) => {
+      if (!value) {
+        setSearchKeywords([]);
+
+        return;
+      }
+
+      setSearchKeywords(value.trim().split(/\s+/) ?? []);
+    },
+    { wait: 500 }
+  );
 
   return (
     <>
@@ -40,21 +47,25 @@ export const SearchChat = React.memo<ISearchChatProps>((props) => {
       </Tooltip>
       <Modal
         destroyOnClose
+        maskClosable={false}
+        width={'80vw'}
         open={showSearchModal}
         footer={null}
         onCancel={() => setShowSearchModal(false)}
       >
-        <div className={cx('search-chat-content')}>
+        <Flex vertical className={cx('search-chat-content')}>
           <div className={cx('search-header')}>
-            <Input
+            <SearchInput
               autoFocus
               className={cx('search-input')}
               placeholder="搜索话题或消息内容..."
-              onChange={handleSearch}
+              onSearch={handleSearch}
             />
           </div>
-          <div className={cx('search-result')}></div>
-        </div>
+          <Flex flex={1}>
+            <GlobalSearch keywords={searchKeywords} />
+          </Flex>
+        </Flex>
       </Modal>
     </>
   );

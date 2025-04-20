@@ -1,0 +1,22 @@
+.gloabl-search {
+  flex: 1;
+
+  :global {
+    .ant-tabs-content {
+      margin-top: 12px;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .ant-tabs-nav {
+      display: none;
+    }
+
+    .ant-tabs-tabpane {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
