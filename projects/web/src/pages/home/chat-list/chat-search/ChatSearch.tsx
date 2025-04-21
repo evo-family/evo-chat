@@ -23,15 +23,17 @@ export const SearchChat = React.memo<ISearchChatProps>((props) => {
 
   const { run: handleSearch } = useDebounceFn(
     (value) => {
+      value = value.trim();
+
       if (!value) {
         setSearchKeywords([]);
 
         return;
       }
 
-      setSearchKeywords(value.trim().split(/\s+/) ?? []);
+      setSearchKeywords(value.split(/\s+/) ?? []);
     },
-    { wait: 500 }
+    { wait: 0 }
   );
 
   return (

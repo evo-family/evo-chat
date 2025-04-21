@@ -1,15 +1,10 @@
-import {
-  DataCell,
-  generatePromiseWrap,
-  getPersistenceCellDriverIns,
-  getPersistenceTissueDriverIns,
-} from '@evo/utils';
 import { IMessageConfig, TModelAnswer } from '@/chat-message/types';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 import { useRef, useState } from 'react';
 
 import { IChatWindowConfig } from '@/chat-window/types';
 import execAll from 'execall';
+import { getPersistenceCellDriverIns } from '@evo/utils';
 import { useGlobalCtx } from '@/react-context/global';
 
 interface ISearchChatParams {
@@ -55,6 +50,10 @@ const getMatchedRange = (text: string, keywords: string[]) => {
   // 检查是否有任何匹配结果
   if (!matchedSomething) return null;
 
+  const allKeywordsMatch = matches.every((matchResult) => matchResult.length);
+
+  if (!allKeywordsMatch) return;
+
   let minStartIndex = Infinity;
   let maxEndIndex = -1;
 
@@ -64,10 +63,6 @@ const getMatchedRange = (text: string, keywords: string[]) => {
       maxEndIndex = Math.max(maxEndIndex, match.index + match.match.length);
     });
   });
-
-  if (minStartIndex === Infinity || maxEndIndex === -1) {
-    return null;
-  }
 
   return {
     range: { start: minStartIndex, end: maxEndIndex },
@@ -132,7 +127,7 @@ export const useSearchChatContent = () => {
 
             if (
               answerSearchResult.length ||
-              keywords.some((word) => msgConfig.sendMessage.includes(word))
+              keywords.every((word) => msgConfig.sendMessage.includes(word))
             ) {
               msgSearchResult.push({
                 msgConfig,
@@ -145,7 +140,7 @@ export const useSearchChatContent = () => {
 
           await Promise.all(msgTasks);
 
-          if (msgSearchResult.length || keywords.some((word) => winTitle.includes(word))) {
+          if (msgSearchResult.length || keywords.every((word) => winTitle.includes(word))) {
             chatSearchResult.push({
               chatConfig,
               type: 'chat',
@@ -169,9 +164,7 @@ export const useSearchChatContent = () => {
 
           // 保证至少每16毫秒有一次渲染
           if (timeDiff > 16) {
-            await new Promise((resolve) => {
-              setTimeout(resolve, 16);
-            });
+            await new Promise((resolve) => setTimeout(resolve, 16));
             lastTickTime = Date.now();
           }
 
