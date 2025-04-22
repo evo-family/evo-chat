@@ -59,7 +59,6 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
     }
   });
 
-  console.log(status);
 
   if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
     return (

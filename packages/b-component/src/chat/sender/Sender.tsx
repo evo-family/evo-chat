@@ -224,6 +224,8 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
   });
 
   useLayoutEffect(() => {
+    setLoading(false);
+
     if (!latestMsg) return;
 
     const subscription = latestMsg.modelAnswers.globListen(

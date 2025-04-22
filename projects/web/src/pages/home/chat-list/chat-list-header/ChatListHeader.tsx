@@ -1,28 +1,18 @@
 import React, { FC } from 'react';
-import { Button, Tooltip } from 'antd';
-import { MenuFoldOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import s from './ChatListHeader.module.scss';
-import { EvoIcon, useAntdToken } from '@evo/component';
+
+import { Button } from 'antd';
+import { EvoIcon } from '@evo/component';
+import { SearchChat } from '../chat-search/ChatSearch';
 import classNames from 'classnames';
+import s from './ChatListHeader.module.scss';
 
 interface IChatListHeaderProps {
-  onCollapse?: () => void;
-  onSearch?: () => void;
   onNewChat?: () => void;
 }
 
-export const ChatListHeader: FC<IChatListHeaderProps> = ({ onCollapse, onSearch, onNewChat }) => {
-  const token = useAntdToken();
+export const ChatListHeader: FC<IChatListHeaderProps> = ({ onNewChat }) => {
   return (
     <div className={s.header}>
-      {/* <Tooltip title="收起侧边栏">
-        <Button
-          type="text"
-          className={s.collapseBtn}
-          icon={<MenuFoldOutlined />}
-          onClick={onCollapse}
-        />
-      </Tooltip> */}
       <Button
         className={classNames('evo-button-icon')}
         onClick={onNewChat}
@@ -33,15 +23,7 @@ export const ChatListHeader: FC<IChatListHeaderProps> = ({ onCollapse, onSearch,
         <span style={{ fontSize: 13 }}>开启新对话</span>
       </Button>
       <div className={s.actions}>
-        <Tooltip title="搜索">
-          <Button
-            className={classNames('evo-button-icon')}
-            style={{ color: token.colorTextTertiary }}
-            type="text"
-            icon={<EvoIcon size={'small'} type="icon-search" />}
-            onClick={onSearch}
-          />
-        </Tooltip>
+        <SearchChat />
       </div>
     </div>
   );

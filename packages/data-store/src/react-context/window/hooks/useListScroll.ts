@@ -1,29 +1,53 @@
-import { DataCell } from '@evo/utils';
+import { DataCell, useCellValue } from '@evo/utils';
+import { useDebounceFn, useMemoizedFn, useSet } from 'ahooks';
+import { useRef, useState } from 'react';
+
 import { IChatWindowContext } from '../types';
-import { useMemoizedFn } from 'ahooks';
-import { useState } from 'react';
+import { Virtualizer } from '@tanstack/react-virtual';
 
-export const useListScroll = (params: Pick<IChatWindowContext, 'listDOMRef'>) => {
-  const { listDOMRef } = params;
+export const useListScroll = (curWindowCell: IChatWindowContext['chatWin']) => {
+  const [autoScroll] = useState(() => new DataCell(false));
 
-  const [autoScroll] = useState(() => new DataCell(true));
+  const [virtualizerCell] = useState(
+    () => new DataCell<undefined | Virtualizer<HTMLDivElement, Element>>(undefined)
+  );
+  const scrollBottomTaskRef = useRef<any>(null);
 
-  const onMsgListScroll = useMemoizedFn(() => {
-    const containerDOM = listDOMRef.current;
-    if (!containerDOM) return;
+  const virtualHandle = useMemoizedFn(
+    (handle: (ins: Virtualizer<HTMLDivElement, Element>) => any) => {
+      const virIns = virtualizerCell.get();
+      if (!virIns) return;
 
-    const isBottomReached =
-      containerDOM.scrollTop + containerDOM.clientHeight >= containerDOM.scrollHeight - 1;
-
-    autoScroll.set(isBottomReached);
-  });
+      handle(virIns);
+    }
+  );
 
   const scrollToBottom = useMemoizedFn(() => {
-    const dom = listDOMRef.current;
+    if (scrollBottomTaskRef.current) return;
 
-    if (!dom) return;
+    virtualHandle((virIns) => {
+      virIns.scrollToIndex(virIns.options.count - 1);
+      // 进行递归式的检查是否正确滚动到底部了。
+      // 因为使用了虚拟列表+内容异步加载，会导致只调用一次时可能会无法滚动到真正的底部。
+      scrollBottomTaskRef.current = setTimeout(() => {
+        scrollBottomTaskRef.current = null;
 
-    dom.scrollTop = dom.scrollHeight;
+        virtualHandle((virIns) => {
+          const { scrollElement, scrollRect, scrollOffset } = virIns;
+
+          if (!(scrollElement && scrollRect && scrollOffset)) return;
+
+          const scrollHeight = scrollElement.scrollHeight;
+          const scrollbarHeight = scrollRect.height;
+
+          // 增加5px的容错
+          if (scrollOffset + scrollbarHeight < scrollHeight - 5) {
+
+            scrollToBottom();
+          }
+        });
+      }, 20);
+    });
   });
 
   const tryScrollToBtmIfNeed = useMemoizedFn(() => {
@@ -33,19 +57,41 @@ export const useListScroll = (params: Pick<IChatWindowContext, 'listDOMRef'>) =>
   });
 
   const scrollList: IChatWindowContext['scrollList'] = useMemoizedFn((params) => {
-    const dom = listDOMRef.current;
-    if (!dom) return;
-
     const { direction, distance } = params;
 
-    dom.scrollTop = direction === 'top' ? dom.scrollTop - distance : dom.scrollTop + distance;
+    virtualHandle((virIns) => {
+      const curScrollTop = virIns.scrollOffset;
+
+      if (curScrollTop) {
+        const nextOffset = direction === 'top' ? curScrollTop - distance : curScrollTop + distance;
+        virIns.scrollToOffset(nextOffset);
+      }
+    });
   });
+
+  const { run: onListScroll } = useDebounceFn(
+    (event) => {
+      virtualHandle((virIns) => {
+        const { scrollElement, scrollRect, scrollOffset } = virIns;
+
+        if (!(scrollElement && scrollRect && scrollOffset)) return;
+
+        const scrollHeight = scrollElement.scrollHeight;
+        const scrollbarHeight = scrollRect.height;
+        const scrollPositionRect = scrollOffset + scrollbarHeight;
+
+        autoScroll.set(scrollPositionRect >= scrollHeight - 20);
+      });
+    },
+    { wait: 0 }
+  );
 
   return {
     autoScroll,
-    onMsgListScroll,
+    virtualizerCell,
     scrollToBottom,
     tryScrollToBtmIfNeed,
     scrollList,
+    onListScroll,
   };
 };

@@ -1,0 +1,28 @@
+.collection-layout {
+  &.horizontal-scroll {
+    display: flex;
+
+    .collection-layout-item {
+      &:not(:first-of-type) {
+        margin-left: 10px;
+      }
+
+      &:only-child {
+        flex: 0 0 100%;
+        max-width: 1000px;
+      }
+      // 只有两个元素时
+      &:nth-child(1):nth-last-child(2),
+      &:nth-child(2):nth-last-child(1) {
+        flex: 0 0 calc(50% - 5px);
+        max-width: calc(50% - 5px);
+      }
+
+      // 三个及以上元素时
+      &:not(:only-child):not(:nth-child(1):nth-last-child(2)):not(:nth-child(2):nth-last-child(1)) {
+        flex: 0 0 40%;
+        max-width: 40%;
+      }
+    }
+  }
+}

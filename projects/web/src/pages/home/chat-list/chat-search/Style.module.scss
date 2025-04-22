@@ -1,0 +1,42 @@
+.search-button {
+  &:focus-visible {
+    outline: none !important;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .search-chat-modal {
+    width: 80vw !important;
+  }
+}
+
+.search-chat-modal {
+  :global {
+    .ant-modal-close {
+      transform: translateY(2px);
+    }
+
+    .ant-modal-content {
+      padding: 0;
+    }
+
+    .ant-modal-body {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+  }
+}
+
+.search-header {
+  padding: 14px 20px;
+  background-color: #f0f4f8;
+}
+
+.search-chat-content {
+  height: calc(100vh - 250px);
+  box-sizing: border-box;
+}
+
+.search-input {
+  width: calc(100% - 40px);
+}

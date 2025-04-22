@@ -19,7 +19,8 @@ const defaultContext: IGlobalContext = {
 
 export const GlobalContext = createContext(defaultContext);
 
-export const useGlobalCtx = createUseContextSelector(GlobalContext);
+export const { useUnwrapCellSelector: useGlobalCtx, useProvideContextSelector: useGlobalOrgCtx } =
+  createUseContextSelector(GlobalContext);
 
 const globalChatController = new ChatController({});
 const envProcessor = EnvProcessor.create().processor;

@@ -22,10 +22,11 @@ export const MarkdownRender: FC<IMarkdownRenderProps> = memo(({ content, classNa
   return (
     <div className={classNames(s.markdown, className)}>
       <MarkdownPreview
+        components={{}}
         source={formattedContent}
         remarkPlugins={[remarkMath, remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeKatex]}
-      ></MarkdownPreview>
+      />
     </div>
   );
 });

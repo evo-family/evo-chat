@@ -7,6 +7,7 @@ import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Divider } from 'antd';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
 import { useCellValueSelector } from '@evo/utils';
+import { useUpdateEffect } from 'ahooks';
 
 export interface IAnswerRenderProps {
   answerCell: TModelAnswerCell;
@@ -21,7 +22,7 @@ const AnswerScrollTrigger = React.memo((props: { answerCell: TModelAnswerCell })
   const [reasoning_content] = useCellValueSelector(answerCell, (value) => value.reasoning_content);
   const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
-  useLayoutEffect(() => {
+  useUpdateEffect(() => {
     tryScrollToBtmIfNeed();
   }, [content, reasoning_content, status]);
 

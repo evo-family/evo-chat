@@ -1,26 +1,18 @@
 import { ChatWindow } from '@evo/data-store';
 
-export const scrollToBottom = (containerDOM: HTMLElement | null) => {
-  if (!containerDOM) return;
-
-  containerDOM.scrollTop = containerDOM.scrollHeight;
-};
-
-export const scrollBottomWhenChatWinInit = (
-  chatWin: ChatWindow,
-  containerDOM: HTMLElement | null
-) => {
-  if (!containerDOM) return;
-
-  const doScroll = () => scrollToBottom(containerDOM);
-
-  chatWin.ready().then(async () => {
+export const initAllChatAnswers = (chatWin: ChatWindow, callback: () => any) => {
+  return chatWin.ready().then(async () => {
     const messageIds = chatWin.getConfigState('messageIds');
 
     await Promise.all(
-      messageIds.map((id) => chatWin.getMessage(id).then((msgIns) => msgIns.ready().then(doScroll)))
+      messageIds.map((id) => chatWin.getMessage(id).then((msgIns) => msgIns.ready().then(callback)))
     );
 
-    setTimeout(doScroll, 20);
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        callback();
+        resolve(undefined);
+      }, 20);
+    });
   });
 };
