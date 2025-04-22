@@ -15,8 +15,8 @@ export const FlexFillContent = React.memo(
     const { wrapClassName, className, wrapStyle, children, ...restContentProps } = props;
 
     return (
-      <div className={cx(['container', wrapClassName])} style={wrapStyle}>
-        <div className={cx(['content', className])} {...restContentProps} ref={ref}>
+      <div className={cx(['flex-fill-content-wrap', wrapClassName])} style={wrapStyle}>
+        <div className={cx(['flex-fill-content', className])} {...restContentProps} ref={ref}>
           {children}
         </div>
       </div>

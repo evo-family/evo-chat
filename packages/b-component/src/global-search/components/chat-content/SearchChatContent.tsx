@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 
 import { FlexFillContent } from '../../../flexable/flex-fill-content/FlexFillContent';
+import { FlexFillWidth } from '../../../flexable/flex-fill-width/FlexFillWidth';
 import { ISearchChatContentProps } from './types';
 import { SearchChatContentList } from './SearchResult';
 import { useGlobSearchCtx } from '../../context/SearchContext';

@@ -4,7 +4,7 @@ import {
   ISearchChatResultItem,
   ISearchMsgResultItem,
 } from '@evo/data-store';
-import { Divider, Flex, Menu, MenuProps, Modal, Popover, Splitter } from 'antd';
+import { Divider, Empty, Flex, Menu, MenuProps, Modal, Popover, Splitter } from 'antd';
 import Highlighter, { HighlighterProps } from 'react-highlight-words';
 import React, { ReactNode, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
@@ -204,35 +204,33 @@ export const SearchChatContentList = React.memo<ISearchChatContent>((props) => {
   });
 
   if (!searchResult.length) {
-    return '暂无搜索结果';
+    return <Empty description="暂无搜素结果" className={cx('empty-info')} />;
   }
 
   return (
-    <>
-      <Splitter>
-        <Splitter.Panel collapsible defaultSize={260} min={200} max="50%">
-          <div className={cx('search-result')}>
-            <Menu
-              selectedKeys={selectedKeys}
-              mode="inline"
-              items={chatWinItems}
-              onSelect={handleSelect}
-            />
-          </div>
-        </Splitter.Panel>
-        <Splitter.Panel collapsible>
-          {selectedWinSearch ? (
-            <MessagesMatchList
-              key={selectedWinSearch.chatWinId}
-              HilightRender={HilightRender}
-              chatWinSearchItem={selectedWinSearch}
-              msgSearchResult={selectedWinSearch.msgsResult}
-            />
-          ) : (
-            '没有匹配的消息记录'
-          )}
-        </Splitter.Panel>
-      </Splitter>
-    </>
+    <Splitter>
+      <Splitter.Panel collapsible defaultSize={260} min={200} max="50%">
+        <div className={cx('search-result')}>
+          <Menu
+            selectedKeys={selectedKeys}
+            mode="inline"
+            items={chatWinItems}
+            onSelect={handleSelect}
+          />
+        </div>
+      </Splitter.Panel>
+      <Splitter.Panel collapsible>
+        {selectedWinSearch ? (
+          <MessagesMatchList
+            key={selectedWinSearch.chatWinId}
+            HilightRender={HilightRender}
+            chatWinSearchItem={selectedWinSearch}
+            msgSearchResult={selectedWinSearch.msgsResult}
+          />
+        ) : (
+          '没有匹配的消息记录'
+        )}
+      </Splitter.Panel>
+    </Splitter>
   );
 });

@@ -1,22 +1,13 @@
-import {
-  ChatWindow,
-  IChatListItem,
-  useChatList,
-  useGlobalCtx,
-  useSettingSelector,
-} from '@evo/data-store';
-import { DataCell, useCellValue } from '@evo/utils';
-import { IN_30_DAY_TEXT, IN_7_TEXT, MORE_EARLY_TEXT, TODAY_TEXT } from '@evo/utils';
-import { Menu, Modal } from 'antd';
-import React, { FC, memo, useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { useMemoizedFn, useUpdate } from 'ahooks';
+import { Flex, Menu, Modal } from 'antd';
+import { FlexFillContent, MenuItem } from '@evo/component';
+import React, { FC, memo, useMemo } from 'react';
+import { useChatList, useGlobalCtx, useSettingSelector } from '@evo/data-store';
 
 import { ChatItemMenu } from './chat-item-menu/ChatItemMenu';
 import { ChatListHeader } from './chat-list-header/ChatListHeader';
-import { MenuItem } from '@evo/component';
 import type { MenuProps } from 'antd';
 import s from './ChatList.module.scss';
-import { useHomeSelector } from '../home-processor/HomeProvider';
+import { useMemoizedFn } from 'ahooks';
 
 export interface IChatListProps {}
 
@@ -93,15 +84,17 @@ export const ChatList: FC<IChatListProps> = memo((props) => {
   }, [groupedChatList]);
 
   return (
-    <div className={s.container}>
+    <Flex vertical className={s.container}>
       <ChatListHeader onNewChat={handleNewChat} />
-      <Menu
-        className={'evo-menu'}
-        mode="inline"
-        items={menus}
-        onSelect={handleSelect}
-        selectedKeys={selectedKeys}
-      />
-    </div>
+      <FlexFillContent>
+        <Menu
+          className={'evo-menu'}
+          mode="inline"
+          items={menus}
+          onSelect={handleSelect}
+          selectedKeys={selectedKeys}
+        />
+      </FlexFillContent>
+    </Flex>
   );
 });

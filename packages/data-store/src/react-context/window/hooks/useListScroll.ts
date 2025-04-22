@@ -42,6 +42,7 @@ export const useListScroll = (curWindowCell: IChatWindowContext['chatWin']) => {
 
           // 增加5px的容错
           if (scrollOffset + scrollbarHeight < scrollHeight - 5) {
+
             scrollToBottom();
           }
         });

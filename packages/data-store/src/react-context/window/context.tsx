@@ -1,23 +1,14 @@
 import { IChatWindowContext, IChatWindowContextOptions } from './types';
-import React, {
-  PropsWithChildren,
-  RefObject,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { createContext, useContextSelector } from 'use-context-selector';
-import { useDebounceFn, useMemoizedFn } from 'ahooks';
+import React, { PropsWithChildren, useLayoutEffect, useMemo, useState } from 'react';
 
 import { ChatWindow } from '@/chat-window/chatWindow';
 import { DataCell } from '@evo/utils';
-import { IFileMeta } from '@evo/types';
+import { createContext } from 'use-context-selector';
 import { createUseContextSelector } from '@/utils/createContextSelector';
 import { useGlobalCtx } from '../global';
 import { useLatestMessage } from './hooks/useLatestMsg';
 import { useListScroll } from './hooks/useListScroll';
+import { useMemoizedFn } from 'ahooks';
 
 export const ChatWinContext = createContext<IChatWindowContext>({} as any);
 
@@ -79,11 +70,11 @@ export const ChatWinContextProvider = React.memo<
   }, [curWindowCell, latestMsg, handlePostMessage, listScroll]);
 
   // 每次curWinId变化时，重新获取chatWin并进行初始化逻辑，期间不渲染内容
-  useEffect(() => {
+  useLayoutEffect(() => {
     setInitReady(false);
 
     chatCtrl.getWindow(realWinId)?.then((curWin) => {
-      return curWin.ready().then(async () => {
+      return curWin.ready().then(() => {
         curWindowCell.set(curWin);
         setInitReady(true);
       });

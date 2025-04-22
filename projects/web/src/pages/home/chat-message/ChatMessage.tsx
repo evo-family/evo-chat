@@ -1,8 +1,8 @@
-import { Drawer, Splitter } from 'antd';
-import React, { FC, memo, useEffect, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 
 import { Chat } from '@evo/component';
 import { ChatMessageHeader } from './chat-message-header/ChatMessageHeader';
+import { Drawer } from 'antd';
 import { SettingMessage } from '../../../components';
 import s from './ChatMessage.module.scss';
 import { useHomeSelector } from '../home-processor/HomeProvider';
@@ -19,12 +19,7 @@ export const ChatMessage: FC<IChatMessageProps> = memo(({}) => {
     <div className={s.container}>
       <ChatMessageHeader />
       <div className={s.content}>
-        <Splitter>
-          <Splitter.Panel>
-            <Chat />
-          </Splitter.Panel>
-        </Splitter>
-
+        <Chat />
         <Drawer
           title="设置"
           placement="right"
