@@ -1,5 +1,5 @@
 import Dexie, { IndexableType } from 'dexie';
-import { PromiseWrap, asyncBufferThrottle, bufferDebounce } from '@/utils/common';
+import { asyncBufferThrottle, bufferDebounce, PromiseWrap } from '../utils/common';
 import { bufferCount, bufferTime } from 'rxjs';
 
 /**
