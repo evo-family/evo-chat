@@ -66,6 +66,6 @@ npmRebuild: false
 afterSign: pkg-script/notarize.js
 publish:
   provider: generic
-  url: https://doc.hevoai.com
+  url: https://release.hevoai.com
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
