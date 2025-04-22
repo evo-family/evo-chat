@@ -4,6 +4,7 @@ import { McpProvider, useMcpSelector } from './mcp-processor/McpProvider';
 import { McpList } from './mcp-list/McpList';
 import { Toolbar } from './tool-bar/Toolbar';
 import { McpMenu } from './mcp-menu/McpMenu';
+import { McpBridgeFactory } from '@evo/platform-bridge';
 
 export interface IMcpPageContentProps {}
 

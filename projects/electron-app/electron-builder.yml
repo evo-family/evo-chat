@@ -1,4 +1,4 @@
-appId: com.evo.app
+appId: com.hevo.evochat
 productName: Evo Chat
 directories:
   buildResources: build
@@ -39,22 +39,15 @@ nsis:
 mac:
   icon: resources/logo.png
   entitlementsInherit: pkg-script/entitlements.mac.plist
+  notarize: false
   artifactName: ${productName}-${version}-${arch}.${ext}
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-  notarize: false
-  identity: null # 开发环境禁用签名
-  hardenedRuntime: false
-  gatekeeperAssess: false
-  signIgnore: ['node_modules/**/*']
   target:
     - target: dmg
-      arch:
-        - arm64
-        - x64
     - target: zip
       arch:
         - arm64
@@ -70,6 +63,7 @@ linux:
   category: Utility
 
 npmRebuild: false
+afterSign: pkg-script/notarize.js
 # publish:
 #   provider: github
 #   owner: evo-family

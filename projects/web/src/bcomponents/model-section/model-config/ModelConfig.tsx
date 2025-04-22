@@ -91,14 +91,15 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
           name="key"
           rules={[{ required: true, message: '请输入 API Key' }]}
           extra={
-            <Button
+            <a
+              style={{ fontSize: 12 }}
               type="link"
               onClick={() => {
                 openUrl(selectModel.webSite?.models);
               }}
             >
               点击获取密钥
-            </Button>
+            </a>
           }
         >
           <Input.Password
@@ -139,39 +140,41 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
                     <SettingGroup.Item
                       key={model.id}
                       title={
-                        <>
+                        <Space>
                           <Avatar
                             size={'small'}
                             src={<img src={getModelLogo(model.id)} alt="avatar" />}
                           />
                           {model.id}
-                        </>
+                          <ModelType types={model.type} />
+                        </Space>
                       }
                     >
                       <>
-                        <ModelType types={model.type} />
-                        <Button
-                          type="text"
-                          icon={<EditOutlined />}
-                          onClick={() => {
-                            modelDialog.setDialogData({
-                              open: true,
-                              type: 'update',
-                              data: {
-                                groupName: group.groupName,
-                                ...model,
-                              },
-                            });
-                          }}
-                        />
-                        <Button
-                          type="text"
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() => {
-                            removeModel(group.groupName, model.id);
-                          }}
-                        />
+                        <Space>
+                          <Button
+                            type="text"
+                            icon={<EditOutlined />}
+                            onClick={() => {
+                              modelDialog.setDialogData({
+                                open: true,
+                                type: 'update',
+                                data: {
+                                  groupName: group.groupName,
+                                  ...model,
+                                },
+                              });
+                            }}
+                          />
+                          <Button
+                            type="text"
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                              removeModel(group.groupName, model.id);
+                            }}
+                          />
+                        </Space>
                       </>
                     </SettingGroup.Item>
                   );
