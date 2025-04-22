@@ -23,7 +23,13 @@
     "build:mac": "pnpm run prebuild && pnpm --filter evo-chat run build:mac",
     "download:iconfont": "node scripts/downloadIconfont.js",
     "generate:assistants": "node ./scripts/generate-assistants/generateAssistants.js",
-    "fix:tsconfig": "node ./scripts/typescript/fixPaths.mjs"
+    "fix:tsconfig": "node ./scripts/typescript/fixPaths.mjs",
+    "version:patch": "node scripts/update-versions.js",
+    "version:minor": "node scripts/update-versions.js minor",
+    "version:major": "node scripts/update-versions.js major",
+    "version:push-patch": "node scripts/update-versions.js patch push",
+    "version:push-minor": "node scripts/update-versions.js minor push",
+    "version:push-major": "node scripts/update-versions.js major push"
   },
   "devDependencies": {
     "vite": "^6.2.3",
