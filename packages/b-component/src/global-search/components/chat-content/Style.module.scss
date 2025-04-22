@@ -59,3 +59,7 @@
   border-radius: 12px;
   overflow: hidden;
 }
+
+.empty-info {
+  transform: translateY(calc(30vh - 100%));
+}

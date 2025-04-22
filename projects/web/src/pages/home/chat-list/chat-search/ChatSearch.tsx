@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
 import Style from './Style.module.scss';
-import classNames from 'classnames';
 import cxb from 'classnames/bind';
 
 const cx = cxb.bind(Style);
@@ -38,9 +37,9 @@ export const SearchChat = React.memo<ISearchChatProps>((props) => {
 
   return (
     <>
-      <Tooltip title="搜索">
+      <Tooltip title="全局搜索">
         <Button
-          className={classNames('evo-button-icon')}
+          className={cx(['evo-button-icon', 'search-button'])}
           style={{ color: token.colorTextTertiary }}
           type="text"
           icon={<EvoIcon size={'small'} type="icon-search" />}
@@ -49,11 +48,13 @@ export const SearchChat = React.memo<ISearchChatProps>((props) => {
       </Tooltip>
       <Modal
         destroyOnClose
+        className={cx('search-chat-modal')}
+        width={'60vw'}
         maskClosable={false}
-        width={'80vw'}
         open={showSearchModal}
         footer={null}
         onCancel={() => setShowSearchModal(false)}
+        afterClose={() => setSearchKeywords([])}
       >
         <Flex vertical className={cx('search-chat-content')}>
           <div className={cx('search-header')}>
@@ -64,7 +65,7 @@ export const SearchChat = React.memo<ISearchChatProps>((props) => {
               onSearch={handleSearch}
             />
           </div>
-          <Flex flex={1}>
+          <Flex className={cx('search-chat-result')} flex={1}>
             <GlobalSearch keywords={searchKeywords} />
           </Flex>
         </Flex>

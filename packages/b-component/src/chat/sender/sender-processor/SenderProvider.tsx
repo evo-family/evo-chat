@@ -1,6 +1,7 @@
 import React, { FC, createContext, useEffect } from 'react';
+import { useCreation, useUnmount } from 'ahooks';
+
 import { SenderProcessor } from './SenderProcessor';
-import { useCreation } from 'ahooks';
 import { useProcessorSelector } from '@evo/utils';
 
 export interface ISenderProviderProps {
@@ -14,18 +15,11 @@ export const SenderProvider: FC<ISenderProviderProps> = ({ children }) => {
     return SenderProcessor.create();
   }, []);
   const { processor, getRoot, destroy } = processorAction || {};
-  useEffect(() => {
-    return () => {
-      destroy?.();
-    }
-  }, [])
 
-  return (
-    <Context.Provider value={processor!}>
-      {children}
-    </Context.Provider>
-  );
-}
+  useUnmount(() => destroy?.());
+
+  return <Context.Provider value={processor!}>{children}</Context.Provider>;
+};
 
 export function useSenderSelector<R extends any>(selector: (s: SenderProcessor) => R) {
   return useProcessorSelector(Context, selector);
