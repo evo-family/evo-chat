@@ -1,6 +1,6 @@
 {
   "name": "evo-chat",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "author": "evo-chat",
   "description": "AI Evo Chat",
   "scripts": {
@@ -27,9 +27,9 @@
     "version:patch": "node scripts/update-versions.js",
     "version:minor": "node scripts/update-versions.js minor",
     "version:major": "node scripts/update-versions.js major",
-    "version:push-patch": "node scripts/update-versions.js patch push",
-    "version:push-minor": "node scripts/update-versions.js minor push",
-    "version:push-major": "node scripts/update-versions.js major push"
+    "version:patch:push": "node scripts/update-versions.js patch push",
+    "version:minor:push": "node scripts/update-versions.js minor push",
+    "version:major:push": "node scripts/update-versions.js major push"
   },
   "devDependencies": {
     "vite": "^6.2.3",

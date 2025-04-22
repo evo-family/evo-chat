@@ -29,11 +29,16 @@ packages.forEach((pkg) => {
   // 跳过private包
   if (pkgJson.private) return;
 
-  console.log(`Updating ${pkg.name} to ${versionType} version`);
-  exec(`pnpm --filter ${pkg.name} version ${versionType}`);
+  console.log(`Updating ${pkg.name} from ${pkgJson.version} to ${versionType} version`);
+  try {
+    exec(`cd ${pkg.path} && pnpm version ${versionType} --no-git-tag-version`);
+  } catch (error) {
+    console.error(`Failed to update ${pkg.name}: ${error.message}`);
+    process.exit(1);
+  }
 });
 
-// 读取根package.json获取新版本号
+// 现在再读取根package.json获取新版本号
 const rootPackageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const newVersion = rootPackageJson.version;
 
