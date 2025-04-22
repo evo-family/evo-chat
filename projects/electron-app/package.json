@@ -1,6 +1,6 @@
 {
   "name": "evo-chat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -38,7 +38,6 @@
     "@evo/types": "workspace:*",
     "@evo/utils": "workspace:*",
     "@libsql/client": "0.15.1",
-    "@types/which": "^3.0.4",
     "dayjs": "^1.11.13",
     "electron-log": "^5.3.0",
     "electron-updater": "^6.3.9"
@@ -48,6 +47,7 @@
     "@electron-toolkit/eslint-config-ts": "^3.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@llm-tools/embedjs-interfaces": "^0.1.28",
+    "@types/which": "^3.0.4",
     "@types/node": "^22.13.13",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",

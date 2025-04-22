@@ -1,3 +1,5 @@
-provider: github
-repo: eov-chat
-owner: evo-family
+# provider: github
+# repo: eov-chat
+# owner: evo-family
+provider: generic
+url: https://release.hevoai.com
