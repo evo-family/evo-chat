@@ -1,4 +1,4 @@
-import { Avatar, Button, message, Select, SelectProps, Space, Tag, Tooltip } from 'antd';
+import { Avatar, Button, Divider, message, Select, SelectProps, Space, Tag, Tooltip } from 'antd';
 import React, { FC, memo, useMemo, useRef, useState } from 'react';
 import { getModelLogo, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 
@@ -8,13 +8,14 @@ import classNames from 'classnames';
 import { useAsyncEffect } from 'ahooks';
 import { useSenderSelector } from '../sender-processor/SenderProvider';
 import { useConvertModelSelect, useModelOptionsData } from '../../../hooks';
+import { PlusOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
 
 export interface IModelSelectToolbarProps {}
 
 export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => {
-  const [chatCtrl] = useGlobalCtx((s) => s.chatCtrl);
+  const navigate = useNavigate();
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
-  const [availableModels] = useGlobalCtx((s) => s.modelProcessor.availableModels);
 
   const [selectValues, setSelectValues] = useState<string[]>([]);
 
@@ -37,11 +38,10 @@ export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => 
   const handleChange = async (values: string[]) => {
     const selectedModels = getSelectChangeModels(values);
     chatWin?.updateConfigModels(selectedModels);
-
     setSelectValues(values);
-    setModelSelectOpen(false);
+    // 移除关闭弹框的逻辑
     removeLastAtChar();
-    senderRef.current?.focus();
+    // senderRef.current?.focus();
   };
 
   const tagRender: SelectProps['tagRender'] = (props) => {
@@ -117,10 +117,26 @@ export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => 
         onChange={handleChange}
         options={modelOptions}
         onDropdownVisibleChange={setModelSelectOpen}
-        open={modelSelectOpen} // 控制 Select 打开状态
-        dropdownStyle={{ width: 400, left: -30 }} // 确保下拉菜单在按钮下面
+        open={modelSelectOpen}
+        dropdownStyle={{ width: 400, left: -30 }}
         variant="borderless"
-      ></Select>
+        dropdownRender={(menu) => (
+          <>
+            {menu}
+            <Divider style={{ margin: '8px 0' }} />
+            <Button
+              style={{ width: '100%' }}
+              type="text"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                navigate('/settings');
+              }}
+            >
+              添加模型
+            </Button>
+          </>
+        )}
+      />
     </div>
   );
 });

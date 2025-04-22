@@ -1,13 +1,13 @@
-.container {
+.flex-fill-content-wrap {
   flex: 1;
   position: relative;
-}
 
-.content {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow: auto;
+  .flex-fill-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+  }
 }

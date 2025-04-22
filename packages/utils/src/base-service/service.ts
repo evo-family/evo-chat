@@ -14,13 +14,13 @@ export class BaseService<Options extends BaseServiceOptions> extends HookExecuto
   Options['hooks']
 > {
   // 状态相关属性
-  protected deferredInitTask: PromiseWrap | undefined;
-  protected destroyed: boolean = false;
-  protected executingDestroy: boolean = false;
+  deferredInitTask: PromiseWrap | undefined;
+  destroyed: boolean = false;
+  executingDestroy: boolean = false;
 
   // 配置相关属性
   protected options: Options;
-  protected context: Options['context'];
+  context: Options['context'];
   protected destroyedRemind: string = MESSAGES.SERVICE_DESTROYED;
   protected destroyCleanups: Array<Function> = [];
 

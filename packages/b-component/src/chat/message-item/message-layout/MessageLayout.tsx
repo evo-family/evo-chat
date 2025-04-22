@@ -12,7 +12,7 @@ export interface IMessageLayoutProps extends HTMLAttributes<HTMLDivElement> {
   avatar?: React.ReactNode;
   name?: React.ReactNode;
   time?: React.ReactNode;
-  actionArea?: React.ReactNode;
+  actionArea?: React.ReactNode | (() => React.ReactNode);
 }
 
 export const MessageLayout = React.memo(
@@ -46,7 +46,7 @@ export const MessageLayout = React.memo(
           </Flex>
           {actionArea && (
             <Flex className={style['action-area']} flex={'30%'}>
-              {actionArea}
+              {typeof actionArea === 'function' ? actionArea() : actionArea}
             </Flex>
           )}
         </Flex>

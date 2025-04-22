@@ -1,13 +1,25 @@
-import { BaseResult, EMcpType, IMcpConfig, IMcpMeta, IMcpStdioConfig } from '@evo/types';
-import { ResultUtil } from '@evo/utils';
+import {
+  BaseResult,
+  EMcpType,
+  IMCPCallToolResponse,
+  IMcpConfig,
+  IMcpMeta,
+  IMcpSseConfig,
+  IMcpStdioConfig,
+  IMcpTool,
+} from '@evo/types';
+import { generateUUID, ResultUtil } from '@evo/utils';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import {
+  SSEClientTransport,
+  SSEClientTransportOptions,
+} from '@modelcontextprotocol/sdk/client/sse.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { IDepManager } from '../types/common';
 import { getCommandPath } from '../utils/cliCheck';
 import { ErrorCode, McpError } from '../utils/errors';
 import { getCommandArgs, getCommandEnv } from '../utils/mcp';
-import { Tool } from '@modelcontextprotocol/sdk/types.js';
+import { getSystemPrompt } from '../utils/prompt';
 
 export interface IMCPClientManagerOptions {
   depManager: IDepManager;
@@ -77,7 +89,13 @@ export class MCPClientManager {
       }
 
       if (mcp.type === EMcpType.SSE) {
-        transport = new SSEClientTransport(new URL(''));
+        const currConfig = config as IMcpSseConfig;
+        const options: SSEClientTransportOptions = {
+          requestInit: {
+            headers: currConfig.headers || {},
+          },
+        };
+        transport = new SSEClientTransport(new URL(currConfig.url), options);
       }
 
       await client.connect(transport!);
@@ -94,9 +112,17 @@ export class MCPClientManager {
   /**
    * 获取当前mcp tools
    * @param mcp
+   * @param enable 是否获取可用的tools
    * @returns
    */
-  async getTools(mcpId: string): Promise<BaseResult<Tool[]>> {
+  async getTools(
+    mcpId: string,
+    options?: {
+      enable?: boolean;
+      removeInputSchemaKeys?: Array<string>;
+    }
+  ): Promise<BaseResult<IMcpTool[]>> {
+    const { enable, removeInputSchemaKeys = [] } = options || {};
     try {
       const mcp = await this.getMcpInfo(mcpId);
       const startResult = await this.startClientByMcpId(mcp.id);
@@ -105,8 +131,86 @@ export class MCPClientManager {
       }
       const client = startResult?.data!;
       const toolsResult = await client.listTools();
-      console.log('evo=>toolsResult', toolsResult);
-      return ResultUtil.success(toolsResult.tools);
+
+      const unEnableTools = JSON.parse(mcp.closeTools) as any[];
+
+      const toolList = toolsResult?.tools
+        ?.map((item) => {
+          if (enable && unEnableTools?.includes(item.name)) {
+            return null;
+          }
+          const result = {
+            ...item,
+            toolId: generateUUID(),
+            serverId: mcp.id,
+            serverName: mcp.name,
+            enable: !unEnableTools?.includes(item.name),
+          } as IMcpTool;
+
+          if (removeInputSchemaKeys?.length) {
+            removeInputSchemaKeys?.forEach((key) => {
+              delete result?.inputSchema?.[key];
+            });
+          }
+          return result;
+        })
+        .filter(Boolean);
+
+      return ResultUtil.success(toolList as IMcpTool[]);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
+
+  /**
+   * 获取所有的MCP的prompt
+   * @param mcpIds
+   * @param userPrompt
+   * @returns
+   */
+  async getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
+    try {
+      const toolsList = await Promise.all(
+        mcpIds.map(async (mcpId) => {
+          const toolsResult = await this.getTools(mcpId, {
+            enable: true,
+            removeInputSchemaKeys: ['$schema'],
+          });
+          return toolsResult.success ? toolsResult.data : [];
+        })
+      );
+
+      const allTools = toolsList.flat().filter(Boolean);
+
+      if (!allTools.length) {
+        return ResultUtil.error('没有可用的工具');
+      }
+      const systemPrompt = getSystemPrompt(userPrompt, allTools as IMcpTool[]);
+      return ResultUtil.success(systemPrompt);
+    } catch (error) {
+      return ResultUtil.error(error);
+    }
+  }
+
+  /**
+   * 调用指定 MCP 的工具
+   * @param mcpId MCP ID
+   * @param name 工具名称
+   * @param args 工具参数
+   */
+  async callTool(
+    mcpId: string,
+    name: string,
+    args: any
+  ): Promise<BaseResult<IMCPCallToolResponse>> {
+    try {
+      const startResult = await this.startClientByMcpId(mcpId);
+      if (!startResult.success) {
+        return ResultUtil.error(startResult.error);
+      }
+      const client = startResult.data!;
+      const result = (await client.callTool({ name, arguments: args })) as IMCPCallToolResponse;
+      return ResultUtil.success(result);
     } catch (error) {
       return ResultUtil.error(error);
     }

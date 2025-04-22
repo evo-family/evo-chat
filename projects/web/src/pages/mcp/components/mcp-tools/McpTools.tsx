@@ -4,6 +4,7 @@ import { JsonSchemaType } from './types';
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { IMcpMeta } from '@evo/types';
 import { ProDescriptions } from '@ant-design/pro-components';
+import { Switch } from 'antd'; // 添加 Switch 导入
 
 interface IMcpToolsProps {
   record: IMcpMeta;
@@ -40,6 +41,38 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
     fetchTools();
   }, [open, record?.id]);
 
+  const [closedTools, setClosedTools] = useState<string[]>(() => {
+    try {
+      return JSON.parse(record.closeTools || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  const handleToolSwitch = async (checked: boolean, toolName: string) => {
+    const newClosedTools = checked
+      ? closedTools.filter((t) => t !== toolName)
+      : [...closedTools, toolName];
+
+    try {
+      const { categoryName, ...rest } = record;
+      const params = {
+        ...rest,
+        closeTools: JSON.stringify(newClosedTools),
+      };
+
+      const res = await McpBridgeFactory.getInstance().updateMcp(params);
+
+      if (res.success) {
+        setClosedTools(newClosedTools);
+      } else {
+        message.error(res.error);
+      }
+    } catch (error) {
+      message.error('更新失败');
+    }
+  };
+
   return (
     <>
       <a onClick={() => setOpen(true)}>工具</a>
@@ -60,12 +93,25 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
             <Collapse.Panel
               key={tool.name}
               header={
-                <>
-                  <strong>{tool.name}</strong>
-                  <div style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)', marginTop: 4 }}>
-                    {tool.description}
+                <div
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                >
+                  <div>
+                    <strong>{tool.name}</strong>
+                    <div style={{ fontSize: '12px', color: 'rgba(0, 0, 0, 0.45)', marginTop: 4 }}>
+                      {tool.description}
+                    </div>
                   </div>
-                </>
+                  <Switch
+                    size="small"
+                    checked={!closedTools.includes(tool.name)}
+                    onChange={(checked, event) => {
+                      event?.stopPropagation();
+                      handleToolSwitch(checked, tool.name);
+                    }}
+                    onClick={(c, e) => e.stopPropagation()}
+                  />
+                </div>
               }
             >
               <ProDescriptions title="请求参数" column={1} bordered>

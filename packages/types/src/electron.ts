@@ -4,6 +4,7 @@ import {
   IKnowledgeMeta,
   IKnowledgeVectorMeta,
   IKnowledgeVectorMetaVo,
+  IMCPCallToolResponse,
   IMcpCategoryMeta,
   IMcpMeta,
 } from './meta';
@@ -174,6 +175,8 @@ export interface IMcpService {
 
   // 工具方法
   getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
+  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>>;
+  callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>>;
 }
 
 export interface ISystemService {

@@ -75,3 +75,4 @@ resources/data/otherAgent
 # 临时提供商配置
 **/temp-provider/
 **/temp-provider/*
+.env

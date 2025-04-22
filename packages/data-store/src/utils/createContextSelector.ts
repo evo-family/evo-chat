@@ -3,7 +3,7 @@ import { DataCell, GetDataCellValue } from '@evo/utils';
 import { useMemo, useRef, useState } from 'react';
 
 export const createUseContextSelector = <Value>(provideContext: Context<Value>) => {
-  return <Selected>(
+  const useUnwrapCellSelector = <Selected>(
     selector: (value: Value) => Selected
   ): Selected extends DataCell ? [GetDataCellValue<Selected>, Selected] : [Selected] => {
     const selected = useContextSelector(provideContext, selector);
@@ -41,5 +41,13 @@ export const createUseContextSelector = <Value>(provideContext: Context<Value>) 
     }, [selected]);
 
     return [valueRef.current.value, selected] as any;
+  };
+
+  const useProvideContextSelector = <Selected>(selector: (contextValue: Value) => Selected) =>
+    useContextSelector(provideContext, selector);
+
+  return {
+    useUnwrapCellSelector,
+    useProvideContextSelector,
   };
 };
