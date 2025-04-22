@@ -64,9 +64,8 @@ linux:
 
 npmRebuild: false
 afterSign: pkg-script/notarize.js
-# publish:
-#   provider: github
-#   owner: evo-family
-#   repo: eov-chat
+publish:
+  provider: generic
+  url: https://doc.hevoai.com
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
