@@ -9,7 +9,6 @@ const { notarize } = require('@electron/notarize');
 const APP_BUNDLE_ID = 'com.hevo.evochat';
 
 async function checkNotarizeRequirements() {
-  console.log('q=>process.env', process.env);
   const requiredEnvVars = ['APPLE_ID', 'APPLE_APP_SPECIFIC_PASSWORD', 'APPLE_TEAM_ID'];
   const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
@@ -37,12 +36,9 @@ exports.default = async function notarizing(context) {
 
   if (!fs.existsSync(appPath)) {
     console.error('错误: 应用路径不存在:', appPath);
-    console.log('当前目录内容:', fs.readdirSync(context.appOutDir));
-    throw new Error(`应用路径不存在: ${appPath}`);
   }
 
   try {
-    console.log('正在公证应用...', process.env.APPLE_ID);
     await notarize({
       appPath,
       appBundleId: APP_BUNDLE_ID,
