@@ -29,7 +29,8 @@
     "version:major": "node scripts/update-versions.js major",
     "version:patch:push": "node scripts/update-versions.js patch push",
     "version:minor:push": "node scripts/update-versions.js minor push",
-    "version:major:push": "node scripts/update-versions.js major push"
+    "version:major:push": "node scripts/update-versions.js major push",
+    "download:assets": "node scripts/download-github-release.js"
   },
   "devDependencies": {
     "vite": "^6.2.3",

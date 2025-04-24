@@ -76,3 +76,4 @@ resources/data/otherAgent
 **/temp-provider/
 **/temp-provider/*
 .env
+/downloads/*
