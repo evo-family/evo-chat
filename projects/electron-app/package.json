@@ -20,9 +20,9 @@
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win ",
-    "build:mac": "electron-vite build && electron-builder --mac",
-    "build:linux": "electron-vite build && electron-builder --linux"
+    "build:win": "npm run build && electron-builder --win --x64 --arm64",
+    "build:mac": "electron-vite build && electron-builder --mac --x64 --arm64",
+    "build:linux": "electron-vite build && electron-builder --linux --x64 --arm64"
   },
   "build": {
     "electronVersion": "35.0.3",
