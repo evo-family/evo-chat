@@ -62,11 +62,6 @@ export function setupAutoUpdataHandler() {
 
   autoUpdater.on('update-downloaded', (info) => {
     log.info('更新已下载', info);
-    // if (isMacOS()) {
-    //   return;
-    //   // shell.openExternal('https://hevoai.com/download');
-    //   return;
-    // }
     dialog
       .showMessageBox({
         type: 'info',
@@ -80,7 +75,7 @@ export function setupAutoUpdataHandler() {
       })
       .then(({ response }) => {
         if (response === 1) {
-          // setImmediate(() => autoUpdater.quitAndInstall())
+          setImmediate(() => autoUpdater.quitAndInstall());
         } else {
           getMainWindow().webContents.send(IPC_EVENTS.UPDATE.CANCEL);
         }

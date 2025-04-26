@@ -110,23 +110,32 @@ async function downloadFileWithRetry(url, filePath, retries = 3) {
 // 主函数
 async function main() {
   try {
+    // 清空下载目录
+    if (fs.existsSync(OUTPUT_DIR)) {
+      fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
+    }
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
     console.log(`Fetching release info for ${REPO_OWNER}/${REPO_NAME}...`);
     const release = await getReleaseInfo(REPO_OWNER, REPO_NAME, RELEASE_TAG);
 
     console.log(`Found release: ${release.name}`);
     console.log(`Downloading ${release.assets.length} assets...`);
 
-    for (const asset of release.assets) {
-      const outputPath = path.join(OUTPUT_DIR, asset.name);
-      console.log(`Downloading ${asset.name} (${Math.round(asset.size / 1024 / 1024)}MB)...`);
+    // 并发下载所有资源
+    await Promise.all(
+      release.assets.map(async (asset) => {
+        const outputPath = path.join(OUTPUT_DIR, asset.name);
+        console.log(`Downloading ${asset.name} (${Math.round(asset.size / 1024 / 1024)}MB)...`);
 
-      try {
-        await downloadFileWithRetry(asset.browser_download_url, outputPath);
-        console.log(`✓ 下载完成: ${outputPath}`);
-      } catch (error) {
-        console.error(`✗ 下载失败: ${asset.name} (${error.message})`);
-      }
-    }
+        try {
+          await downloadFileWithRetry(asset.browser_download_url, outputPath);
+          console.log(`✓ 下载完成: ${outputPath}`);
+        } catch (error) {
+          console.error(`✗ 下载失败: ${asset.name} (${error.message})`);
+        }
+      })
+    );
 
     console.log('所有下载任务完成！');
   } catch (error) {
