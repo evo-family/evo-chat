@@ -1,6 +1,6 @@
 {
   "name": "@evo/data-store",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "scripts": {
     "clean": "rm -rf ./{*.tsbuildinfo,build,dist,.hash}",
