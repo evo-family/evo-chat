@@ -8,7 +8,6 @@ export const IPC_EVENTS = {
     PROGRESS: 'update-progress',
     DOWNLOADED: 'update-downloaded',
     CANCEL: 'update-cancel',
-    GET_VERSION: 'get-version',
   },
 
   // 窗口操作相关
@@ -22,9 +21,19 @@ export const IPC_EVENTS = {
   // 系统操作相关
   SYSTEM: {
     OPEN_EXTERNAL: 'open-external-link',
-    SHOW_ITEM_IN_FOLDER: 'show-item-in-folder',
+    ON_NATIVE_THEME_CHANGE: 'on-native-theme-change',
+    GET_NATIVE_THEME: 'get-native-theme',
+    GET_LOG_PATH: 'get-log-path',
+    GET_TEMP_PATH: 'get-temp-path',
+    OPEN_FILE: 'open-file',
+    OPEN_FOLDER: 'open-folder',
+    GET_VERSION: 'get-version',
+
+    // 暂无实现
     GET_PATH: 'get-system-path',
     CLEAN_LOCAL_DATA: 'clean-local-data',
+    GET_APP_DATA_PATH: 'get-app-data-path',
+    GET_USER_DATA_PATH: 'get-user-data-path',
   },
 
   // 对话框相关
