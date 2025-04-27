@@ -143,14 +143,6 @@ export interface IKnowledgeService {
   deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>>;
 }
 
-export interface ICommonService {
-  getTheme(): Promise<EThemeMode>;
-  onThemeChange(callback: (theme: EThemeMode) => void): void;
-  openExternal: (url: string, options?: any) => void;
-  getVersion(): Promise<string>;
-  checkMobilePermission?(permissions: MobilePermissionType[]): Promise<boolean>;
-}
-
 export interface ICliService {
   checkBunCommand(): Promise<BaseResult<boolean>>;
   checkUvCommand(): Promise<BaseResult<boolean>>;
@@ -189,6 +181,27 @@ export interface IMcpService {
 
 export interface ISystemService {
   clearLocalData(): Promise<BaseResult<boolean>>;
+  getLogPath(): Promise<BaseResult<string>>;
+  /**
+   * 打开文件
+   * @param filePath 文件路径
+   */
+  openFile(filePath: string): Promise<BaseResult<boolean>>;
+  /**
+   * 打开文件夹
+   * @param folderPath 文件夹路径
+   */
+  openFolder(folderPath: string): Promise<BaseResult<boolean>>;
+
+  getTheme(): Promise<EThemeMode>;
+  onThemeChange(callback: (theme: EThemeMode) => void): void;
+  openExternal: (url: string, options?: any) => void;
+  getVersion(): Promise<string>;
+
+  /**
+   * 检查应用权限，移动端
+   */
+  checkPermission(permissions: MobilePermissionType[]): Promise<Boolean>;
 }
 
 export interface IGetFileListParams {
@@ -204,8 +217,6 @@ export interface ElectronAPI {
   };
   fileService: IFileService;
   knowledgeService: IKnowledgeService;
-
-  commonService: ICommonService;
 }
 
 // 确保文件被视为模块

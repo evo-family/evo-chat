@@ -11,4 +11,8 @@ export class SystemBridgeFactory extends BaseBridgeFactory<ISystemService> {
   protected createWebBridge(): ISystemService {
     return new WebSystem();
   }
+
+  protected createMobileBridge(): ISystemService {
+    return new WebSystem();
+  }
 }

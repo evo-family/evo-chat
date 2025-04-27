@@ -1,17 +1,31 @@
-import React, { FC } from 'react';
-import { Button, message, Modal, Switch } from 'antd';
+import React, { FC, useMemo, useState } from 'react';
+import { Button, message, Modal, Space, Switch } from 'antd';
 import { SettingGroup } from '../../../../components';
 import { useGlobalCtx, useSettingSelector } from '@evo/data-store';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { clearDataCellStorageWithWeb, clearStateTissueStorageWithWeb } from '@evo/utils';
 import { SystemBridgeFactory } from '@evo/platform-bridge';
+import { FileOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 
 export const DataContent: FC = React.memo(() => {
   const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
+  const [systemBridgeFactory] = useState(SystemBridgeFactory.getInstance());
+
+  const { data: logPath } = useRequest(
+    async () => {
+      const result = await systemBridgeFactory.getLogPath();
+      return result?.data;
+    },
+    {
+      refreshDeps: [systemBridgeFactory],
+    }
+  );
+
   const clearLocalCache = useMemoizedFn(async () => {
     clearDataCellStorageWithWeb();
     clearStateTissueStorageWithWeb();
-    const res = await SystemBridgeFactory.getInstance().clearLocalData();
+    const res = await systemBridgeFactory.clearLocalData();
     if (res.success) {
       message.info('操作成功');
     } else {
@@ -55,6 +69,12 @@ export const DataContent: FC = React.memo(() => {
     });
   });
 
+  const openLog = () => {
+    if (logPath) {
+      systemBridgeFactory.openFile(logPath);
+    }
+  };
+
   return (
     <>
       <SettingGroup title="数据备份">
@@ -90,6 +110,17 @@ export const DataContent: FC = React.memo(() => {
           <Button danger onClick={handleResetSettings}>
             重置
           </Button>
+        </SettingGroup.Item>
+      </SettingGroup>
+
+      <SettingGroup title="数据目录">
+        <SettingGroup.Item title="应用日志">
+          <Space size={4}>
+            {logPath}
+            <Tooltip title="打开日志文件">
+              <Button color="default" variant="text" icon={<FileOutlined />} onClick={openLog} />
+            </Tooltip>
+          </Space>
         </SettingGroup.Item>
       </SettingGroup>
     </>

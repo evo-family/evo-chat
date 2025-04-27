@@ -86,8 +86,4 @@ export function setupAutoUpdataHandler() {
   ipcMain.handle(IPC_EVENTS.UPDATE.CHECK, () => {
     autoUpdater.checkForUpdatesAndNotify();
   });
-
-  ipcMain.handle(IPC_EVENTS.UPDATE.GET_VERSION, () => {
-    return app.getVersion();
-  });
 }

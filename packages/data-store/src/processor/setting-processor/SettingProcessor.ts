@@ -2,6 +2,7 @@ import {
   BaseProcessor,
   checkForUpdate,
   DataCell,
+  isElectron,
   persistenceCellSync,
   setPartialDataCell,
   storage,
@@ -27,7 +28,7 @@ import {
 import { EStorageType } from '../../types/storageKey';
 import { modelProcessor } from '../model-processor';
 import { themeColorData } from '../../config-data';
-import { CommonBridgeFactory } from '@evo/platform-bridge';
+import { SystemBridgeFactory } from '@evo/platform-bridge';
 
 export class SettingProcessor extends BaseProcessor {
   theme: DataCell<EThemeMode>;
@@ -79,7 +80,7 @@ export class SettingProcessor extends BaseProcessor {
 
     this.about = persistenceCellSync<IAboutSetting>(SETTING_ABOUT, {
       version: '',
-      isAutoUpdate: false,
+      isAutoUpdate: true,
     });
 
     this.init();
@@ -88,20 +89,22 @@ export class SettingProcessor extends BaseProcessor {
   private init() {
     // this.theme.listen(({ next }) => {
     // })
-    CommonBridgeFactory.getInstance()
-      .getVersion()
-      .then((version) => {
-        setTimeout(() => {
-          this.setAbout({
-            version: version,
-          });
-        }, 100);
+    if (isElectron()) {
+      SystemBridgeFactory.getInstance()
+        .getVersion()
+        .then((version) => {
+          setTimeout(() => {
+            this.setAbout({
+              version: version,
+            });
+          }, 100);
+        });
+      this.about.listen(({ next }) => {
+        if (next?.isAutoUpdate) {
+          checkForUpdate();
+        }
       });
-    this.about.listen(({ next }) => {
-      if (next?.isAutoUpdate) {
-        checkForUpdate();
-      }
-    });
+    }
   }
 
   setTheme = (theme: EThemeMode) => {
@@ -112,7 +115,7 @@ export class SettingProcessor extends BaseProcessor {
     this.language.set(language);
   };
   setThemeColorId = (id: string) => {
-    console.log("id=>",id)
+    console.log('id=>', id);
     this.themeColorId.set(id);
   };
 

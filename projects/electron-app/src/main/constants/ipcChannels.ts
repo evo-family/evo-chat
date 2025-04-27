@@ -21,10 +21,6 @@ export const IpcChannels = {
   KNOWLEDGE_GET_VECTORS_BY_FILE: 'knowledge-get-vectors-by-file', // 获取文件的向量信息
   KNOWLEDGE_DELETE_VECTORS_BY_FILE: 'knowledge-delete-vectors-by-file', // 删除文件的向量信息
 
-  COMMON_GET_NATIVE_THEME: 'common-get-native-theme', // 获取主题
-  COMMON_ON_NATIVE_THEME_CHANGE: 'common-on-native-theme-change', // 监听主题变化
-  COMMON_OPEN_EXTERNAL: 'common-open-external', // 打开外部链接
-
   // 检查更新
   UPDATA_CHECK: 'updata-check',
 } as const;
