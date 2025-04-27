@@ -68,6 +68,14 @@ export interface ISearchVectorsByKnowledge {
   knowledgeId: string;
   searchValue: string;
 }
+
+export interface IGetMcpToolParams {
+  mcpId: string;
+  options?: {
+    enable?: boolean;
+    removeInputSchemaKeys?: Array<string>;
+  };
+}
 export interface IKnowledgeService {
   setModelEmbeddingMap(modelEmbeddingMap: TAvailableModelMap): void;
 
@@ -174,8 +182,8 @@ export interface IMcpService {
   getServiceStatus(mcpId: string): Promise<BaseResult<boolean>>;
 
   // 工具方法
-  getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
-  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>>;
+  getTools(params: IGetMcpToolParams): Promise<BaseResult<Tool[]>>;
+
   callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>>;
 }
 
