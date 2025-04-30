@@ -22,7 +22,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
 
-  const [status] = useCellValueSelector(answerCell, (value) => value.status);
+  const [status] = useCellValueSelector(answerCell, (value) => value.connResult.status);
 
   const retryModel = useMemoizedFn(() => {
     chatWin.retryAnswer({
@@ -36,7 +36,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   });
 
   const copyModelAnswer = useMemoizedFn(() => {
-    const { content: answerContent, errorMessage, status } = answerCell.get();
+    const { content: answerContent, errorMessage, status } = answerCell.get().connResult;
 
     let clipContent = '';
 
@@ -58,7 +58,6 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
       });
     }
   });
-
 
   if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
     return (

@@ -13,12 +13,18 @@ export interface IReasoningRenderProps {
 export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
   const { answerCell } = props;
 
-  const [reasoning_content] = useCellValueSelector(answerCell, (value) => value.reasoning_content);
+  const [reasoning_content] = useCellValueSelector(
+    answerCell,
+    (value) => value.connResult.reasoning_content
+  );
   const [startReasoningTime] = useCellValueSelector(
     answerCell,
-    (value) => value.startReasoningTime
+    (value) => value.connResult.startReasoningTime
   );
-  const [endReasoningTime] = useCellValueSelector(answerCell, (value) => value.endReasoningTime);
+  const [endReasoningTime] = useCellValueSelector(
+    answerCell,
+    (value) => value.connResult.endReasoningTime
+  );
 
   const computeCollapseLabel = useMemo(() => {
     return startReasoningTime && endReasoningTime

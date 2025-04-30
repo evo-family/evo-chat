@@ -27,7 +27,7 @@ const MessageItemFileInfo = React.memo(() => {
 
   return (
     <>
-      {fileInfos.map((info) => {
+      {fileInfos?.map((info) => {
         return (
           <Flex key={info.id}>
             <FileAvatar id={info.id} name={info.name} />

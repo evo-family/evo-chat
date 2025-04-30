@@ -235,8 +235,8 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
 
         const isResolving = arrayAnswers.some(
           (info) =>
-            info?.status === EModalAnswerStatus.PENDING ||
-            info?.status === EModalAnswerStatus.RECEIVING
+            info?.connResult?.status === EModalAnswerStatus.PENDING ||
+            info?.connResult?.status === EModalAnswerStatus.RECEIVING
         );
 
         setLoading(isResolving);

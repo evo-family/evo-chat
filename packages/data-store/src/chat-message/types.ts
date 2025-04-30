@@ -17,29 +17,45 @@ export enum EModalAnswerStatus {
   RECEIVING = 'receiving',
 }
 
-export interface IModelBaseAnswer {
-  id: string;
-  model: string;
-  provider: string;
-  content: string;
-  reasoning_content: string;
+export interface IModelConnRecord {
   startReasoningTime?: number;
   endReasoningTime?: number;
+  content: string;
+  reasoning_content: string;
   status: EModalAnswerStatus;
-  createdTime?: number;
   usage?: ChatCompletionChunk['usage'];
   errorMessage: string;
 }
 
-export type TModelAnswer = IModelBaseAnswer;
+export interface IModelBaseAnswer {
+  id: string;
+  model: string;
+  provider: string;
+  createdTime?: number;
+  connResult: IModelConnRecord;
+}
+
+export interface INormalAnswer extends IModelBaseAnswer {
+  type: 'normal';
+}
+
+export interface IMCPExchangeItem extends IModelConnRecord {}
+
+export interface IMCPModelAnswer extends IModelBaseAnswer {
+  type: 'mcp';
+  mcpExchanges: Array<IMCPExchangeItem>;
+}
+
+export type TModelAnswer = INormalAnswer | IMCPModelAnswer;
 
 export interface IMessageConfig {
   id: string;
   createdTime: number;
   providers: { name: string; model: string }[];
   sendMessage: string;
-  attachFileInfos: IFileMeta[];
   answerIds: string[];
+  attachFileInfos?: IFileMeta[];
+  mcpIds?: string[];
 }
 
 export interface IChatMessageHooks extends BaseServiceHooks {

@@ -1,4 +1,5 @@
-import React, { FC, memo } from 'react';
+import { Button, Form, message } from 'antd';
+import { EMcpType, IMcpMeta } from '@evo/types';
 import {
   ModalForm,
   ProFormRadio,
@@ -6,12 +7,12 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { EMcpType, IMcpMeta } from '@evo/types';
-import { Button, Form, message } from 'antd';
-import { useMcpSelector } from '../../mcp-processor/McpProvider';
-import { McpBridgeFactory } from '@evo/platform-bridge';
-import { useRequest } from 'ahooks';
+import React, { FC, memo } from 'react';
 import { parseKeyValueText, stringifyKeyValueText } from '@evo/utils';
+
+import { McpBridgeFactory } from '@evo/platform-bridge';
+import { useMcpSelector } from '../../mcp-processor/McpProvider';
+import { useRequest } from 'ahooks';
 
 export interface IAddOrUpdateMcpProps {}
 
@@ -140,6 +141,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
               message.error(res.error);
             }
           } else {
+            console.log(formValue);
             const id = dialogData.data?.id! as string;
             const res = await updateMcp({ ...formValue, id });
             if (res.success) {

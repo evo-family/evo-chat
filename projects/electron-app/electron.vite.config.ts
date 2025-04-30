@@ -1,6 +1,7 @@
-import { resolve } from 'path';
 // 需要先安装 electron-vite 依赖: npm install electron-vite --save-dev
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite';
+
+import { resolve } from 'path';
 
 export default defineConfig({
   main: {

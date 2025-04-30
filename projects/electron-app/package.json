@@ -1,5 +1,5 @@
 {
-  "name": "evo-chat",
+  "name": "@evo/client",
   "version": "0.0.4",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
@@ -47,10 +47,10 @@
     "@electron-toolkit/eslint-config-ts": "^3.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@llm-tools/embedjs-interfaces": "^0.1.28",
-    "@types/which": "^3.0.4",
     "@types/node": "^22.13.13",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@types/which": "^3.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "electron": "35.0.3",
     "electron-builder": "^25.1.8",

@@ -1,8 +1,10 @@
 import {
   BaseService,
   DataCell,
+  PromiseWrap,
   StateTissue,
   generateHashId,
+  generatePromiseWrap,
   persistenceCell,
   persistenceCellSync,
 } from '@evo/utils';
@@ -13,16 +15,19 @@ import {
   IMessageConfig,
   TModelAnswer,
 } from './types';
-import { IBaseModelHandler, IModelConnHandleBaseParams } from './utils/model-handle/types';
+import { map, of } from 'rxjs';
 
 import { AuthenticationError } from 'openai';
+import { IComposeModelContextParams } from './utils/model-handle/types';
+import { composeModelConnContext } from './utils/model-handle/modelConnContext';
+import { fixChatMsg20250430 } from '@/utils/upgrade_scripts/chatMessage/20250430';
 import { getEmptyAnswerData } from './constants/answer';
 import { modelConnHandle } from './utils/model-handle/handler';
 
 export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<Context>> {
   configState: DataCell<IMessageConfig>;
   modelAnswers = new StateTissue<Record<string, TModelAnswer>>({});
-  answerResolver: Map<string, Awaited<ReturnType<IBaseModelHandler>>> = new Map();
+  answerResolver: Map<string, PromiseWrap> = new Map();
 
   constructor(options: IChatMessageInitOptions<Context>) {
     super(options);
@@ -32,7 +37,6 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       sendMessage: '',
       createdTime: +Date.now(),
       providers: [],
-      attachFileInfos: [],
       answerIds: [],
     });
 
@@ -42,7 +46,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
   protected handleCleanup(): void {
     this.configState.destroy();
     this.modelAnswers.destroy();
-    this.answerResolver.forEach((resolver) => resolver.result.controller.abort());
+    this.answerResolver.forEach((resolver) => resolver.reject());
 
     super.handleCleanup();
   }
@@ -62,10 +66,10 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
               // 如果本地取回的数据的状态是pending或者receiving，则将其状态改为success(未完成接收前就刷新页面强制中断了)
               if (
-                answerData.status === EModalAnswerStatus.PENDING ||
-                answerData.status === EModalAnswerStatus.RECEIVING
+                answerData.connResult.status === EModalAnswerStatus.PENDING ||
+                answerData.connResult.status === EModalAnswerStatus.RECEIVING
               ) {
-                answerData.status = EModalAnswerStatus.SUCCESS;
+                answerData.connResult.status = EModalAnswerStatus.SUCCESS;
                 cell.set(answerData);
               }
 
@@ -96,7 +100,8 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     // 先清理前一个model连接接收
     if (modelResolver) {
-      modelResolver.result.controller.abort();
+      modelResolver.resolve(undefined);
+      this.answerResolver.delete(id);
     }
   }
 
@@ -117,15 +122,29 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     });
   }
 
-  async reinitializeAnswer(id: string, params?: IModelConnHandleBaseParams) {
+  private getModelConnSignal(id: string) {
+    let resolver = this.answerResolver.get(id);
+
+    if (!resolver) {
+      resolver = generatePromiseWrap();
+      this.answerResolver.set(id, resolver);
+    }
+
+    return resolver;
+  }
+
+  async initializeAnswer(id: string, params?: IComposeModelContextParams) {
     const answerCell = this.modelAnswers.getCellSync(id);
 
     if (!answerCell) return;
 
     const answerData = answerCell.get();
     const msgConfig = this.getConfigState();
+
     // 先尝试停止前一个model连接接收
     this.stopResolveAnswer(answerData.id);
+
+    const resolver = this.getModelConnSignal(answerData.id);
 
     try {
       // 重置数据answer的数据
@@ -134,40 +153,56 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         ...getEmptyAnswerData(),
       });
 
-      const handleResult = await modelConnHandle({
+      resolver.promise
+        .then(() => {
+          const curData = answerCell.get();
+          curData.connResult.status = EModalAnswerStatus.SUCCESS;
+          answerCell.set(curData);
+        })
+        .catch((error: any) => {
+          const curData = answerCell.get();
+          let errorMessage = error?.message ?? error?.toString() ?? '';
+
+          if (error instanceof AuthenticationError) {
+            errorMessage = 'API秘钥或令牌无效';
+          }
+
+          curData.connResult.errorMessage = errorMessage;
+          curData.connResult.status = EModalAnswerStatus.ERROR;
+
+          answerCell.set(curData);
+        })
+        .finally(() => {
+          this.stopResolveAnswer(answerData.id);
+        });
+
+      await modelConnHandle({
         msgConfig,
-        answerCell,
+        taskSignal: resolver,
+        answerConfig: answerData,
+        onResolve: (data) => {
+          const curData = answerCell.get();
+          curData.connResult = data;
+
+          answerCell.set(curData);
+        },
+        getMessageContext: () =>
+          composeModelConnContext({
+            msgConfig,
+            ...params,
+          }),
         ...params,
       });
 
-      if (handleResult) {
-        this.answerResolver.set(answerData.id, handleResult);
-
-        await handleResult.streamTask;
-      }
-
-      answerCell.set({
-        ...answerCell.get(),
-        status: EModalAnswerStatus.SUCCESS,
-      });
+      resolver.resolve(undefined);
     } catch (error: any) {
-      let errorMessage = error?.message ?? error?.toString() ?? '';
-
-      if (error instanceof AuthenticationError) {
-        errorMessage = 'API秘钥或令牌无效';
-      }
-
-      answerCell.set({
-        ...answerCell.get(),
-        status: EModalAnswerStatus.ERROR,
-        errorMessage,
-      });
+      resolver.reject(error);
     }
   }
 
   async postMessage(
     params: Pick<IMessageConfig, 'sendMessage' | 'providers' | 'attachFileInfos'> &
-      IModelConnHandleBaseParams
+      IComposeModelContextParams
   ) {
     await this.ready();
 
@@ -177,15 +212,18 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       return Promise.reject('message already exists.');
     }
 
-    const { providers, sendMessage, attachFileInfos } = params;
+    const { providers, sendMessage, attachFileInfos, mcpIds } = params;
 
     const answerIds = providers.map(({ name, model }) => {
       const id = generateHashId(32, 'c_ans_');
+      const msgType = mcpIds?.length ? 'mcp' : 'normal';
 
       const initialAnswerData: TModelAnswer = {
         id,
         model,
         provider: name,
+        type: msgType,
+        mcpExchanges: [],
         ...getEmptyAnswerData(),
       };
       const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);
@@ -201,9 +239,10 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       providers,
       attachFileInfos,
       answerIds,
+      mcpIds,
     });
 
-    answerIds.forEach((id) => this.reinitializeAnswer(id, params));
+    answerIds.forEach((id) => this.initializeAnswer(id, params));
 
     return this.modelAnswers;
   }

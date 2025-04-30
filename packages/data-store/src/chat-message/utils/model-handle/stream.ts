@@ -1,8 +1,10 @@
 import { ChatResponse, DataCell } from '@evo/utils';
-import { EModalAnswerStatus, TModelAnswerCell } from '@/chat-message/types';
+import { EModalAnswerStatus, IModelConnRecord, TModelAnswerCell } from '@/chat-message/types';
+
+import { IModelConnParams } from './types';
 
 const updateReasoningTimestamps = (
-  curData: ReturnType<TModelAnswerCell['get']>,
+  curData: IModelConnRecord,
   deltaContent?: string | null,
   deltaReasoningContent?: string
 ) => {
@@ -17,19 +19,20 @@ const updateReasoningTimestamps = (
   }
 };
 
-export const defaultStreamResolver = async (params: {
-  stream: ChatResponse<true>;
-  answerCell: TModelAnswerCell;
-}) => {
-  const { stream, answerCell } = params;
+export const defaultStreamResolver = async (
+  params: {
+    stream: ChatResponse<true>;
+    connResult: IModelConnRecord;
+  } & Pick<IModelConnParams, 'onResolve'>
+) => {
+  const { stream, connResult, onResolve } = params;
 
   for await (const content of stream) {
     const { usage, choices } = content;
-    const curData = answerCell.get();
 
     // 更新接收状态
-    if (curData.status === EModalAnswerStatus.PENDING) {
-      curData.status = EModalAnswerStatus.RECEIVING;
+    if (connResult.status === EModalAnswerStatus.PENDING) {
+      connResult.status = EModalAnswerStatus.RECEIVING;
     }
 
     // 处理每个选项的内容
@@ -37,17 +40,17 @@ export const defaultStreamResolver = async (params: {
       // @ts-ignore
       const { content: deltaContent, reasoning_content: deltaReasoningContent } = choice.delta;
 
-      if (deltaContent) curData.content += deltaContent;
-      if (deltaReasoningContent) curData.reasoning_content += deltaReasoningContent;
+      if (deltaContent) connResult.content += deltaContent;
+      if (deltaReasoningContent) connResult.reasoning_content += deltaReasoningContent;
 
-      updateReasoningTimestamps(curData, deltaContent, deltaReasoningContent);
+      updateReasoningTimestamps(connResult, deltaContent, deltaReasoningContent);
     });
 
     // 更新使用量统计
     if (usage) {
-      curData.usage = usage;
+      connResult.usage = usage;
     }
 
-    answerCell.set(curData);
+    onResolve?.(connResult);
   }
 };

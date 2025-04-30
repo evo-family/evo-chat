@@ -1,21 +1,10 @@
-import { EModalAnswerStatus, IModelBaseAnswer } from '../types';
+import { EModalAnswerStatus, IModelBaseAnswer, IModelConnRecord } from '../types';
 
-export const getEmptyAnswerData = (): Pick<
-  IModelBaseAnswer,
-  | 'status'
-  | 'content'
-  | 'reasoning_content'
-  | 'errorMessage'
-  | 'usage'
-  | 'createdTime'
-  | 'startReasoningTime'
-  | 'endReasoningTime'
-> => ({
+export const getEmptyModelConnResult = (): IModelConnRecord => ({
   status: EModalAnswerStatus.PENDING,
   content: '',
   reasoning_content: '',
   errorMessage: '',
-  createdTime: +Date.now(),
   startReasoningTime: undefined,
   endReasoningTime: undefined,
   usage: {
@@ -23,4 +12,9 @@ export const getEmptyAnswerData = (): Pick<
     completion_tokens: 0,
     total_tokens: 0,
   },
+});
+
+export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'connResult' | 'createdTime'> => ({
+  createdTime: +Date.now(),
+  connResult: getEmptyModelConnResult(),
 });

@@ -11,7 +11,7 @@ export interface IReasoningRenderProps {
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
   const { answerCell } = props;
 
-  const [answerContent] = useCellValueSelector(answerCell, (value) => value.content);
+  const [answerContent] = useCellValueSelector(answerCell, (value) => value.connResult.content);
 
   if (!answerContent) return null;
 

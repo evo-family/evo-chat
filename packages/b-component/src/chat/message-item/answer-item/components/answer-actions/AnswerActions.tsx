@@ -24,7 +24,7 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
 
   const [chatWinOptions] = useChatWinCtx((ctx) => ctx.options);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
-  const [status] = useCellValueSelector(answerCell, (value) => value.status);
+  const [status] = useCellValueSelector(answerCell, (value) => value.connResult.status);
 
   const stopModel = useMemoizedFn(() => {
     chatMsg.stopResolveAnswer(answerCell.get().id);

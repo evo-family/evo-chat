@@ -45,6 +45,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      '@modelcontextprotocol/server-filesystem':
+        specifier: ^2025.3.28
+        version: 2025.3.28(zod@3.24.2)
     devDependencies:
       '@evo-tools/compile':
         specifier: workspace:*
@@ -299,6 +303,9 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
       use-context-selector:
         specifier: ^2.0.0
         version: 2.0.0(react@18.3.1)(scheduler@0.23.2)
@@ -1528,9 +1535,16 @@ packages:
     resolution: {integrity: sha512-9QOtNffcOF/c1seMCDnjckb3R9WHcG34tky+FHpNKKCW0wc/scYLwMtO+ptyGUfMW0/b/n4qRiALlaFHc9Oj7Q==}
     engines: {node: '>= 10.0.0'}
 
+  '@modelcontextprotocol/sdk@0.5.0':
+    resolution: {integrity: sha512-RXgulUX6ewvxjAG0kOpLMEdXXWkzWgaoCGaA2CwNW7cQCIphjpJhjpHSiaPdVCnisjRF/0Cm9KWHUuIoeiAblQ==}
+
   '@modelcontextprotocol/sdk@1.9.0':
     resolution: {integrity: sha512-Jq2EUCQpe0iyO5FGpzVYDNFR6oR53AIrwph9yWl7uSc7IWUMsrmpmSaTGra5hQNunXpM+9oit85p924jWuHzUA==}
     engines: {node: '>=18'}
+
+  '@modelcontextprotocol/server-filesystem@2025.3.28':
+    resolution: {integrity: sha512-1AMqM0EZnF7n6L5njMASDR12ppyvtj89HinePbvB8UtT5JKWQ6LJJcbsTYIt/gerFNssf17gH5qXvqSM+eCQSg==}
+    hasBin: true
 
   '@module-federation/error-codes@0.8.4':
     resolution: {integrity: sha512-55LYmrDdKb4jt+qr8qE8U3al62ZANp3FhfVaNPOaAmdTh0jHdD8M3yf5HKFlr5xVkVO4eV/F/J2NCfpbh+pEXQ==}
@@ -3448,6 +3462,10 @@ packages:
 
   diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
+    engines: {node: '>=0.3.1'}
+
+  diff@5.2.0:
+    resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
     engines: {node: '>=0.3.1'}
 
   dingbat-to-unicode@1.0.1:
@@ -8764,6 +8782,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@modelcontextprotocol/sdk@0.5.0':
+    dependencies:
+      content-type: 1.0.5
+      raw-body: 3.0.0
+      zod: 3.24.2
+
   '@modelcontextprotocol/sdk@1.9.0':
     dependencies:
       content-type: 1.0.5
@@ -8778,6 +8802,16 @@ snapshots:
       zod-to-json-schema: 3.24.5(zod@3.24.2)
     transitivePeerDependencies:
       - supports-color
+
+  '@modelcontextprotocol/server-filesystem@2025.3.28(zod@3.24.2)':
+    dependencies:
+      '@modelcontextprotocol/sdk': 0.5.0
+      diff: 5.2.0
+      glob: 10.4.5
+      minimatch: 10.0.1
+      zod-to-json-schema: 3.24.5(zod@3.24.2)
+    transitivePeerDependencies:
+      - zod
 
   '@module-federation/error-codes@0.8.4': {}
 
@@ -10998,6 +11032,8 @@ snapshots:
   dexie@4.0.11: {}
 
   diff@4.0.2: {}
+
+  diff@5.2.0: {}
 
   dingbat-to-unicode@1.0.1: {}
 

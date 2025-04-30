@@ -8,11 +8,11 @@ export const composeContextMsg = async (
 ) => {
   const { context_count = 1 } = params;
   const collectContext: TComposedContexts[] = [];
-  const reversedMsg = historyMessages.toReversed();
+  const sliceHistoryMsg = context_count ? historyMessages.slice(-context_count) : [];
 
   let currentTimes = context_count;
 
-  for await (const msgIns of reversedMsg) {
+  for await (const msgIns of sliceHistoryMsg) {
     if (!currentTimes--) break;
 
     await msgIns.ready();

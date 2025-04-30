@@ -5,6 +5,7 @@ import {
   IMcpMeta,
   IMcpService,
 } from '@evo/types';
+
 import { BaseBridge } from '../common/baseBridge';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 

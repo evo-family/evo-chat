@@ -1,25 +1,32 @@
-import { ChatResponse, DataCell, OpenAiClient } from '@evo/utils';
-import { IMessageConfig, TComposedContexts, TModelAnswer, TModelAnswerCell } from '../../types';
+import { ChatResponse, DataCell, OpenAiClient, PromiseWrap } from '@evo/utils';
+import {
+  IMessageConfig,
+  IModelConnRecord,
+  TComposedContexts,
+  TModelAnswer,
+  TModelAnswerCell,
+} from '../../types';
 
+import { ChatCompletionMessageParam } from 'openai/resources.mjs';
 import { ChatMessage } from '@/chat-message/chatMessage';
 import { IChatWindowConfig } from '@/chat-window/types';
 
-export interface IModelConnHandleBaseParams
-  extends Pick<IChatWindowConfig, 'agentIds' | 'knowledgeIds'> {
+export interface IComposeModelContextParams
+  extends Pick<Partial<IChatWindowConfig>, 'agentIds' | 'knowledgeIds' | 'mcpIds'> {
   composedContexts?: TComposedContexts;
   historyMessages?: ChatMessage[];
 }
 
-export interface IModelConnHandleParams extends IModelConnHandleBaseParams {
+export interface IModelConnParams {
+  getMessageContext: () => Promise<ChatCompletionMessageParam[]>;
   msgConfig: IMessageConfig;
-  answerCell: TModelAnswerCell;
+  answerConfig: TModelAnswer;
+  taskSignal: PromiseWrap;
+  onResolve?: (value: IModelConnRecord) => void;
 }
 
 export interface IModelConnHandle {
-  (params: IModelConnHandleParams): Promise<{
-    result: ChatResponse<true>;
-    streamTask: Promise<any>;
-  }>;
+  (params: IModelConnParams): any;
 }
 
 export interface IBaseModelHandler {

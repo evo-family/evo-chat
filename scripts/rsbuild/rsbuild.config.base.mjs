@@ -47,6 +47,9 @@ export default function generateConfig({ projectCWD }) {
       template: path.resolve(projectCWD, './public/index.html'),
     },
     performance: {
+      buildCache: {
+        cacheDigest: Object.entries(rawPublicVars).map(([keyBy, value]) => `${keyBy}=${value}`),
+      },
       preload: {
         type: 'initial',
         exclude: [/.*\.(png|svg|jpg|jpeg|gif|woff|woff2|ttf|eot|ico|webp)$/],
@@ -91,11 +94,11 @@ export default function generateConfig({ projectCWD }) {
           );
         }
 
-        // 启用持久化缓存
-        config.cache = true;
-        config.experiments.cache = {
-          type: 'persistent',
-        };
+        // // 启用持久化缓存
+        // config.cache = true;
+        // config.experiments.cache = {
+        //   type: 'persistent',
+        // };
       },
     },
     source: {
