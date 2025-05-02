@@ -1,6 +1,6 @@
 import { IChatWindowConfig } from '@/chat-window/types';
 import { TComposedContexts } from '@/chat-message/types';
-import { getAgentsData } from '../../../../glob-state/agent';
+import { getAssistantsData } from '../../../../glob-state/assistant';
 
 export const composeAgentsMsg = async (params: { agentIds: IChatWindowConfig['agentIds'] }) => {
   const { agentIds } = params;
@@ -8,7 +8,7 @@ export const composeAgentsMsg = async (params: { agentIds: IChatWindowConfig['ag
   const results: TComposedContexts = [];
 
   if (agentIds?.length) {
-    const agentsData = await getAgentsData();
+    const agentsData = await getAssistantsData();
 
     agentIds.forEach((id) => {
       const agent = agentsData.getCellValueSync(id);
@@ -17,7 +17,7 @@ export const composeAgentsMsg = async (params: { agentIds: IChatWindowConfig['ag
 
       results.push({
         role: 'system',
-        content: agent.config?.systemRole,
+        content: agent.prompt,
       });
     });
   }

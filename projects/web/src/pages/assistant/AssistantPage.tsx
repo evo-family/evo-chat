@@ -1,25 +1,60 @@
-import { Button, Flex, Menu, Space, Typography } from 'antd';
-import { EvoIcon, SearchInput } from '@evo/component';
-import React, { FC, useMemo } from 'react';
-import { useAgentLogic, useGlobalCtx } from '@evo/data-store';
+import {
+  App,
+  Button,
+  Empty,
+  Flex,
+  List,
+  Menu,
+  Space,
+  Switch,
+  Tag,
+  Tooltip,
+  Typography,
+} from 'antd';
+import { Emoji, EvoIcon, SearchInput } from '@evo/component';
+import React, { FC, useMemo, useRef } from 'react';
+import {
+  useAssistantLogic,
+  useAssistantOperation,
+  useCreateAssistantWindow,
+  useGlobalCtx,
+} from '@evo/data-store';
 
 import { ContentPanel } from '../../components';
-import { IAssistant } from '@evo/types';
-import List from 'rc-virtual-list';
+import { IAssistantCategory, IAssistantMeta } from '@evo/types';
+import VirtualList from 'rc-virtual-list';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { AddOrUpdateAssistant } from './components/add-or-update/AddOrUpdateAssistant';
+import { TableDropdown } from '@ant-design/pro-components';
+import { AssistantProvider, useAssistantSelector } from './assistant-processor/AssistantProvider';
+import { PromptModal } from './components/prompt-modal/PromptMoal';
 
 export interface IAssistantProps {}
 
 const RenderAgent = React.forwardRef<
   any,
-  { data: IAssistant; onClick?: (data: IAssistant) => any }
+  { data: IAssistantMeta; onClick?: (data: IAssistantMeta) => any }
 >((props, ref) => {
   const { data, onClick } = props;
 
+  const { modal } = App.useApp();
+
+  const setUpdateModalData = useAssistantSelector(
+    (s) => s.addOrUpdateAssistantDialog.setUpdateModalData
+  );
+
+  const setDialogData = useAssistantSelector((s) => s.addOrUpdateAssistantDialog.setDialogData);
+  const { createAssistantWindow } = useCreateAssistantWindow();
+
+  const { updateAssistant, deleteAssistant } = useAssistantOperation();
+
   const renderAvatar = useMemoizedFn((avatar: string) => {
+    if (!avatar) {
+      return <></>;
+    }
     // 判断是否为URL或Blob链接
     const isImageUrl =
       avatar.startsWith('http') || avatar.startsWith('blob') || avatar.startsWith('data:');
@@ -32,65 +67,160 @@ const RenderAgent = React.forwardRef<
   });
 
   const handleClick = useMemoizedFn(() => {
-    onClick?.(data);
+    createAssistantWindow(data);
   });
 
+  const handleFrequentChange = useMemoizedFn((checked: boolean) => {
+    updateAssistant({
+      ...data,
+      isFrequent: checked,
+    });
+  });
+
+  const handleEdit = () => {
+    setUpdateModalData({
+      data,
+    });
+  };
+  const handleCopy = () => {
+    setDialogData({
+      type: 'copy',
+      open: true,
+      data: { ...data, title: `复制 ${data.title}` },
+    });
+  };
+
+  const handleEmojiChange = (emoji: string) => {
+    updateAssistant({
+      ...data,
+      avatar: emoji,
+    });
+  };
+
+  const isMy = data.category === 'my';
+
   return (
-    <Flex ref={ref} className={style['agent-item']} align="center" justify="space-between">
-      <Flex align="center" style={{ flex: 1 }}>
-        <div className={style['agent-avatar']}>{renderAvatar(data.meta.avatar)}</div>
-        <Flex vertical style={{ flex: 1 }}>
-          <Typography.Text strong className={style['agent-title']}>
-            {data.meta.title}
-          </Typography.Text>
-          <Typography.Text type="secondary" className={style['agent-secondary-title']}>
-            {data.meta.description}
-          </Typography.Text>
-        </Flex>
-      </Flex>
-      <Button color="default" variant="filled" onClick={handleClick}>
-        开启新对话
-      </Button>
-    </Flex>
+    <List.Item
+      styles={{
+        actions: {
+          marginLeft: 20,
+        },
+      }}
+      key={data.id}
+      actions={
+        isMy
+          ? [
+              <a key="edit" onClick={handleEdit}>
+                编辑
+              </a>,
+              <TableDropdown
+                key="more"
+                onSelect={(key) => {
+                  if (key === 'delete') {
+                    modal.confirm({
+                      title: '确认删除',
+                      content: `确定要删除助手 "${data.title}" 吗？`,
+                      okText: '确定',
+                      cancelText: '取消',
+                      onOk: () => {
+                        deleteAssistant(data.id);
+                      },
+                    });
+                  }
+
+                  if (key === 'copy') {
+                    handleCopy();
+                  }
+                }}
+                menus={[
+                  { key: 'copy', name: '复制' },
+                  { key: 'delete', danger: true, name: '删除' },
+                ]}
+              />,
+            ]
+          : [
+              <a key="copy" onClick={handleCopy}>
+                复制
+              </a>,
+            ]
+      }
+    >
+      <List.Item.Meta
+        avatar={
+          <>
+            {isMy ? (
+              <Emoji value={data.avatar} onChange={handleEmojiChange}>
+                {<span style={{ cursor: 'pointer' }}>{renderAvatar(data.avatar)}</span>}
+              </Emoji>
+            ) : (
+              renderAvatar(data.avatar)
+            )}
+          </>
+        }
+        title={
+          <div>
+            {data.title}
+            <div style={{ marginTop: 2 }}>
+              {data.tags.map((tag) => (
+                <Tag style={{ color: `var(--evo-color-text-tertiary)` }} key={tag} bordered={false}>
+                  {tag}
+                </Tag>
+              ))}
+            </div>
+          </div>
+        }
+        description={data.description}
+      />
+      <Space>
+        <Tooltip title="设为常用助手">
+          <Switch size="small" checked={data.isFrequent} onChange={handleFrequentChange} />
+        </Tooltip>
+        <PromptModal data={data} />
+        <Button color="default" variant="filled" onClick={handleClick}>
+          开启新对话
+        </Button>
+      </Space>
+    </List.Item>
   );
 });
 
-export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
-  const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
+interface IAssistantPageContentProps {}
 
+const AssistantPageContent: FC<IAssistantPageContentProps> = React.memo((props) => {
   const [searchText, setSearchText] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string>('全部');
 
-  const { tags, agents, filteredAgents } = useAgentLogic({ searchText, selectedTag });
-
-  const navigate = useNavigate();
-
-  const tagMenus = useMemo(() => {
-    return tags.map((tag) => ({
-      key: tag,
-      label: tag,
-      onClick: () => setSelectedTag(tag),
-    }));
-  }, [tags]);
-
-  const handleSelectAgent = useMemoizedFn(async (data: IAssistant) => {
-    const value = data.identifier;
-
-    const selectedAgentInfo: IAssistant = agents.find(
-      (agent) => agent.identifier === value
-    ) as unknown as IAssistant;
-    if (!selectedAgentInfo) return;
-
-    navigate('/home');
-
-    const newWinIns = await chatCtrl.createWindow(
-      // todo_lcf 创建对话需要支持 agent参数
-      { agentIds: [value] }
-    );
-
-    // 关闭弹窗并重置状态
-    setSearchText('');
+  const setCreateModalData = useAssistantSelector(
+    (s) => s.addOrUpdateAssistantDialog.setCreateModalData
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useAssistantSelector((s) => [
+    s.selectedCategoryId,
+    s.setSelectedCategoryId,
+  ]);
+  const { filteredAssistants, categories } = useAssistantLogic({
+    searchText,
+    selectedCategoryId,
   });
+
+  const categoryMenu = useMemo(() => {
+    return categories.map((category) => ({
+      key: category.id,
+      label: (
+        <Flex justify="space-between" align="center" style={{ width: '100%' }}>
+          <span>{category.name}</span>
+          <Typography.Text type="secondary">({category.count})</Typography.Text>
+        </Flex>
+      ),
+      onClick: () => {
+        setSelectedCategoryId(category.id);
+      },
+    }));
+  }, [categories]);
+
+  const selectCategory = useMemo(() => {
+    return categories.find((f) => f.id === selectedCategoryId);
+  }, [selectedCategoryId]);
+
+  const handleSelectAgent = useMemoizedFn(async (data: IAssistantMeta) => {});
 
   return (
     <ContentPanel
@@ -108,34 +238,59 @@ export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
             color="default"
             variant="filled"
             icon={<EvoIcon size={'small'} type="icon-assistant" />}
+            onClick={() => setCreateModalData()}
           >
             添加助手
           </Button>
         </Space>
       }
       leftContent={
-        <Menu className={'evo-menu'} selectedKeys={[selectedTag]} mode="inline" items={tagMenus} />
+        <Menu
+          className={'evo-menu'}
+          selectedKeys={[selectedCategoryId]}
+          mode="inline"
+          items={categoryMenu}
+        />
       }
     >
       {/* <div className={style['search-container']}></div> */}
-      {filteredAgents.length ? (
+      {filteredAssistants.length ? (
         <div className={style['agent-list']}>
-          <List
-            data={filteredAgents as unknown as IAssistant[]}
-            height={window.innerHeight - 90} // 调整高度计算，预留更多空间
-            itemHeight={88}
-            itemKey="identifier"
-          >
-            {(agent: IAssistant) => (
-              <RenderAgent key={agent.identifier} data={agent} onClick={handleSelectAgent} />
-            )}
+          <List>
+            <VirtualList
+              data={filteredAssistants as unknown as IAssistantMeta[]}
+              height={window.innerHeight - 90} // 调整高度计算，预留更多空间
+              itemHeight={88}
+              itemKey="id"
+            >
+              {(item: IAssistantMeta) => (
+                <RenderAgent key={item.id} data={item} onClick={handleSelectAgent} />
+              )}
+            </VirtualList>
           </List>
         </div>
       ) : (
         <Flex vertical align="center" justify="center" style={{ height: '100%' }}>
-          未搜索到结果
+          {selectCategory?.count === 0 ? (
+            <Empty description={`当前分类 "${selectCategory.name}" 暂无助手`} />
+          ) : (
+            <Empty description={`未找到包含 "${searchText}" 的助手`} />
+          )}
         </Flex>
       )}
     </ContentPanel>
+  );
+});
+
+export const AssistantPage: FC<IAssistantProps> = React.memo((props) => {
+  return (
+    <>
+      <AssistantProvider>
+        <>
+          <AddOrUpdateAssistant />
+          <AssistantPageContent />
+        </>
+      </AssistantProvider>
+    </>
   );
 });
