@@ -1,3 +1,4 @@
+import { HOME_SLIDER_VISIBLE_KEY } from '@evo/data-store';
 import {
   BaseProcessor,
   DataCell,
@@ -6,12 +7,10 @@ import {
   persistenceCellSync,
 } from '@evo/utils';
 
-const SLIDER_VISIBLE_KEY = '__home_slider_visible__';
-
 export class HomeProcessor extends BaseProcessor {
   modelSettingVisible = new DataCell<boolean>(false);
 
-  sliderVisible = persistenceCellSync(SLIDER_VISIBLE_KEY, false);
+  sliderVisible = persistenceCellSync(HOME_SLIDER_VISIBLE_KEY, false);
 
   drawerVisible = new DataCell<boolean>(false);
 
@@ -25,7 +24,7 @@ export class HomeProcessor extends BaseProcessor {
 
   protected async init() {
     try {
-      await Promise.all([persistenceCell(SLIDER_VISIBLE_KEY)]);
+      await Promise.all([persistenceCell(HOME_SLIDER_VISIBLE_KEY)]);
 
       this.initTask.resolve(undefined);
     } catch (error) {

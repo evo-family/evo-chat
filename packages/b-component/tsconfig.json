@@ -6,6 +6,7 @@
   "extends": "@evo-tools/compile/config/tsconfig.options.json",
   "include": [
     "src/**/*",
+    "src/**/*.json",
     "types/**/*",
     "typings.d.ts",
     "../../types/**/*",

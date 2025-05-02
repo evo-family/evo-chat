@@ -16,3 +16,6 @@ export * from './provider/WrapperProvider';
 export * from './label/Label';
 export * from './global-search/GlobalSearch';
 export * from './collection-layout/CollectionLayout';
+export * from './emoji/Emoji';
+export * from './selector';
+export * from './markdown-render/MarkdownRender';
