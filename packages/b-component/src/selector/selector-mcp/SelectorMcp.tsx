@@ -1,4 +1,4 @@
-import { Button, Divider, Select, SelectProps } from 'antd';
+import { Button, Divider, Select, SelectProps, Space } from 'antd';
 import React, { FC, memo, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { PlusOutlined } from '@ant-design/icons';
@@ -31,22 +31,30 @@ export const SelectorMcp: FC<ISelectorMcpProps> = memo((props) => {
     <Select
       placeholder="请选择MCP"
       {...otherProps}
+      className="evo-select"
+      dropdownStyle={{
+        padding: 0,
+        ...otherProps.dropdownStyle,
+      }}
       dropdownRender={(menu) => (
         <>
-          {menu}
+          <div className="evo-select-menu">{menu}</div>
           {showAddMcp && (
             <>
-              <Divider style={{ margin: '8px 0' }} />
-              <Button
-                style={{ width: '100%' }}
-                type="text"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  navigate('/mcp');
-                }}
-              >
-                添加 MCP
-              </Button>
+              <Divider style={{ margin: 0 }} />
+              <Space style={{ padding: 8, alignItems: 'center' }}>
+                <Button
+                  style={{ width: '100%' }}
+                  type="text"
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    navigate('/mcp');
+                  }}
+                >
+                  添加 MCP
+                </Button>
+              </Space>
             </>
           )}
         </>

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import { Button, Dropdown, MenuProps, Space } from 'antd';
-import { EvoIcon } from '@evo/component';
+import { EvoIcon, SelectorAssistant } from '@evo/component';
 import { SearchChat } from '../chat-search/ChatSearch';
 import classNames from 'classnames';
 import s from './ChatListHeader.module.scss';
@@ -50,17 +50,16 @@ export const ChatListHeader: FC<IChatListHeaderProps> = ({ onNewChat }) => {
         >
           <span style={{ fontSize: 13 }}>新对话</span>
         </Button>
-        {/* <Dropdown menu={{ items }} placement="bottomLeft">
+        <SelectorAssistant showAddAssistant>
           <Button
             className={classNames('evo-button-icon')}
-            // onClick={onNewChat}
             variant="filled"
             color="default"
             icon={<EvoIcon size={'small'} type="icon-assistant" />}
           >
             <span style={{ fontSize: 13 }}>助手</span>
           </Button>
-        </Dropdown> */}
+        </SelectorAssistant>
       </Space>
 
       <div className={s.actions}>

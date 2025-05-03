@@ -11,13 +11,12 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { Emoji, EvoIcon, SearchInput } from '@evo/component';
+import { AssistantAvatar, Emoji, EvoIcon, SearchInput } from '@evo/component';
 import React, { FC, useMemo, useRef } from 'react';
 import {
+  useAssistantCreateWindow,
   useAssistantLogic,
   useAssistantOperation,
-  useCreateAssistantWindow,
-  useGlobalCtx,
 } from '@evo/data-store';
 
 import { ContentPanel } from '../../components';
@@ -47,24 +46,9 @@ const RenderAgent = React.forwardRef<
   );
 
   const setDialogData = useAssistantSelector((s) => s.addOrUpdateAssistantDialog.setDialogData);
-  const { createAssistantWindow } = useCreateAssistantWindow();
+  const { createAssistantWindow } = useAssistantCreateWindow();
 
   const { updateAssistant, deleteAssistant } = useAssistantOperation();
-
-  const renderAvatar = useMemoizedFn((avatar: string) => {
-    if (!avatar) {
-      return <></>;
-    }
-    // 判断是否为URL或Blob链接
-    const isImageUrl =
-      avatar.startsWith('http') || avatar.startsWith('blob') || avatar.startsWith('data:');
-
-    if (isImageUrl) {
-      return <img className={style['agent-avatar-img']} src={avatar} alt="avatar" />;
-    }
-
-    return <span className={style['agent-avatar-emoji']}>{avatar}</span>;
-  });
 
   const handleClick = useMemoizedFn(() => {
     createAssistantWindow(data);
@@ -150,10 +134,14 @@ const RenderAgent = React.forwardRef<
           <>
             {isMy ? (
               <Emoji value={data.avatar} onChange={handleEmojiChange}>
-                {<span style={{ cursor: 'pointer' }}>{renderAvatar(data.avatar)}</span>}
+                {
+                  <span style={{ cursor: 'pointer' }}>
+                    <AssistantAvatar avatar={data.avatar} width={48} />
+                  </span>
+                }
               </Emoji>
             ) : (
-              renderAvatar(data.avatar)
+              <AssistantAvatar avatar={data.avatar} width={48} />
             )}
           </>
         }

@@ -1,4 +1,4 @@
-import { Button, Divider, Select } from 'antd';
+import { Button, Divider, Select, Space } from 'antd';
 import React, { FC, forwardRef, memo, useMemo, useRef } from 'react';
 import {
   ISelectModelsMapRef,
@@ -83,22 +83,30 @@ export const SelectorModel = memo(
         ref={selectRef}
         placeholder="请选择模型"
         {...otherProps}
+        className="evo-select"
+        dropdownStyle={{
+          padding: 0,
+          ...otherProps.dropdownStyle,
+        }}
         dropdownRender={(menu) => (
           <>
-            {menu}
+            <div className="evo-select-menu">{menu}</div>
             {showAddModel && (
               <>
-                <Divider style={{ margin: '8px 0' }} />
-                <Button
-                  style={{ width: '100%' }}
-                  type="text"
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    navigate('/settings');
-                  }}
-                >
-                  添加模型
-                </Button>
+                <Divider style={{ margin: 0 }} />
+                <Space style={{ padding: 8, alignItems: 'center' }}>
+                  <Button
+                    size="small"
+                    style={{ width: '100%' }}
+                    type="text"
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      navigate('/settings');
+                    }}
+                  >
+                    添加模型
+                  </Button>
+                </Space>
               </>
             )}
           </>

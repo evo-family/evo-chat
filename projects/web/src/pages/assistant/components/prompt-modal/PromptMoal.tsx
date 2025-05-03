@@ -1,7 +1,7 @@
 import { Button, Form, Modal, Space } from 'antd';
 import React, { FC, useState } from 'react';
 import { IAssistantMeta } from '@evo/types';
-import { useAssistantOperation, useCreateAssistantWindow } from '@evo/data-store';
+import { useAssistantCreateWindow, useAssistantOperation } from '@evo/data-store';
 import { useMemoizedFn } from 'ahooks';
 import { MarkdownRender } from '@evo/component';
 
@@ -13,7 +13,7 @@ export const PromptModal: FC<IPromptModalProps> = React.memo((props) => {
   const { data } = props;
   const [open, setOpen] = useState(false);
   const { updateAssistant } = useAssistantOperation();
-  const { createAssistantWindow } = useCreateAssistantWindow();
+  const { createAssistantWindow } = useAssistantCreateWindow();
 
   const handlePrompt = useMemoizedFn(() => {
     setOpen(true);

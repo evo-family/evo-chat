@@ -1,8 +1,8 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { IAssistantCategory, IAssistantMeta } from '@evo/types';
-import { getAssistantsData } from '../../glob-state/assistant';
+import { IAssistantCategory } from '@evo/types';
 import { ASSISTANT_CATEGORIES } from '../../constants/assistant/category';
+import { useAssistantData } from './useAssistantData';
 
 export const useAssistantLogic = (params: {
   searchText: string;
@@ -10,7 +10,7 @@ export const useAssistantLogic = (params: {
 }) => {
   const { searchText, selectedCategoryId } = params;
 
-  const [assistants, setAssistants] = useState<IAssistantMeta[]>([]);
+  const { assistants } = useAssistantData();
 
   // 修改过滤逻辑以支持"其他"类别
   const filteredAssistants = useMemo(() => {
@@ -29,38 +29,6 @@ export const useAssistantLogic = (params: {
       return (matchSearch || matchDescription) && matchCategory;
     });
   }, [searchText, selectedCategoryId, assistants]);
-
-  useLayoutEffect(() => {
-    let cleanUpHandler: undefined | (() => any) = undefined;
-    let unmounted = false;
-
-    getAssistantsData().then((assistantsData) => {
-      if (unmounted) return;
-
-      const subscription = assistantsData.globListen(
-        (signal) => {
-          const list = assistantsData.getCellsValue({ all: true, getArray: true })
-            .array as IAssistantMeta[];
-
-          const sortList = list.sort((a, b) => {
-            const timeA = new Date(a.createTime || 0).getTime();
-            const timeB = new Date(b.createTime || 0).getTime();
-            return timeB - timeA; // 倒序排序
-          });
-
-          setAssistants(sortList);
-        },
-        { immediate: true, debounceTime: 100 }
-      );
-
-      cleanUpHandler = () => subscription.unsubscribe();
-    });
-
-    return () => {
-      unmounted = true;
-      cleanUpHandler && cleanUpHandler();
-    };
-  }, [getAssistantsData]);
 
   // 计算每个分类的数量
   const categoriesWithCount = useMemo(() => {
