@@ -26,11 +26,21 @@ const initOrDiffAssistantData = async (
       const existValue = cacheTissue.getCellValueSync(item.id);
 
       if (existValue) {
-        const existHash = JSON.stringify(existValue);
-        const curHash = JSON.stringify(item);
+        // 排除一些不需要比较的属性
+        const compareValue = (obj: any) => {
+          const { isFrequent, ...rest } = obj;
+          return JSON.stringify(rest);
+        };
+        
+        const existHash = compareValue(existValue);
+        const curHash = compareValue(item);
 
         if (existHash !== curHash) {
-          cacheTissue.setCellValueSync(item.id, item);
+          // 保留原有的 isFrequent 状态
+          cacheTissue.setCellValueSync(item.id, {
+            ...item,
+            isFrequent: existValue?.isFrequent || false,
+          });
         }
       } else {
         cacheTissue.setCellValueSync(item.id, item);

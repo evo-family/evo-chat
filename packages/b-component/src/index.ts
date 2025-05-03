@@ -19,3 +19,4 @@ export * from './collection-layout/CollectionLayout';
 export * from './emoji/Emoji';
 export * from './selector';
 export * from './markdown-render/MarkdownRender';
+export * from './avatar/assistant/AssistantAvatar';

@@ -1,0 +1,15 @@
+.assistant-avatar {
+
+  &-img {
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  &-emoji {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--evo-hover-bg);
+    border-radius: 8px;
+  }
+}

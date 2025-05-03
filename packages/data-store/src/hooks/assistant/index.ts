@@ -1,3 +1,4 @@
 export * from './useAssistantLogic';
 export * from './useAssistantOperation';
-export * from './useCreateAssistantWindow';
+export * from './useAssistantCreateWindow';
+export * from './useAssistantFrequentData';

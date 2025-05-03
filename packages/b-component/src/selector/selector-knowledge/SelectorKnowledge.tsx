@@ -37,14 +37,19 @@ export const SelectorKnowledge: FC<ISelectorKnowledgeProps> = memo((props) => {
     <Select
       placeholder="请选择知识库"
       {...otherProps}
+      className="evo-select"
+      dropdownStyle={{
+        padding: 0,
+        ...otherProps.dropdownStyle,
+      }}
       dropdownRender={(menu) => (
         <>
-          <div style={{ padding: '8px' }}>
+          <div style={{ padding: '8px 8px 0px 8px' }}>
             <Input
               placeholder="搜索知识库"
               onChange={(e) => setSearchText(e.target.value)}
               value={searchText}
-              suffix={<EvoIcon type="icon-search" size="small" style={{ color: '#999' }} />}
+              prefix={<EvoIcon type="icon-search" size="small" style={{ color: '#999' }} />}
               onKeyDown={(e) => {
                 if (e.key === 'Backspace' && !searchText) {
                   e.stopPropagation();
@@ -52,20 +57,23 @@ export const SelectorKnowledge: FC<ISelectorKnowledgeProps> = memo((props) => {
               }}
             />
           </div>
-          {menu}
+          <div className="evo-select-menu">{menu}</div>
           {showAddKnowledge && (
             <>
-              <Divider style={{ margin: '8px 0' }} />
-              <Button
-                style={{ width: '100%' }}
-                type="text"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  navigate('/file');
-                }}
-              >
-                添加知识库
-              </Button>
+              <Divider style={{ margin: 0 }} />
+              <Space style={{ padding: 8, alignItems: 'center' }}>
+                <Button
+                  style={{ width: '100%' }}
+                  type="text"
+                  size="small"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    navigate('/file');
+                  }}
+                >
+                  添加知识库
+                </Button>
+              </Space>
             </>
           )}
         </>

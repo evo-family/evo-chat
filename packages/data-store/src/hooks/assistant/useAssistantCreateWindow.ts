@@ -4,7 +4,7 @@ import { IAssistantMeta } from '@evo/types';
 import { useGlobalCtx } from '../../react-context/global';
 import { useSettingSelector } from '../../processor';
 
-export const useCreateAssistantWindow = () => {
+export const useAssistantCreateWindow = () => {
   const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
   const defaultMessageModel = useSettingSelector((s) => s.defaultMessageModel);
   const navigate = useNavigate();
