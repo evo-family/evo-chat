@@ -26,8 +26,9 @@ export const AntdProvider: FC<IAntdProviderProps> = React.memo((props) => {
         token: {
           wireframe: true,
           colorPrimary: '#13C2C2',
+          colorInfo: '#13C2C2',
           // colorPrimary: !isDark ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.55)',
-          colorInfo: !isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.85)',
+          // colorInfo: !isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.85)',
           colorPrimaryActive: !isDark ? `rgba(0, 0, 0, 0.95)` : `rgba(255, 255, 255, 0.75)`,
         },
         components: {
