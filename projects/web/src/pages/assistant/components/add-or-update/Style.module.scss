@@ -1,0 +1,10 @@
+.inputEmoji {
+  width: 200px;
+
+
+  :global {
+    .ant-form-item-control-input {
+      flex: 1;
+    }
+  }
+}

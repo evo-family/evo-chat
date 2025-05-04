@@ -1,12 +1,13 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { Virtualizer, useVirtualizer } from '@tanstack/react-virtual';
-import { useChatWinCtx, useChatWinOrgCtx } from '@evo/data-store';
+import { useChatWinCtx, useChatWinOrgCtx, useDisplayChatMessage } from '@evo/data-store';
 
 import { MessageItem } from '../message-item/MessageItem';
 import { ScrollToBottton } from '../scroll-button/ScrollToBottton';
 import Style from './Style.module.scss';
 import { initAllChatAnswers } from '../../utils/scroll';
 import { useCellValue } from '@evo/utils';
+import { PromptInfo } from '../prompt-info/PromptInfo';
 
 export interface IMessageListProps {
   initialScrollEnd?: boolean;
@@ -19,7 +20,7 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [messageIds] = useCellValue(chatWin.configState.getCellSync('messageIds'));
   const virtualizerCell = useChatWinOrgCtx((ctx) => ctx.virtualizerCell);
-
+  const { display } = useDisplayChatMessage();
   const [scrollToBottom] = useChatWinCtx((ctx) => ctx.scrollToBottom);
   const [onListScroll] = useChatWinCtx((ctx) => ctx.onListScroll);
 
@@ -49,11 +50,12 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
     });
   }, [chatWin]);
 
-  if (!messageIds?.length) return null;
+  if (!display) return null;
 
   return (
     <>
       <div ref={listDOMRef} className={Style.message_list} onScroll={onListScroll}>
+        <PromptInfo />
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,
@@ -63,7 +65,7 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
             const { key, index, start } = virtualItem;
-            const msgId = messageIds[index]; // 获取数据
+            const msgId = messageIds?.[index]; // 获取数据
 
             return (
               <div
@@ -78,7 +80,7 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
                   transform: `translateY(${start ?? 0}px)`,
                 }}
               >
-                <MessageItem id={msgId} />
+                <MessageItem id={msgId!} />
               </div>
             );
           })}

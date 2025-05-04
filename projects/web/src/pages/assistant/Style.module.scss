@@ -19,6 +19,7 @@
   }
 }
 
+
 .search-container {
   margin-bottom: 16px;
   padding-right: 20px;
@@ -35,27 +36,7 @@
     background-color: var(--evo-hover-bg);
   }
 
-  .agent-avatar {
-    margin-right: 16px;
 
-    &-img {
-      width: 48px;
-      height: 48px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    &-emoji {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--evo-hover-bg);
-      border-radius: 8px;
-    }
-  }
 
   .agent-title {
     font-size: 16px;

@@ -6,18 +6,16 @@ import { Sender } from './sender/Sender';
 import { WelcomeChat } from './welcome-chat/WelcomeChat';
 import s from './Chat.module.scss';
 import { useCellValue } from '@evo/utils';
-import { useChatWinCtx } from '@evo/data-store';
+import { useChatWinCtx, useDisplayChatMessage } from '@evo/data-store';
 
 export interface IChatProps {}
 
 export const Chat: FC<IChatProps> = React.memo((props) => {
-  const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
-
   const [handlePostMessage] = useChatWinCtx((ctx) => ctx.handlePostMessage);
 
-  const [messageIds] = useCellValue(chatWin.configState.getCellSync('messageIds'));
+  const { display } = useDisplayChatMessage();
 
-  return messageIds?.length ? (
+  return display ? (
     <Flex vertical className={s.chat}>
       <Flex vertical flex={1} style={{ position: 'relative', overflow: 'auto' }}>
         <ChatMessageList />

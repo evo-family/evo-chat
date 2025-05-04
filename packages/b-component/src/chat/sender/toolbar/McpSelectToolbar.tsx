@@ -1,51 +1,46 @@
-import { Avatar, Button, Divider, Select, SelectProps, Space, Tag, Tooltip } from 'antd';
-import React, { FC, memo, useState } from 'react';
-import { useAsyncEffect } from 'ahooks';
-import { useChatWinCtx } from '@evo/data-store';
+import { Button, Tooltip } from 'antd';
+import React, { FC, memo, useEffect, useState } from 'react';
+import { useChatWinCtx, useMcpOptions } from '@evo/data-store';
 import { EvoIcon } from '../../../icon';
-import { PlusOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router';
 import classNames from 'classnames';
-import { McpBridgeFactory } from '@evo/platform-bridge';
+import { SelectorMcp } from '../../../selector';
 
 export const McpSelectToolbar: FC = memo(() => {
-  const navigate = useNavigate();
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [selectOpen, setSelectOpen] = useState(false);
   const [selectValues, setSelectValues] = useState<string[]>([]);
-  const [mcpOptions, setMcpOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const { mcpOptions } = useMcpOptions();
 
-  useAsyncEffect(async () => {
-    // 获取 MCP 列表
-    const res = await McpBridgeFactory.getInstance().getMcpList();
-    if (res.success && res?.data) {
-      setMcpOptions(
-        res?.data?.map((mcp) => ({
-          label: mcp.name,
-          value: mcp.id,
-        }))
-      );
-
-      // 设置当前选中的 MCP，只选择在可用列表中存在的 MCP
-      const currentMcps = chatWin.getConfigState('mcpIds') || [];
-      const availableMcpIds = res.data.map((mcp) => mcp.id);
-      const validMcps = currentMcps.filter((mcpId) => availableMcpIds.includes(mcpId));
-      setSelectValues(validMcps);
-    }
+  useEffect(() => {
+    // 设置当前选中的 MCP，只选择在可用列表中存在的 MCP
+    const currentMcps = chatWin.getConfigState('mcpIds') || [];
+    setSelectValues(currentMcps);
   }, [chatWin]);
 
   const handleChange = async (values: string[]) => {
-    const selectedMCPIds = mcpOptions
-      .filter((opt) => values.includes(opt.value))
-      .map((opt) => opt.value);
-
-    chatWin.updateConfigMCPIds(selectedMCPIds);
+    chatWin.updateConfigMCPIds(values);
     setSelectValues(values);
+  };
+
+  // 获取已选择的MCP名称
+  const getSelectedMcpNames = () => {
+    if (!selectValues?.length || !mcpOptions) return '';
+
+    const selectedNames: string[] = [];
+    mcpOptions.forEach((group) => {
+      group.options.forEach((option) => {
+        if (selectValues.includes(option.value as string)) {
+          selectedNames.push(option.label as string);
+        }
+      });
+    });
+
+    return selectedNames.join('、');
   };
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-      <Tooltip title="选择 MCP">
+      <Tooltip title={selectValues.length > 0 ? `已选择: ${getSelectedMcpNames()}` : '选择 MCP'}>
         <Button
           className={classNames('evo-button-icon')}
           color={selectValues?.length ? 'primary' : 'default'}
@@ -55,7 +50,7 @@ export const McpSelectToolbar: FC = memo(() => {
           onClick={() => setSelectOpen(!selectOpen)}
         />
       </Tooltip>
-      <Select
+      <SelectorMcp
         style={{ width: 0 }}
         mode="multiple"
         tagRender={() => <></>}
@@ -69,28 +64,10 @@ export const McpSelectToolbar: FC = memo(() => {
           return (triggerNode.parentNode as HTMLElement) || document.body;
         }}
         onChange={handleChange}
-        options={mcpOptions}
         open={selectOpen}
         onDropdownVisibleChange={setSelectOpen}
         dropdownStyle={{ width: 200, left: -30 }}
         variant="borderless"
-        dropdownRender={(menu) => (
-          <>
-            {menu}
-            <Divider style={{ margin: '8px 0' }} />
-            <Button
-              style={{ width: '100%' }}
-              type="text"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setSelectOpen(false);
-                navigate('/mcp');
-              }}
-            >
-              添加 MCP
-            </Button>
-          </>
-        )}
       />
     </div>
   );

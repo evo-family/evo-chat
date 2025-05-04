@@ -6,17 +6,17 @@ import style from './BaseAvatar.module.scss';
 const cx = cxb.bind(style);
 
 export interface IBaseAvatarProps {
-  clasName?: string;
+  className?: string;
   width?: string | number;
   height?: string | number;
-  content?: ReactNode;
+  content?: ReactNode | string;
 }
 
 export const BaseAvatar = React.memo<IBaseAvatarProps>((props) => {
-  const { clasName, width = 32, height = width, content } = props;
+  const { className, width = 32, height = width, content } = props;
 
   return (
-    <div className={cx(['base-avatar', clasName])} style={{ width, height }}>
+    <div className={cx(['base-avatar', className])} style={{ width, height }}>
       {content}
     </div>
   );

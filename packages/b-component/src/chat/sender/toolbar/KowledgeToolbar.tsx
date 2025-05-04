@@ -5,66 +5,29 @@ import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 import { useAsyncEffect, useRequest } from 'ahooks';
 import classNames from 'classnames';
 import { useSenderSelector } from '../sender-processor/SenderProvider';
-import { useChatWinCtx } from '@evo/data-store';
+import { useChatWinCtx, useKnowledgeLogic } from '@evo/data-store';
+import { SelectorKnowledge } from '../../../selector';
 
 export interface IKnowledgeToolbarProps {}
 
 export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
-  const [searchText, setSearchText] = useState('');
   const [selectValues, setSelectValues] = useState<string[]>([]);
-  const selectRef = useRef<any>(null);
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const knowledgeSelectOpen = useSenderSelector((s) => s.knowledgeSelectOpen);
   const setKnowledgeSelectOpen = useSenderSelector((s) => s.setKnowledgeSelectOpen);
   const senderRef = useSenderSelector((s) => s.senderRef);
-
-  const { data: knowledgeList } = useRequest(
-    async () => {
-      const result = await KnowledgeBridgeFactory.getKnowledge().getList();
-      return result.data || [];
-    },
-    {
-      refreshOnWindowFocus: false,
-    }
-  );
-
+  const { knowledgeList } = useKnowledgeLogic();
   // 设置默认当前选中
   useAsyncEffect(async () => {
     const ids = chatWin.getConfigState('knowledgeIds');
     setSelectValues(ids || []);
   }, [chatWin]);
 
-  const knowledgeOptions = useMemo(() => {
-    return knowledgeList?.map((item) => ({
-      label: <Space align="center">{item.name}</Space>,
-      value: item.id,
-    }));
-  }, [knowledgeList]);
-
   const handleChange = async (values: string[]) => {
     // 始终只取最后选择的那个值
     setSelectValues(values);
     chatWin.updateConfigKnowledgeIds(values);
-    // senderRef.current?.focus();
   };
-
-  React.useEffect(() => {
-    if (knowledgeSelectOpen) {
-      requestAnimationFrame(() => {
-        selectRef.current?.focus();
-      });
-    }
-  }, [knowledgeSelectOpen]);
-
-  const filteredOptions = useMemo(() => {
-    if (!searchText) return knowledgeOptions;
-    return knowledgeOptions?.filter((option) =>
-      (option.label as any).props.children
-        .toString()
-        .toLowerCase()
-        .includes(searchText.toLowerCase())
-    );
-  }, [knowledgeOptions, searchText]);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
@@ -89,8 +52,8 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
           }}
         />
       </Tooltip>
-      <Select
-        ref={selectRef}
+      <SelectorKnowledge
+        // ref={selectRef}
         style={{ width: 0 }}
         mode="multiple"
         tagRender={() => <></>}
@@ -104,24 +67,10 @@ export const KnowledgeToolbar: FC<IKnowledgeToolbarProps> = memo((props) => {
           return (triggerNode.parentNode as HTMLElement) || document.body;
         }}
         onChange={handleChange}
-        options={filteredOptions}
         onDropdownVisibleChange={setKnowledgeSelectOpen}
         open={knowledgeSelectOpen}
         dropdownStyle={{ width: 200, left: -30 }}
         variant="borderless"
-        dropdownRender={(menu) => (
-          <>
-            <div style={{ padding: '8px' }}>
-              <Input
-                placeholder="搜索知识库"
-                onChange={(e) => setSearchText(e.target.value)}
-                value={searchText}
-                suffix={<EvoIcon type="icon-search" size="small" style={{ color: '#999' }} />}
-              />
-            </div>
-            {menu}
-          </>
-        )}
       />
     </div>
   );

@@ -17,7 +17,7 @@ export const ModelAvatar = React.memo<IModelAvatarProps>((props) => {
 
   return (
     <BaseAvatar
-      clasName={style['model-avatar']}
+      className={style['model-avatar']}
       width={width}
       height={height}
       content={<img src={modelImage} />}

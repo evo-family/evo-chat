@@ -68,6 +68,14 @@ export interface ISearchVectorsByKnowledge {
   knowledgeId: string;
   searchValue: string;
 }
+
+export interface IGetMcpToolParams {
+  mcpId: string;
+  options?: {
+    enable?: boolean;
+    removeInputSchemaKeys?: Array<string>;
+  };
+}
 export interface IKnowledgeService {
   setModelEmbeddingMap(modelEmbeddingMap: TAvailableModelMap): void;
 
@@ -135,14 +143,6 @@ export interface IKnowledgeService {
   deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>>;
 }
 
-export interface ICommonService {
-  getTheme(): Promise<EThemeMode>;
-  onThemeChange(callback: (theme: EThemeMode) => void): void;
-  openExternal: (url: string, options?: any) => void;
-  getVersion(): Promise<string>;
-  checkMobilePermission?(permissions: MobilePermissionType[]): Promise<boolean>;
-}
-
 export interface ICliService {
   checkBunCommand(): Promise<BaseResult<boolean>>;
   checkUvCommand(): Promise<BaseResult<boolean>>;
@@ -174,13 +174,34 @@ export interface IMcpService {
   getServiceStatus(mcpId: string): Promise<BaseResult<boolean>>;
 
   // 工具方法
-  getTools(mcpId: string): Promise<BaseResult<Tool[]>>;
-  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>>;
+  getTools(params: IGetMcpToolParams): Promise<BaseResult<Tool[]>>;
+
   callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>>;
 }
 
 export interface ISystemService {
   clearLocalData(): Promise<BaseResult<boolean>>;
+  getLogPath(): Promise<BaseResult<string>>;
+  /**
+   * 打开文件
+   * @param filePath 文件路径
+   */
+  openFile(filePath: string): Promise<BaseResult<boolean>>;
+  /**
+   * 打开文件夹
+   * @param folderPath 文件夹路径
+   */
+  openFolder(folderPath: string): Promise<BaseResult<boolean>>;
+
+  getTheme(): Promise<EThemeMode>;
+  onThemeChange(callback: (theme: EThemeMode) => void): void;
+  openExternal: (url: string, options?: any) => void;
+  getVersion(): Promise<string>;
+
+  /**
+   * 检查应用权限，移动端
+   */
+  checkPermission(permissions: MobilePermissionType[]): Promise<Boolean>;
 }
 
 export interface IGetFileListParams {
@@ -196,8 +217,6 @@ export interface ElectronAPI {
   };
   fileService: IFileService;
   knowledgeService: IKnowledgeService;
-
-  commonService: ICommonService;
 }
 
 // 确保文件被视为模块

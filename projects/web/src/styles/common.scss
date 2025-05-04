@@ -28,6 +28,22 @@
   }
 }
 
+.evo-select {
+
+
+  &-menu {
+    padding: 8px;
+
+    .ant-select-item {
+      padding: 5px 12px !important;
+    }
+
+    .ant-select-item-group {
+      padding: 5px 0px !important;
+    }
+  }
+}
+
 // 设置图片预览的关闭按钮可点击
 .ant-image-preview-operations-wrapper {
   .ant-image-preview-close {

@@ -1,17 +1,12 @@
-import {
-  Sender as AntdXSender,
-  Attachments,
-  AttachmentsProps,
-  SenderProps,
-  Suggestion,
-} from '@ant-design/x';
-import { Button, GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
-import { CloudUploadOutlined, LinkOutlined, OpenAIFilled, OpenAIOutlined } from '@ant-design/icons';
-import { CommonBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
+import { Sender as AntdXSender, Attachments, AttachmentsProps, SenderProps } from '@ant-design/x';
+import { GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
+import { CloudUploadOutlined } from '@ant-design/icons';
+import { SystemBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
 import { EModalAnswerStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 import { IFileMeta, MobilePermissionType } from '@evo/types';
 import React, { FC, memo, useEffect, useLayoutEffect } from 'react';
 import { SenderProvider, useSenderSelector } from './sender-processor/SenderProvider';
+
 import {
   getFileExtension,
   getPlatformFileAccept,
@@ -29,7 +24,7 @@ import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
 import { noop } from 'lodash';
 import { useAntdToken } from '../../hooks';
-
+import s from './SenderToolbar.module.scss';
 const SENDER_ATTACH_STYLES = {
   content: {
     padding: 0,
@@ -157,7 +152,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
   const debouncedCheck = useDebounceFn(
     async (e: React.MouseEvent) => {
       if (!mobileHasMicPermission && isMobileApp()) {
-        const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([
+        const result = await SystemBridgeFactory.getInstance().checkPermission?.([
           MobilePermissionType.microphone,
         ]);
         setMobileHasMicPermission(!!result);
@@ -254,6 +249,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
 
   return (
     <AntdXSender
+      className={s.sender}
       allowSpeech
       loading={loading}
       style={{

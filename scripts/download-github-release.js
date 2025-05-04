@@ -84,7 +84,6 @@ function downloadFile(url, filePath) {
         .on('error', reject);
     };
 
-    console.log('q=>redirectUrl', redirectUrl);
     download(redirectUrl);
   });
 }

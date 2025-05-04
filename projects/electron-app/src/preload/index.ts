@@ -2,13 +2,11 @@ import { contextBridge, ipcRenderer } from 'electron';
 import {
   BaseResult,
   ElectronAPI,
-  EThemeMode,
   IAddFileMetaToVectorParams,
   IAddFilesMetaToVectorParams,
   IAddFileToVectorParams,
   IAddFolderToVectorParams,
   IDeleteFileParams,
-  IFileMeta,
   IGetFileListParams,
   IKnowledgeMeta,
   IKnowledgeVectorMeta,
@@ -90,20 +88,6 @@ const __ELECTRON_API__: ElectronAPI = {
     },
     deleteVectorByFileId: function (fileId: string): Promise<BaseResult<boolean>> {
       return ipcRenderer.invoke(IpcChannels.KNOWLEDGE_DELETE_VECTORS_BY_FILE, fileId);
-    },
-  },
-  commonService: {
-    getTheme: function (): Promise<EThemeMode> {
-      return ipcRenderer.invoke(IpcChannels.COMMON_GET_NATIVE_THEME);
-    },
-    onThemeChange: function (callback: (theme: EThemeMode) => void): void {
-      ipcRenderer.invoke(IpcChannels.COMMON_ON_NATIVE_THEME_CHANGE, callback);
-    },
-    openExternal: function (url: string, options?: any): void {
-      ipcRenderer.invoke(IpcChannels.COMMON_OPEN_EXTERNAL, url, options);
-    },
-    getVersion: function (): Promise<string> {
-      throw new Error('Function not implemented.');
     },
   },
 };
