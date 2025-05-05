@@ -54,3 +54,7 @@
 .ant-pro-list-item {
   padding-left: 10px !important;
 }
+
+.ant-modal .ant-modal-header {
+  -webkit-app-region: no-drag;
+}
