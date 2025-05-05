@@ -20,3 +20,5 @@ export * from './emoji/Emoji';
 export * from './selector';
 export * from './markdown-render/MarkdownRender';
 export * from './avatar/assistant/AssistantAvatar';
+export * from './mcp-market/McpMarket';
+export * from './button-wrapper/ButtonWrapper';

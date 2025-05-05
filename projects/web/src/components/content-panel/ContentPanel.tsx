@@ -9,7 +9,7 @@ import {
 import classNames from 'classnames';
 
 interface IContentPanelContentProps {
-  title?: string;
+  title?: string | React.ReactNode;
   subTitle?: string;
   toolbar?: React.ReactElement;
   className?: string;

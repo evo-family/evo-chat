@@ -1,0 +1,17 @@
+.envList {
+  :global {
+    .ant-form-item-control-input-content {
+      border: 1px solid var(--evo-color-border-secondary);
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .ant-space {
+      .ant-form-item-control-input-content {
+        border: none;
+        border-radius: unset;
+        padding: 0px;
+      }
+    }
+  }
+}
