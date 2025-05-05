@@ -189,9 +189,11 @@ export const AddOrUpdateAssistant: React.FC<AddOrUpdateAssistantProps> = ({}) =>
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
             >
-              <SelectorModel returnArray allowClear useModelOptionsParams={{ showProvider: true }}>
-                33
-              </SelectorModel>
+              <SelectorModel
+                returnArray
+                allowClear
+                useModelOptionsParams={{ showProvider: true }}
+              ></SelectorModel>
             </Form.Item>
           )}
 
