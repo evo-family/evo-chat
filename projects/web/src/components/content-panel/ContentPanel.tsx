@@ -9,7 +9,7 @@ import {
 import classNames from 'classnames';
 
 interface IContentPanelContentProps {
-  title: string;
+  title?: string | React.ReactNode;
   subTitle?: string;
   toolbar?: React.ReactElement;
   className?: string;
@@ -22,6 +22,7 @@ interface IContentPanelContentProps {
   contentClassName?: string;
   contentStyle?: React.CSSProperties;
   children?: React.ReactNode;
+  hiddenHeader?: boolean;
 }
 
 const ContentPanelContent: FC<IContentPanelContentProps> = memo((props) => {
@@ -38,22 +39,25 @@ const ContentPanelContent: FC<IContentPanelContentProps> = memo((props) => {
     style,
     contentClassName,
     contentStyle,
+    hiddenHeader,
   } = props;
   const setToolbarElement = useContentPanelSelector((s) => s.setToolbarElement);
   const token = useAntdToken();
   return (
     <div className={classNames(s.container, className)} style={style}>
-      <div className={`${s.toolbar} app-region-drag`}>
-        <Flex justify="space-between" align="center">
-          <div>
-            <div className={s.title}>{title}</div>
-            {props.subTitle && <div className={s.subTitle}>{props.subTitle}</div>}
-          </div>
-          <div className="app-region-no-drag" ref={setToolbarElement}>
-            {toolbar}
-          </div>
-        </Flex>
-      </div>
+      {!hiddenHeader && (
+        <div className={`${s.toolbar} app-region-drag`}>
+          <Flex justify="space-between" align="center">
+            <div>
+              <div className={s.title}>{title}</div>
+              {props.subTitle && <div className={s.subTitle}>{props.subTitle}</div>}
+            </div>
+            <div className="app-region-no-drag" ref={setToolbarElement}>
+              {toolbar}
+            </div>
+          </Flex>
+        </div>
+      )}
       <div style={contentStyle} className={classNames(s.content, contentClassName)}>
         <div style={leftStyle} className={`${s.left} ${leftClassName || ''}`}>
           {leftContent}

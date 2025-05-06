@@ -8,9 +8,9 @@ export const createBaseMeta = <T extends IBaseMeta>(data: Omit<T, keyof IBaseMet
   const now = Date.now();
   return {
     id: uuidv4(),
+    ...data,
     createTime: now,
     modifiedTime: now,
-    ...data,
   } as T;
 };
 

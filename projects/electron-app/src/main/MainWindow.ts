@@ -1,23 +1,23 @@
-import { app, BrowserWindow, Menu, MenuItem } from 'electron'
-import { logger } from './logger'
-import { getAppIcon, getHtmlPath, getPreloadPath } from './utils/AppUtil'
-let mainWindow: BrowserWindow | null = null
+import { app, BrowserWindow, Menu, MenuItem } from 'electron';
+import { logger } from './logger';
+import { getAppIcon, getHtmlPath, getPreloadPath } from './utils/AppUtil';
+let mainWindow: BrowserWindow | null = null;
 /**
  * 获取主窗口
  * @returns
  */
 export function getMainWindow() {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    return mainWindow
+    return mainWindow;
   }
-  return null
+  return null;
 }
 export function createMainWindow() {
-  const currMainWindow = getMainWindow()
+  const currMainWindow = getMainWindow();
   if (currMainWindow) {
-    return mainWindow!
+    return mainWindow!;
   }
-  const appIcon = getAppIcon('logo.png')
+  const appIcon = getAppIcon('logo.png');
   const win = (mainWindow = new BrowserWindow({
     width: 1080,
     height: 600,
@@ -29,18 +29,18 @@ export function createMainWindow() {
     titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default', // macOS 隐藏标题栏，Windows 使用默认
     webPreferences: {
       nodeIntegration: true,
-      preload: getPreloadPath()
-    }
-  }))
+      preload: getPreloadPath(),
+    },
+  }));
 
   if (process.platform === 'darwin') {
-    app.dock.setIcon(appIcon)
+    app.dock.setIcon(appIcon);
   }
 
-  logger.info('窗口创建成功')
+  logger.info('窗口创建成功');
 
   // 创建右键菜单
-  const contextMenu = new Menu()
+  const contextMenu = new Menu();
 
   // contextMenu.append(new MenuItem({ type: 'separator' }))  // 分隔线
   contextMenu.append(
@@ -48,23 +48,23 @@ export function createMainWindow() {
       label: '开发者工具',
       accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
       click: () => {
-        win.webContents.toggleDevTools()
-      }
+        win.webContents.toggleDevTools();
+      },
     })
-  )
+  );
 
   // 监听右键点击事件
   win.webContents.on('context-menu', () => {
-    contextMenu.popup()
-  })
+    contextMenu.popup();
+  });
 
   // 添加快捷键
   win.webContents.on('before-input-event', (event, input) => {
     if (input.control && input.shift && input.key.toLowerCase() === 'i') {
-      win?.webContents.toggleDevTools()
-      event.preventDefault()
+      win?.webContents.toggleDevTools();
+      event.preventDefault();
     }
-  })
+  });
 
   // 监听窗口崩溃事件，直接重新加载
   // win.webContents.on('crashed', () => {
@@ -75,29 +75,29 @@ export function createMainWindow() {
 
   win.on('unresponsive', () => {
     // 记录日志
-    logger.error('窗口无响应')
-    win.reload()
-  })
+    logger.error('窗口无响应');
+    win.reload();
+  });
 
   // 监听窗口恢复响应
   win.on('responsive', () => {
-    logger.info('窗口恢复响应')
-  })
+    logger.info('窗口恢复响应');
+  });
 
-  win.loadURL(getHtmlPath())
+  win.loadURL(getHtmlPath());
 
-  return win
+  return win;
 }
 
 export function showMainWindow() {
-  const currMainWindow = getMainWindow()
+  const currMainWindow = getMainWindow();
   if (currMainWindow) {
     if (currMainWindow.isMinimized()) {
-      return currMainWindow.restore()
+      return currMainWindow.restore();
     }
-    currMainWindow.show()
-    currMainWindow.focus()
+    currMainWindow.show();
+    currMainWindow.focus();
   } else {
-    createMainWindow()
+    createMainWindow();
   }
 }

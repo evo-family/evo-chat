@@ -1,14 +1,21 @@
 import { Button, Form, message } from 'antd';
 import { EMcpType, IMcpMeta } from '@evo/types';
+import React, { FC, memo, useEffect } from 'react';
 import {
   ModalForm,
+  ProFormGroup,
+  ProFormList,
   ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import React, { FC, memo } from 'react';
 import { parseKeyValueText, stringifyKeyValueText } from '@evo/utils';
+import s from './AddOrUpdataMcp.module.scss';
+import {
+  IIntelligentRecognitionData,
+  IntelligentRecognition,
+} from '../intelligent-recognition/IntelligentRecognition';
 
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { useMcpSelector } from '../../mcp-processor/McpProvider';
@@ -19,7 +26,7 @@ export interface IAddOrUpdateMcpProps {}
 export interface IFormData extends IMcpMeta {
   command: string;
   args: string;
-  env: string;
+  env: { key: string; value: string }[];
   categoryName?: string;
 
   url?: string;
@@ -31,6 +38,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
   const closeDialog = useMcpSelector((s) => s.addOrUpdateMcpDialog.closeDialog);
   const createMcp = useMcpSelector((s) => s.createMcp);
   const updateMcp = useMcpSelector((s) => s.updateMcp);
+  const [form] = Form.useForm();
   const selectCategory = useMcpSelector((s) => s.selectCategory);
 
   const getInitialValues = () => {
@@ -48,12 +56,14 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
     const config = JSON.parse(dialogData.data?.config || '{}');
     const type = dialogData.data?.type;
     if (type === EMcpType.STDIO) {
+      const envObj = config.env || {};
+      const envList = Object.entries(envObj).map(([key, value]) => ({ key, value }));
       return {
         ...dialogData.data,
         type,
         command: config.command,
-        args: config.args?.join(' '),
-        env: stringifyKeyValueText(config.env),
+        args: config.args?.join('\n'),
+        env: envList, //stringifyKeyValueText(config.env),
       };
     }
     if (type === EMcpType.SSE) {
@@ -66,14 +76,26 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
     }
   };
 
+  useEffect(() => {
+    if (dialogData.open) {
+      form.setFieldsValue(getInitialValues());
+    }
+  }, [dialogData.open]);
+
   const getFormValues = (values: IFormData) => {
     const { command, args, env, url, headers, categoryName, ...otherValues } = values;
     let config = {};
     if (otherValues.type === EMcpType.STDIO) {
+      const envObj: Record<string, string> = {};
+      values.env?.forEach((item: { key: string; value: string }) => {
+        if (item.key) {
+          envObj[item.key] = item.value;
+        }
+      });
       config = {
         command: values.command,
-        args: values.args?.split(' ').filter(Boolean) || [],
-        env: parseKeyValueText(values.env),
+        args: values.args?.split('\n').filter(Boolean) || [],
+        env: envObj, // parseKeyValueText(values.env),
       };
     }
     if (otherValues.type === EMcpType.SSE) {
@@ -108,27 +130,25 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
     }
   );
 
+  const handleRecognition = (data: IIntelligentRecognitionData) => {
+    form.setFieldsValue({ ...data, type: EMcpType.STDIO });
+  };
+
   return (
     <ModalForm<IFormData>
       title={dialogData.type === 'create' ? '创建 MCP' : '编辑 MCP'}
       open={dialogData.open}
       width={600}
+      form={form}
       modalProps={{
         destroyOnClose: true,
         onCancel: closeDialog,
-        style: { top: 40 },
         bodyStyle: {
           maxHeight: 'calc(100vh - 200px)',
           overflow: 'auto',
-          paddingRight: 16,
         },
+        centered: true,
       }}
-      grid={true}
-      colProps={{ span: 24 }}
-      layout="horizontal"
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 20 }}
-      initialValues={getInitialValues()}
       onFinish={async (values) => {
         try {
           const formValue = getFormValues(values);
@@ -186,6 +206,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
         },
       }}
     >
+      <IntelligentRecognition onRecognition={handleRecognition} />
       <ProFormText
         name="name"
         label="名称"
@@ -245,13 +266,45 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
                   allowClear: false,
                 }}
               />
-              <ProFormText name="args" label="参数" placeholder="请输入参数，以空格分隔" />
               <ProFormTextArea
+                rules={[{ required: true, message: '请输入参数' }]}
+                name="args"
+                label="参数"
+                tooltip={{
+                  title: `传递给执行命令的参数列表，一般在这里输入 MCP 服务器名称，或启动脚本路径。
+                  每个参数占一行,例如文件MCP Server：
+                  @modelcontextprotocol/server-filesystem
+                  /Users/username/Desktop
+                  /path/to/other/allowed/dir
+                  `,
+                  overlayStyle: { maxWidth: 300 },
+                }}
+                placeholder={`@modelcontextprotocol/server-filesystem
+/Users/username/Desktop
+/path/to/other/allowed/dir`}
+              />
+              <ProFormList
                 name="env"
                 label="环境变量"
-                placeholder="请输入环境变量 JSON"
-                fieldProps={{ rows: 3 }}
-              />
+                className={s.envList}
+                tooltip={{
+                  title: 'MCP Server环境变量，一般用来输入ACCESS_TOKEN等配置',
+                }}
+                creatorButtonProps={{
+                  creatorButtonText: '新增一行',
+                }}
+                copyIconProps={false}
+              >
+                <ProFormGroup>
+                  <ProFormText name="key" label="key" placeholder="key" />
+                  <ProFormText
+                    style={{ width: 300 }}
+                    name="value"
+                    label="value"
+                    placeholder="value"
+                  />
+                </ProFormGroup>
+              </ProFormList>
             </>
           );
         }}

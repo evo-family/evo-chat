@@ -1,8 +1,16 @@
-import { useGlobalCtx } from "@evo/data-store";
-import { IAvailableModel, IModelSchema } from "@evo/types"
-import { useMemoizedFn } from "ahooks"
-import { useRef } from "react";
+import { useGlobalCtx } from '@evo/data-store';
+import { IAvailableModel, IModelSchema } from '@evo/types';
+import { useMemoizedFn } from 'ahooks';
+import { useRef } from 'react';
 
+export type ISelectModelsMapRef = Record<
+  string,
+  {
+    providerName: string;
+    providerId: string;
+    model: IModelSchema;
+  }
+>;
 
 /**
  * 模型选择 Hook，用于处理模型选择的相关逻辑
@@ -12,11 +20,7 @@ export const useConvertModelSelect = () => {
   const [availableModels] = useGlobalCtx((s) => s.modelProcessor.availableModels);
 
   // 存储已选择模型的映射关系
-  const selectModelsMapRef = useRef<Record<string, {
-    providerName: string;
-    providerId: string;
-    model: IModelSchema;
-  }>>({});
+  const selectModelsMapRef = useRef<ISelectModelsMapRef>({});
 
   const getSelectChangeModels = useMemoizedFn((values: string[] | string) => {
     const selectedModels: IAvailableModel[] = [];
@@ -40,34 +44,34 @@ export const useConvertModelSelect = () => {
         selectModelsMapRef.current[value] = {
           providerName: provider.name,
           providerId: provider.id,
-          model: model
+          model: model,
         };
       }
     });
 
     return selectedModels;
-  })
+  });
 
   const getSelectValue = useMemoizedFn((models: IAvailableModel[]) => {
     selectModelsMapRef.current = {};
     const currSelectValues: string[] = [];
     for (const model of models || []) {
-      model.models.forEach((m) => {
+      model?.models?.forEach((m) => {
         const key = `${model.id}=${m.id}`;
         selectModelsMapRef.current[key] = {
           providerName: model.name,
           providerId: model.id,
-          model: m
+          model: m,
         };
         currSelectValues.push(key);
       });
     }
     return currSelectValues;
-  })
+  });
 
   return {
     selectModelsMapRef,
     getSelectChangeModels,
-    getSelectValue
-  }
-}
+    getSelectValue,
+  };
+};

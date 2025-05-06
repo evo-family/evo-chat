@@ -28,7 +28,7 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
     setLoading(true);
     try {
       const res = await McpBridgeFactory.getInstance().getTools({
-        mcpId: record.id,
+        mcpId: record?.id,
       });
       if (res.success) {
         setTools(res.data as any);

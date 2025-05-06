@@ -30,11 +30,6 @@ async function main() {
         { headers: { 'Content-Type': 'application/json' } }
       ).then((res) => res.json());
 
-      console.log(
-        'q=>releaseInfo',
-        `${API_BASE}/releases/tags/${TAG}?access_token=${ACCESS_TOKEN}`,
-        releaseInfo
-      );
       releaseName = releaseInfo.name;
     } catch (error) {
       console.log('查询 Release 失败，将创建新的 Release');
