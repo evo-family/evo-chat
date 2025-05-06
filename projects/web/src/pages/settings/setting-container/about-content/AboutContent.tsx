@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { SettingGroup } from '../../../../components';
-import { Button, Flex, Space, Switch } from 'antd';
+import { Button, Space, Switch } from 'antd';
 import { GithubOutlined } from '@ant-design/icons';
-import { IPC_EVENTS } from '@evo/utils';
 import { useGlobalCtx, useSettingSelector } from '@evo/data-store';
 import { Update } from './Update';
 
@@ -38,6 +37,7 @@ export const AboutContent: FC = React.memo(() => {
         {isElectron && (
           <SettingGroup.Item title="自动检查更新" description="启动时自动检查新版本">
             <Switch
+              size="small"
               checked={about.isAutoUpdate}
               onChange={(checked) => {
                 setAbout({

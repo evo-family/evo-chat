@@ -12,15 +12,17 @@ import {
   EModalAnswerStatus,
   IChatMessageInitOptions,
   IChatMessageOptions,
+  IMCPExchangeItem,
   IMessageConfig,
+  IModelConnRecord,
   TModelAnswer,
 } from './types';
-import { map, of } from 'rxjs';
+import { IComposeModelContextParams, IModelConnParams } from './utils/model-handle/types';
+import { XMLBuilder, XMLParser, XMLValidator } from 'fast-xml-parser';
 
 import { AuthenticationError } from 'openai';
-import { IComposeModelContextParams } from './utils/model-handle/types';
+import { McpBridgeFactory } from '@evo/platform-bridge';
 import { composeModelConnContext } from './utils/model-handle/modelConnContext';
-import { fixChatMsg20250430 } from '@/utils/upgrade_scripts/chatMessage/20250430';
 import { getEmptyAnswerData } from './constants/answer';
 import { modelConnHandle } from './utils/model-handle/handler';
 
@@ -133,32 +135,53 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     return resolver;
   }
 
+  async resolveModelConn(
+    options: {
+      answerConfig: TModelAnswer;
+    } & Pick<IModelConnParams, 'onResolve'>,
+    params?: IComposeModelContextParams
+  ) {
+    const { answerConfig, onResolve } = options;
+    const msgConfig = this.getConfigState();
+    const resolver = this.getModelConnSignal(answerConfig.id);
+
+    return await modelConnHandle({
+      msgConfig,
+      taskSignal: resolver,
+      answerConfig,
+      onResolve,
+      getMessageContext: () =>
+        composeModelConnContext({
+          msgConfig,
+          answerConfig,
+          ...params,
+        }),
+      ...params,
+    });
+  }
+
   async initializeAnswer(id: string, params?: IComposeModelContextParams) {
     const answerCell = this.modelAnswers.getCellSync(id);
 
     if (!answerCell) return;
 
-    const answerData = answerCell.get();
+    const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
+    const { mcpIds } = msgConfig;
 
     // 先尝试停止前一个model连接接收
-    this.stopResolveAnswer(answerData.id);
+    this.stopResolveAnswer(answerConfig.id);
 
-    const resolver = this.getModelConnSignal(answerData.id);
+    const resolver = this.getModelConnSignal(answerConfig.id);
 
     try {
       // 重置数据answer的数据
       answerCell.set({
-        ...answerData,
+        ...answerConfig,
         ...getEmptyAnswerData(),
       });
 
       resolver.promise
-        .then(() => {
-          const curData = answerCell.get();
-          curData.connResult.status = EModalAnswerStatus.SUCCESS;
-          answerCell.set(curData);
-        })
         .catch((error: any) => {
           const curData = answerCell.get();
           let errorMessage = error?.message ?? error?.toString() ?? '';
@@ -173,29 +196,129 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
           answerCell.set(curData);
         })
         .finally(() => {
-          this.stopResolveAnswer(answerData.id);
+          this.stopResolveAnswer(answerConfig.id);
         });
 
-      await modelConnHandle({
-        msgConfig,
-        taskSignal: resolver,
-        answerConfig: answerData,
-        onResolve: (data) => {
-          const curData = answerCell.get();
-          curData.connResult = data;
+      if (mcpIds?.length) {
+        let firstResolve = true;
 
-          answerCell.set(curData);
-        },
-        getMessageContext: () =>
-          composeModelConnContext({
-            msgConfig,
-            ...params,
-          }),
-        ...params,
-      });
+        const connResult = await this.resolveModelConn(
+          {
+            answerConfig,
+            onResolve: (data) => {
+              const curData = answerCell.get();
+
+              if (firstResolve && curData.type === 'mcp') {
+                // @ts-ignore
+                data.mcpExecuteParams = [];
+                // @ts-ignore
+                data.mcpExecuteResult = [];
+                // @ts-ignore
+                curData.mcpExchanges.push(data);
+
+                answerCell.set(curData);
+
+                firstResolve = false;
+              } else {
+                answerCell.set(curData);
+              }
+            },
+          },
+          params
+        );
+
+        console.log(1111, connResult);
+
+        const mcpResult = connResult as IMCPExchangeItem;
+
+        if (mcpResult) {
+          const parser = new XMLParser({
+            ignoreAttributes: false,
+          });
+          const mcpExecuteParams = parser.parse((connResult as IModelConnRecord).content);
+          const tool_user = mcpExecuteParams?.tool_use;
+
+          if (tool_user) {
+            const validToolUser = Array.isArray(tool_user) ? tool_user : [tool_user];
+            console.log(222222, { mcpExecuteParams, validToolUser });
+
+            for await (const useToolInfo of validToolUser) {
+              mcpResult.mcpExecuteParams.push({
+                mcp_id: useToolInfo.mcp_id,
+                name: useToolInfo.name,
+                arguments: useToolInfo.arguments,
+              });
+
+              const executeResult = await McpBridgeFactory.getInstance().callTool(
+                useToolInfo.mcp_id,
+                useToolInfo.name,
+                JSON.parse(useToolInfo.arguments)
+              );
+
+              console.log(3333, executeResult);
+              if (executeResult?.success && executeResult.data) {
+                mcpResult.mcpExecuteResult.push({
+                  mcp_id: useToolInfo.mcp_id,
+                  name: useToolInfo.name,
+                  result: executeResult.data.content,
+                });
+              } else {
+                throw executeResult;
+              }
+            }
+            firstResolve = false;
+
+            const connResult2 = await this.resolveModelConn(
+              {
+                answerConfig,
+                onResolve: (data) => {
+                  const curData = answerCell.get();
+
+                  if (firstResolve && curData.type === 'mcp') {
+                    curData.mcpExchanges.push({
+                      ...data,
+                      mcpExecuteParams: [],
+                      mcpExecuteResult: [],
+                    });
+                    answerCell.set(curData);
+
+                    firstResolve = false;
+                  } else {
+                    answerCell.set(curData);
+                  }
+                },
+              },
+              {
+                ...params,
+                userMsg: '',
+              }
+            );
+
+            console.log(55555, connResult2);
+          }
+        }
+      } else {
+        await this.resolveModelConn(
+          {
+            answerConfig,
+            onResolve: (data) => {
+              const curData = answerCell.get();
+              curData.connResult = data;
+
+              answerCell.set(curData);
+            },
+          },
+          params
+        );
+      }
+
+      const curData = answerCell.get();
+      curData.connResult.status = EModalAnswerStatus.SUCCESS;
+      answerCell.set(curData);
 
       resolver.resolve(undefined);
     } catch (error: any) {
+      console.error(error);
       resolver.reject(error);
     }
   }

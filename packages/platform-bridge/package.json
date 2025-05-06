@@ -1,6 +1,6 @@
 {
   "name": "@evo/platform-bridge",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "description": "",
   "module": "dist/index.js",
   "types": "src/index.ts",

@@ -8,12 +8,14 @@ You can use one tool per message, and will receive the result of that tool use i
 Tool use is formatted using XML-style tags. The tool name is enclosed in opening and closing tags, and each parameter is similarly enclosed within its own set of tags. Here's the structure:
 
 <tool_use>
+  <mcp_id>{mcp_id}</mcp_id>
   <name>{tool_name}</name>
   <arguments>{json_arguments}</arguments>
 </tool_use>
 
 The tool name should be the exact name of the tool you are using, and the arguments should be a JSON object containing the parameters required by that tool. For example:
 <tool_use>
+  <mcp_id>{mcp_id}</mcp_id>
   <name>python_interpreter</name>
   <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
 </tool_use>
@@ -21,6 +23,7 @@ The tool name should be the exact name of the tool you are using, and the argume
 The user will respond with the result of the tool use, which should be formatted as follows:
 
 <tool_use_result>
+  <mcp_id>{mcp_id}</mcp_id>
   <name>{tool_name}</name>
   <result>{result}</result>
 </tool_use_result>
@@ -29,6 +32,7 @@ The result should be a string, which can represent a file or any other output ty
 For example, if the result of the tool use is an image file, you can use it in the next action like this:
 
 <tool_use>
+  <mcp_id>{mcp_id}</mcp_id>
   <name>image_transformer</name>
   <arguments>{"image": "image_1.jpg"}</arguments>
 </tool_use>
@@ -63,22 +67,26 @@ User: Generate an image of the oldest person in this document.
 
 Assistant: I can use the document_qa tool to find out who the oldest person is in the document.
 <tool_use>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>document_qa</name>
   <arguments>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>document_qa</name>
   <result>John Doe, a 55 year old lumberjack living in Newfoundland.</result>
 </tool_use_result>
 
 Assistant: I can use the image_generator tool to create a portrait of John Doe.
 <tool_use>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>image_generator</name>
   <arguments>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</arguments>
 </tool_use>
 
 User: <tool_use_result>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>image_generator</name>
   <result>image.png</result>
 </tool_use_result>
@@ -90,11 +98,13 @@ User: "What is the result of the following operation: 5 + 3 + 1294.678?"
 
 Assistant: I can use the python_interpreter tool to calculate the result of the operation.
 <tool_use>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>python_interpreter</name>
   <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>python_interpreter</name>
   <result>1302.678</result>
 </tool_use_result>
@@ -106,34 +116,39 @@ User: "Which city has the highest population , Guangzhou or Shanghai?"
 
 Assistant: I can use the search tool to find the population of Guangzhou.
 <tool_use>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>search</name>
   <arguments>{"query": "Population Guangzhou"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>search</name>
   <result>Guangzhou has a population of 15 million inhabitants as of 2021.</result>
 </tool_use_result>
 
 Assistant: I can use the search tool to find the population of Shanghai.
 <tool_use>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>search</name>
   <arguments>{"query": "Population Shanghai"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
   <name>search</name>
   <result>26 million (2019)</result>
 </tool_use_result>
 Assistant: The population of Shanghai is 26 million, while Guangzhou has a population of 15 million. Therefore, Shanghai has the highest population.
 `;
 
-export const getPromptTools = (tools: IMcpTool[]) => {
+export const getPromptTools = (tools: IMcpTool[], mcpId: string) => {
   const availableTools = tools
     .map((tool) => {
       return `
 <tool>
-  <name>${tool.toolId}</name>
+  <mcp_id>${mcpId}</mcp_id>
+  <name>${tool.name}</name>
   <description>${tool.description}</description>
   <arguments>
     ${tool.inputSchema ? JSON.stringify(tool.inputSchema) : ''}
@@ -147,11 +162,15 @@ ${availableTools}
 </tools>`;
 };
 
-export const getSystemPrompt = (userSystemPrompt: string, tools: IMcpTool[]): string => {
+export const getSystemPrompt = (
+  userSystemPrompt: string,
+  tools: IMcpTool[],
+  mcpId: string
+): string => {
   if (tools && tools.length > 0) {
     return MCP_SYSTEM_PROMPT.replace('{{ USER_SYSTEM_PROMPT }}', userSystemPrompt)
       .replace('{{ TOOL_USE_EXAMPLES }}', ToolUseExamples)
-      .replace('{{ AVAILABLE_TOOLS }}', getPromptTools(tools));
+      .replace('{{ AVAILABLE_TOOLS }}', getPromptTools(tools, mcpId));
   }
 
   return userSystemPrompt;

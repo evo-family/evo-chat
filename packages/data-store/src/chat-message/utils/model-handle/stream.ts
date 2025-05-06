@@ -53,4 +53,6 @@ export const defaultStreamResolver = async (
 
     onResolve?.(connResult);
   }
+
+  return connResult;
 };

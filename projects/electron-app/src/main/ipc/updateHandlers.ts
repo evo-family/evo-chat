@@ -52,7 +52,7 @@ export function setupAutoUpdataHandler() {
   autoUpdater.on('error', (err) => {
     log.error('更新出错', err);
     getMainWindow()?.webContents.send(IPC_EVENTS.UPDATE.ERROR, err);
-    dialog.showErrorBox('更新错误', `检查更新时发生错误：${err.message || err}`);
+    dialog.showErrorBox('更新错误', `检查更新时发生问题`);
   });
 
   autoUpdater.on('download-progress', (progressObj) => {
@@ -62,11 +62,6 @@ export function setupAutoUpdataHandler() {
 
   autoUpdater.on('update-downloaded', (info) => {
     log.info('更新已下载', info);
-    if (isMacOS()) {
-      return;
-      // shell.openExternal('https://hevoai.com/download');
-      return;
-    }
     dialog
       .showMessageBox({
         type: 'info',
@@ -80,7 +75,7 @@ export function setupAutoUpdataHandler() {
       })
       .then(({ response }) => {
         if (response === 1) {
-          // setImmediate(() => autoUpdater.quitAndInstall())
+          setImmediate(() => autoUpdater.quitAndInstall());
         } else {
           getMainWindow().webContents.send(IPC_EVENTS.UPDATE.CANCEL);
         }
@@ -90,9 +85,5 @@ export function setupAutoUpdataHandler() {
   // 手动检查更新的 IPC 处理
   ipcMain.handle(IPC_EVENTS.UPDATE.CHECK, () => {
     autoUpdater.checkForUpdatesAndNotify();
-  });
-
-  ipcMain.handle(IPC_EVENTS.UPDATE.GET_VERSION, () => {
-    return app.getVersion();
   });
 }

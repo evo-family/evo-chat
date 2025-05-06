@@ -1,5 +1,6 @@
 import {
   BaseResult,
+  IGetMcpToolParams,
   IMCPCallToolResponse,
   IMcpCategoryMeta,
   IMcpMeta,
@@ -10,12 +11,13 @@ import { BaseBridge } from '../common/baseBridge';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export class WebMcp extends BaseBridge implements IMcpService {
+  getTools(params: IGetMcpToolParams): Promise<BaseResult<Tool[]>> {
+    throw new Error('Method not implemented.');
+  }
   callTool(mcpId: string, name: string, args: any): Promise<BaseResult<IMCPCallToolResponse>> {
     throw new Error('Method not implemented.');
   }
-  getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
-    throw new Error('Method not implemented.');
-  }
+
   startClientByMcpId(mcpId: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }
@@ -29,9 +31,7 @@ export class WebMcp extends BaseBridge implements IMcpService {
   getServiceStatus(mcpId: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }
-  getTools(mcpId: string): Promise<BaseResult<Tool[]>> {
-    throw new Error('Method not implemented.');
-  }
+
   createCategory(meta: Partial<IMcpCategoryMeta>): Promise<BaseResult<IMcpCategoryMeta>> {
     throw new Error('Method not implemented.');
   }

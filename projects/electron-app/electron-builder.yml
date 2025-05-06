@@ -23,19 +23,22 @@ icon: resources/logo.png
 win:
   icon: resources/logo_256.ico
   executableName: Evo Chat
-  artifactName: ${productName}-${version}-portable.${ext}
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
   target:
     - target: nsis
+    - target: portable
 nsis:
   installerIcon: resources/logo_256.ico
   uninstallerIcon: resources/logo_256.ico
-  artifactName: ${productName}-${version}-setup.${ext}
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
   allowToChangeInstallationDirectory: true
   oneClick: false
   include: pkg-script/nsis-installer.nsh
+portable:
+  artifactName: ${productName}-${version}-${arch}-portable.${ext}
 mac:
   icon: resources/logo.png
   entitlementsInherit: pkg-script/entitlements.mac.plist

@@ -15,6 +15,7 @@ export interface IComposeModelContextParams
   extends Pick<Partial<IChatWindowConfig>, 'agentIds' | 'knowledgeIds' | 'mcpIds'> {
   composedContexts?: TComposedContexts;
   historyMessages?: ChatMessage[];
+  userMsg?: '';
 }
 
 export interface IModelConnParams {
@@ -26,7 +27,7 @@ export interface IModelConnParams {
 }
 
 export interface IModelConnHandle {
-  (params: IModelConnParams): any;
+  (params: IModelConnParams): Promise<IModelConnRecord>;
 }
 
 export interface IBaseModelHandler {

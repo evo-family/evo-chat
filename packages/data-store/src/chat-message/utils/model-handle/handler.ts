@@ -43,6 +43,8 @@ export const modelConnHandle: IModelConnHandle = (params) => {
       })
       .catch((error) => {
         taskSignal.reject(error);
+
+        return Promise.reject(error);
       });
   });
 };

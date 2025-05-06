@@ -1,4 +1,4 @@
-import { BaseResult, IMcpCategoryMeta, IMcpMeta } from '@evo/types';
+import { BaseResult, IGetMcpToolParams, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
 import { IPC_EVENTS, ResultUtil } from '@evo/utils';
 
 import { ipcMain } from 'electron';
@@ -118,14 +118,10 @@ export async function setupMcpHandlers() {
     }
   );
 
-  ipcMain.handle(IPC_EVENTS.MCP.GET_TOOLS, async (_, mcpId: string): Promise<BaseResult<any[]>> => {
-    return MCPClientManager.getTools(mcpId);
-  });
-
   ipcMain.handle(
-    IPC_EVENTS.MCP.GET_MCP_PROMPT,
-    async (_, mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> => {
-      return MCPClientManager.getMcpPrompt(mcpIds, userPrompt);
+    IPC_EVENTS.MCP.GET_TOOLS,
+    async (_, params: IGetMcpToolParams): Promise<BaseResult<any[]>> => {
+      return MCPClientManager.getTools(params);
     }
   );
 

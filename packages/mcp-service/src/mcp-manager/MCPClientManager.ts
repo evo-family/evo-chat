@@ -1,6 +1,7 @@
 import {
   BaseResult,
   EMcpType,
+  IGetMcpToolParams,
   IMCPCallToolResponse,
   IMcpConfig,
   IMcpMeta,
@@ -20,7 +21,6 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { IDepManager } from '../types/common';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { getCommandPath } from '../utils/cliCheck';
-import { getSystemPrompt } from '../utils/prompt';
 
 export interface IMCPClientManagerOptions {
   depManager: IDepManager;
@@ -116,16 +116,10 @@ export class MCPClientManager {
    * @param enable 是否获取可用的tools
    * @returns
    */
-  async getTools(
-    mcpId: string,
-    options?: {
-      enable?: boolean;
-      removeInputSchemaKeys?: Array<string>;
-    }
-  ): Promise<BaseResult<IMcpTool[]>> {
+  async getTools(params: IGetMcpToolParams): Promise<BaseResult<IMcpTool[]>> {
+    const { options, mcpId } = params || {};
     const { enable, removeInputSchemaKeys = [] } = options || {};
     try {
-      console.log(222);
       const mcp = await this.getMcpInfo(mcpId);
       const startResult = await this.startClientByMcpId(mcp.id);
       console.log('startResult', startResult);
@@ -160,36 +154,6 @@ export class MCPClientManager {
         .filter(Boolean);
 
       return ResultUtil.success(toolList as IMcpTool[]);
-    } catch (error) {
-      return ResultUtil.error(error);
-    }
-  }
-
-  /**
-   * 获取所有的MCP的prompt
-   * @param mcpIds
-   * @param userPrompt
-   * @returns
-   */
-  async getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
-    try {
-      const toolsList = await Promise.all(
-        mcpIds.map(async (mcpId) => {
-          const toolsResult = await this.getTools(mcpId, {
-            enable: true,
-            removeInputSchemaKeys: ['$schema'],
-          });
-          return toolsResult.success ? toolsResult.data : [];
-        })
-      );
-
-      const allTools = toolsList.flat().filter(Boolean);
-
-      if (!allTools.length) {
-        return ResultUtil.error('没有可用的工具');
-      }
-      const systemPrompt = getSystemPrompt(userPrompt, allTools as IMcpTool[]);
-      return ResultUtil.success(systemPrompt);
     } catch (error) {
       return ResultUtil.error(error);
     }

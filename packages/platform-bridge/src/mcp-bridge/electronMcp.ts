@@ -1,5 +1,6 @@
 import {
   BaseResult,
+  IGetMcpToolParams,
   IMCPCallToolResponse,
   IMcpCategoryMeta,
   IMcpMeta,
@@ -8,8 +9,12 @@ import {
 
 import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
+import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 export class ElectronMcp extends BaseBridge implements IMcpService {
+  async getTools(params: IGetMcpToolParams): Promise<BaseResult<Tool[]>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_TOOLS, params);
+  }
   async callTool(
     mcpId: string,
     name: string,
@@ -17,13 +22,7 @@ export class ElectronMcp extends BaseBridge implements IMcpService {
   ): Promise<BaseResult<IMCPCallToolResponse>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.CALL_TOOL, mcpId, name, args);
   }
-  async getMcpPrompt(mcpIds: string[], userPrompt: string): Promise<BaseResult<string>> {
-    return window.__ELECTRON__.ipcRenderer.invoke(
-      IPC_EVENTS.MCP.GET_MCP_PROMPT,
-      mcpIds,
-      userPrompt
-    );
-  }
+
   // 分类相关方法
   async createCategory(meta: Partial<IMcpCategoryMeta>): Promise<BaseResult<IMcpCategoryMeta>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.CREATE_CATEGORY, meta);
@@ -88,9 +87,5 @@ export class ElectronMcp extends BaseBridge implements IMcpService {
 
   async getServiceStatus(mcpId: string): Promise<BaseResult<boolean>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_SERVICE_STATUS, mcpId);
-  }
-
-  async getTools(mcpId: string): Promise<BaseResult<any[]>> {
-    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.MCP.GET_TOOLS, mcpId);
   }
 }

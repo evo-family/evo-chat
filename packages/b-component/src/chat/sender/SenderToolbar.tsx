@@ -8,9 +8,9 @@ import { ModelSelectToolbar } from './toolbar/ModelSelectToolbar';
 import classNames from 'classnames';
 import { isElectron, isH5, isMobile, isMobileApp } from '@evo/utils';
 import s from './SenderToolbar.module.scss';
-import { CommonBridgeFactory } from '@evo/platform-bridge';
 import { MobilePermissionType } from '@evo/types';
 import { McpSelectToolbar } from './toolbar/McpSelectToolbar';
+import { SystemBridgeFactory } from '@evo/platform-bridge';
 
 export interface ISenderToolbarProps {
   fileOpen: boolean;
@@ -30,7 +30,7 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
             <Button
               onClick={async () => {
                 if (isMobileApp()) {
-                  const result = await CommonBridgeFactory.getInstance().checkMobilePermission?.([
+                  const result = await SystemBridgeFactory.getInstance().checkPermission?.([
                     MobilePermissionType.camera,
                     MobilePermissionType.microphone,
                     MobilePermissionType.mediaLibrary,

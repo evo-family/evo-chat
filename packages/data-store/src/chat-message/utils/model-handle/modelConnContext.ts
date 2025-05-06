@@ -1,23 +1,27 @@
+import { IMessageConfig, TModelAnswer } from '@/chat-message/types';
+
 import { ChatCompletionMessageParam } from 'openai/resources.mjs';
 import { IComposeModelContextParams } from './types';
-import { IMessageConfig } from '@/chat-message/types';
 import { composeAgentsMsg } from './compose-methods/agent';
 import { composeAttachment } from './compose-methods/attachment';
-import { composeContextMsg } from './compose-methods/contextMsg';
-import { composeMcpTools } from './compose-methods/mcpTools';
+import { composeCurMsgMcp } from './compose-methods/mcp/msgMcp';
+import { composeHistoryMsg } from './compose-methods/histroyMsg';
+import { composeMcpTools } from './compose-methods/mcp/mcp';
 import { composeUserMsg } from './compose-methods/user';
 import { modelProcessor } from '@/processor/model-processor';
 
 export const composeModelConnContext = async (
-  params: IComposeModelContextParams & { msgConfig: IMessageConfig }
+  params: IComposeModelContextParams & { msgConfig: IMessageConfig; answerConfig: TModelAnswer }
 ): Promise<ChatCompletionMessageParam[]> => {
   const {
     msgConfig,
+    answerConfig,
     composedContexts,
     historyMessages = [],
     knowledgeIds,
     agentIds,
     mcpIds,
+    userMsg = msgConfig.sendMessage,
   } = params;
   const { attachFileInfos } = msgConfig;
 
@@ -25,20 +29,23 @@ export const composeModelConnContext = async (
   const modelParams = modelProcessor.modelParams.get();
   const { context_count } = modelParams;
 
-  const [lastContext, agentContext, attachContext, userContext, mcpTools] = await Promise.all([
-    composeContextMsg(historyMessages, { context_count }),
-    composeAgentsMsg({ agentIds }),
-    composeAttachment({ fileInfos: attachFileInfos }),
-    composeUserMsg({ msgConfig, knowledgeIds }),
-    composeMcpTools({ mcpIds }),
-  ]);
+  const [lastContext, agentContext, attachContext, userContext, mcpTools, curMsgMcpExecuteInfo] =
+    await Promise.all([
+      composeHistoryMsg(historyMessages, { context_count }),
+      composeAgentsMsg({ agentIds }),
+      composeAttachment({ fileInfos: attachFileInfos }),
+      composeUserMsg({ msgConfig, knowledgeIds }),
+      composeMcpTools({ mcpIds }),
+      composeCurMsgMcp({ answerConfig }),
+    ]);
 
   const composeMessages: ChatCompletionMessageParam[] = (composedContexts ?? []).concat(
     agentContext,
     mcpTools,
     lastContext,
     attachContext,
-    userContext
+    userContext,
+    curMsgMcpExecuteInfo
   );
 
   return composeMessages;

@@ -6,29 +6,28 @@ import { languageData, themeColorData, useGlobalCtx, useSettingSelector } from '
 import { EThemeMode } from '@evo/types';
 import { DefaultModelSelect } from './DefaultModelSelect';
 
-export interface IGeneralContentProps { }
+export interface IGeneralContentProps {}
 
 export const GeneralContent: FC<IGeneralContentProps> = React.memo((props) => {
-
-
-  const [theme, setTheme] = useSettingSelector(s => [s.theme, s.setTheme])
-  const [themeColorId, setThemeColorId] = useSettingSelector(s => [s.themeColorId, s.setThemeColorId])
-  const [language, setLanguage] = useSettingSelector(s => [s.language, s.setLanguage])
-  const [defaultMessageModel, setDefaultMessageModel] = useSettingSelector(s => [s.defaultMessageModel, s.setDefaultMessageModel])
-  const [defaultRenameModel, setDefaultRenameModel] = useSettingSelector(s => [s.defaultRenameModel, s.setDefaultRenameModel])
-
-
-
+  const [theme, setTheme] = useSettingSelector((s) => [s.theme, s.setTheme]);
+  const [themeColorId, setThemeColorId] = useSettingSelector((s) => [
+    s.themeColorId,
+    s.setThemeColorId,
+  ]);
+  const [language, setLanguage] = useSettingSelector((s) => [s.language, s.setLanguage]);
+  const [defaultMessageModel, setDefaultMessageModel] = useSettingSelector((s) => [
+    s.defaultMessageModel,
+    s.setDefaultMessageModel,
+  ]);
+  const [defaultRenameModel, setDefaultRenameModel] = useSettingSelector((s) => [
+    s.defaultRenameModel,
+    s.setDefaultRenameModel,
+  ]);
 
   return (
     <>
-      <SettingGroup
-        title="基础设置"
-      >
-        <SettingGroup.Item
-          title="主题"
-          description="设置应用的明暗主题模式"
-        >
+      <SettingGroup title="基础设置">
+        <SettingGroup.Item title="主题" description="设置应用的明暗主题模式">
           <Select
             value={theme}
             style={{ width: 200 }}
@@ -41,10 +40,7 @@ export const GeneralContent: FC<IGeneralContentProps> = React.memo((props) => {
           />
         </SettingGroup.Item>
 
-        <SettingGroup.Item
-          title="主题色1"
-          description="自定义应用的主题色调"
-        >
+        <SettingGroup.Item title="主题色" description="自定义应用的主题色调">
           <Select
             value={themeColorId}
             style={{ width: 200 }}
@@ -53,10 +49,7 @@ export const GeneralContent: FC<IGeneralContentProps> = React.memo((props) => {
           />
         </SettingGroup.Item>
 
-        <SettingGroup.Item
-          title="语言"
-          description="设置应用界面显示的语言"
-        >
+        <SettingGroup.Item title="语言" description="设置应用界面显示的语言">
           <Select
             value={language}
             style={{ width: 200 }}
@@ -80,22 +73,14 @@ export const GeneralContent: FC<IGeneralContentProps> = React.memo((props) => {
         </SettingGroup.Item>
       </SettingGroup> */}
 
-      <SettingGroup title='默认模型'>
-        <SettingGroup.Item
-          title="会话模型"
-          description="设置新建会话时默认使用的AI模型"
-        >
+      <SettingGroup title="默认模型">
+        <SettingGroup.Item title="会话模型" description="设置新建会话时默认使用的AI模型">
           <DefaultModelSelect value={defaultMessageModel} onChange={setDefaultMessageModel} />
         </SettingGroup.Item>
-        <SettingGroup.Item
-          title="会话自动命名"
-          description="选择用于自动生成会话标题的AI模型"
-        >
+        <SettingGroup.Item title="会话自动命名" description="选择用于自动生成会话标题的AI模型">
           <DefaultModelSelect value={defaultRenameModel} onChange={setDefaultRenameModel} />
         </SettingGroup.Item>
-
       </SettingGroup>
-
     </>
   );
 });

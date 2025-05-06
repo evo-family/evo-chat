@@ -1,8 +1,9 @@
+import { Collapse, Descriptions, Drawer, Tag, message } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { Drawer, Collapse, Descriptions, Tag, message } from 'antd';
+
+import { IMcpMeta } from '@evo/types';
 import { JsonSchemaType } from './types';
 import { McpBridgeFactory } from '@evo/platform-bridge';
-import { IMcpMeta } from '@evo/types';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Switch } from 'antd'; // 添加 Switch 导入
 
@@ -26,7 +27,9 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
 
     setLoading(true);
     try {
-      const res = await McpBridgeFactory.getInstance().getTools(record.id);
+      const res = await McpBridgeFactory.getInstance().getTools({
+        mcpId: record.id,
+      });
       if (res.success) {
         setTools(res.data as any);
       } else {

@@ -7,8 +7,7 @@ import {
   HookRunnerContext,
 } from '@evo/utils';
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources';
-
-import { IFileMeta } from '@evo/types';
+import { IFileMeta, IMCPCallToolResponse } from '@evo/types';
 
 export enum EModalAnswerStatus {
   SUCCESS = 'success',
@@ -39,7 +38,18 @@ export interface INormalAnswer extends IModelBaseAnswer {
   type: 'normal';
 }
 
-export interface IMCPExchangeItem extends IModelConnRecord {}
+export interface IMCPExchangeItem extends IModelConnRecord {
+  mcpExecuteParams: Array<{
+    mcp_id: string;
+    name: string;
+    arguments: Record<any, any>;
+  }>;
+  mcpExecuteResult: Array<{
+    mcp_id: string;
+    name: string;
+    result: IMCPCallToolResponse['content'];
+  }>;
+}
 
 export interface IMCPModelAnswer extends IModelBaseAnswer {
   type: 'mcp';

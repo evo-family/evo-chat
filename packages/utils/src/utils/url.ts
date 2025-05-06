@@ -1,4 +1,5 @@
-import { isElectron } from "./env";
+import { IPC_EVENTS } from './electron';
+import { isElectron } from './env';
 
 /**
  * 打开链接
@@ -9,8 +10,7 @@ export const openUrl = (url?: string) => {
   if (!url) return;
 
   if (isElectron()) {
-    window.__ELECTRON__.commonService.openExternal(url);
-
+    window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.SYSTEM.OPEN_EXTERNAL, url);
   } else {
     const a = document.createElement('a');
     a.href = url;
@@ -18,7 +18,6 @@ export const openUrl = (url?: string) => {
     a.click();
   }
 };
-
 
 export function formatModelHost(host: string) {
   if (!host) return '';

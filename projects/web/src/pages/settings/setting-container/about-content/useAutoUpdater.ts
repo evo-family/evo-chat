@@ -15,11 +15,6 @@ export function useAutoUpdater(params: IUseAutoUpdater) {
     // 监听新版本可用
     const onUpdateAvailable = (_event: any, info: any) => {
       console.log('发现新版本:', info);
-      if (isMacOS()) {
-        CommonBridgeFactory.getInstance().openExternal("https://www.evoai.com/download")
-        setUpdataLoading(false);
-      }
-
     };
 
     // 监听当前已是最新版本
@@ -37,7 +32,6 @@ export function useAutoUpdater(params: IUseAutoUpdater) {
         setUpdataLoading(false);
       }
       setDownloadProgress(p);
-
     };
 
     // 注册监听器
@@ -47,9 +41,9 @@ export function useAutoUpdater(params: IUseAutoUpdater) {
     window.__ELECTRON__.ipcRenderer.on(IPC_EVENTS.UPDATE.ERROR, (event, error) => {
       updateErrorCallback?.(error);
       setUpdataLoading(false);
-    })
+    });
 
-    window.__ELECTRON__.ipcRenderer.on(IPC_EVENTS.UPDATE.CANCEL,() => {
+    window.__ELECTRON__.ipcRenderer.on(IPC_EVENTS.UPDATE.CANCEL, () => {
       setUpdataLoading(false);
       message.info({
         content: '更新已取消',
@@ -58,22 +52,29 @@ export function useAutoUpdater(params: IUseAutoUpdater) {
 
     // 清理监听器
     return () => {
-      window.__ELECTRON__.ipcRenderer.removeListener(IPC_EVENTS.UPDATE.AVAILABLE, onUpdateAvailable);
-      window.__ELECTRON__.ipcRenderer.removeListener(IPC_EVENTS.UPDATE.NOT_AVAILABLE, onUpdateNotAvailable);
-      window.__ELECTRON__.ipcRenderer.removeListener(IPC_EVENTS.UPDATE.PROGRESS, onDownloadProgress);
+      window.__ELECTRON__.ipcRenderer.removeListener(
+        IPC_EVENTS.UPDATE.AVAILABLE,
+        onUpdateAvailable
+      );
+      window.__ELECTRON__.ipcRenderer.removeListener(
+        IPC_EVENTS.UPDATE.NOT_AVAILABLE,
+        onUpdateNotAvailable
+      );
+      window.__ELECTRON__.ipcRenderer.removeListener(
+        IPC_EVENTS.UPDATE.PROGRESS,
+        onDownloadProgress
+      );
     };
   }, []);
 
   const checkUpdate = async () => {
     setUpdataLoading(true);
     checkForUpdate();
-  }
-
-
+  };
 
   return {
     downloadProgress,
     uploadLoading,
-    checkUpdate
+    checkUpdate,
   };
 }
