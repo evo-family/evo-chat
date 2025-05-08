@@ -20,7 +20,6 @@ import {
 } from './types';
 import { IComposeModelContextParams, IModelConnParams } from './utils/model-handle/types';
 
-import { AuthenticationError } from 'openai';
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { XMLParser } from 'fast-xml-parser';
 import { composeModelConnContext } from './utils/model-handle/modelConnContext';
@@ -182,12 +181,19 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     if (!answerCell) return;
 
-    const answerConfig = answerCell.get();
-    const msgConfig = this.getConfigState();
-    const { mcpIds } = msgConfig;
+    // 重置数据answer的数据
+    answerCell.set({
+      ...answerCell.get(),
+      ...getEmptyAnswerData(),
+    });
+
     const actionRecord: IModelAnserActionRecord = {
       chatTurns: [],
     };
+
+    const answerConfig = answerCell.get();
+    const msgConfig = this.getConfigState();
+    const { mcpIds } = msgConfig;
     answerConfig.histroy.push(actionRecord);
 
     // 先尝试停止前一个model连接接收
@@ -196,109 +202,78 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     const resolver = this.getModelConnSignal(answerConfig.id);
 
     try {
-      // 重置数据answer的数据
-      answerCell.set({
-        ...answerConfig,
-        ...getEmptyAnswerData(),
-      });
-
       resolver.promise.finally(() => {
         this.stopResolveAnswer(answerConfig.id);
       });
 
+      const firstConnResult = await this.resolveModelConn(
+        {
+          answerCell,
+          actionRecord,
+          userContent: msgConfig.sendMessage,
+        },
+        params
+      );
+
       if (mcpIds?.length) {
-        const connResult = await this.resolveModelConn(
-          {
-            answerCell,
-            actionRecord,
-            userContent: msgConfig.sendMessage,
-          },
-          params
-        );
+        let lastConnResult = firstConnResult;
 
-        console.log(1111, connResult);
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+        });
 
-        if (connResult) {
-          const parser = new XMLParser({
-            ignoreAttributes: false,
-          });
-          const mcpExecuteParams = parser.parse((connResult as IModelConnRecord).content);
+        while (actionRecord.chatTurns.length < 10) {
+          const mcpExecuteParams = parser.parse((lastConnResult as IModelConnRecord).content);
           const tool_user = mcpExecuteParams?.tool_use;
 
-          if (tool_user) {
-            const validToolUser = Array.isArray(tool_user) ? tool_user : [tool_user];
-            console.log(222222, { mcpExecuteParams, validToolUser });
+          if (!tool_user) {
+            break;
+          }
 
-            for await (const useToolInfo of validToolUser) {
-              connResult.mcpInfo.executeParams.push({
-                mcp_id: useToolInfo.mcp_id,
-                name: useToolInfo.name,
-                arguments: useToolInfo.arguments,
-              });
+          const validToolUser = Array.isArray(tool_user) ? tool_user : [tool_user];
 
-              const executeResult = await McpBridgeFactory.getInstance().callTool(
-                useToolInfo.mcp_id,
-                useToolInfo.name,
-                JSON.parse(useToolInfo.arguments)
-              );
-
-              console.log(3333, executeResult);
-              if (executeResult?.success && executeResult.data) {
-                connResult.mcpInfo.executeResult.push({
-                  mcp_id: useToolInfo.mcp_id,
-                  name: useToolInfo.name,
-                  result: executeResult.data,
-                });
-              } else {
-                throw executeResult;
-              }
-            }
-
-            const XMLContent = transMcpExecuteResultToXML({
-              executeResult: connResult.mcpInfo.executeResult,
+          for await (const useToolInfo of validToolUser) {
+            lastConnResult.mcpInfo.executeParams.push({
+              mcp_id: useToolInfo.mcp_id,
+              name: useToolInfo.name,
+              arguments: useToolInfo.arguments,
             });
 
-            const connResult2 = await this.resolveModelConn(
-              {
-                answerCell,
-                actionRecord,
-                userContent: XMLContent,
-              },
-              params
+            const executeResult = await McpBridgeFactory.getInstance().callTool(
+              useToolInfo.mcp_id,
+              useToolInfo.name,
+              JSON.parse(useToolInfo.arguments)
             );
-            console.log(55555, connResult2);
-          }
-        }
-      } else {
-        await this.resolveModelConn(
-          {
-            answerCell,
-            actionRecord,
-            userContent: msgConfig.sendMessage,
-          },
-          params
-        );
-      }
 
-      const curData = answerCell.get();
-      answerCell.set(curData);
+            if (executeResult?.success && executeResult.data) {
+              lastConnResult.mcpInfo.executeResult.push({
+                mcp_id: useToolInfo.mcp_id,
+                name: useToolInfo.name,
+                result: executeResult.data,
+              });
+            } else {
+              throw executeResult;
+            }
+          }
+
+          const XMLContent = transMcpExecuteResultToXML({
+            executeResult: lastConnResult.mcpInfo.executeResult,
+          });
+
+          lastConnResult = await this.resolveModelConn(
+            {
+              answerCell,
+              actionRecord,
+              userContent: XMLContent,
+            },
+            params
+          );
+        }
+      }
 
       resolver.resolve(undefined);
     } catch (error: any) {
       console.error(error);
-
-      const curData = answerCell.get();
-      let errorMessage = error?.message ?? error?.toString() ?? '';
-
-      if (error instanceof AuthenticationError) {
-        errorMessage = 'API秘钥或令牌无效';
-      }
-
-      // onnResult.status = EModalAnswerStatus.ERROR;
-
-      answerCell.set(curData);
-
-      resolver.reject(error);
     }
   }
 
@@ -323,7 +298,6 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         id,
         model,
         provider: name,
-        histroy: [],
         ...getEmptyAnswerData(),
       };
       const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);

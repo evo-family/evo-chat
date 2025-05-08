@@ -1,3 +1,5 @@
+import { AuthenticationError } from 'openai';
+import { EModalAnswerStatus } from '@/chat-message/types';
 import { IModelConnHandle } from './types';
 import { OpenAiClient } from '@evo/utils';
 import { defaultStreamResolver } from './stream';
@@ -49,8 +51,24 @@ export const modelConnHandle: IModelConnHandle = (params) => {
           firstResolve,
         });
       })
+      .then((connResult) => {
+        baseConnResult.status = EModalAnswerStatus.SUCCESS;
+        onResolve?.(connResult);
+
+        return connResult;
+      })
       .catch((error) => {
         taskSignal.reject(error);
+
+        let errorMessage = error?.message ?? error?.toString() ?? '';
+
+        if (error instanceof AuthenticationError) {
+          errorMessage = 'API秘钥或令牌无效';
+        }
+
+        baseConnResult.status = EModalAnswerStatus.ERROR;
+
+        onResolve?.(baseConnResult);
 
         return Promise.reject(error);
       });
