@@ -1,5 +1,3 @@
-import { AuthenticationError } from 'openai';
-import { EModalAnswerStatus } from '@/chat-message/types';
 import { IModelConnHandle } from './types';
 import { OpenAiClient } from '@evo/utils';
 import { defaultStreamResolver } from './stream';
@@ -7,7 +5,8 @@ import { getEmptyModelConnResult } from '@/chat-message/constants/answer';
 import { modelProcessor } from '../../../processor';
 
 export const modelConnHandle: IModelConnHandle = (params) => {
-  const { answerConfig, getMessageContext, taskSignal, onResolve } = params;
+  const { answerConfig, getMessageContext, taskSignal, userContent, onResolve, firstResolve } =
+    params;
   const providerName = answerConfig.provider;
 
   // 根据供应商获取对应的连接
@@ -21,9 +20,10 @@ export const modelConnHandle: IModelConnHandle = (params) => {
     baseURL: provider?.apiInfo.url!,
     defaultModel: answerConfig.model,
   });
-
-  const baseConnResult = getEmptyModelConnResult();
   const modelParams = modelProcessor.modelParams.get();
+  const baseConnResult = getEmptyModelConnResult(userContent);
+
+  answerConfig.chatTurns.push(baseConnResult);
 
   return getMessageContext().then((composeMessages) => {
     return modelConnection
@@ -39,6 +39,7 @@ export const modelConnHandle: IModelConnHandle = (params) => {
           stream: modelConnResult,
           connResult: baseConnResult,
           onResolve,
+          firstResolve,
         });
       })
       .catch((error) => {

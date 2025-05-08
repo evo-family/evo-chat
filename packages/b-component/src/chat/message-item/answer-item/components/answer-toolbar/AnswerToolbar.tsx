@@ -22,7 +22,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
 
-  const [status] = useCellValueSelector(answerCell, (value) => value.connResult.status);
+  const [status] = useCellValueSelector(answerCell, (value) => value.chatTurns.at(-1)?.status);
 
   const retryModel = useMemoizedFn(() => {
     chatWin.retryAnswer({
@@ -36,21 +36,24 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   });
 
   const copyModelAnswer = useMemoizedFn(() => {
-    const { content: answerContent, errorMessage, status } = answerCell.get().connResult;
-
+    const { chatTurns } = answerCell.get();
     let clipContent = '';
 
-    switch (status) {
-      case EModalAnswerStatus.SUCCESS:
-        clipContent = answerContent;
-        break;
-      case EModalAnswerStatus.ERROR:
-        clipContent = errorMessage;
-        break;
+    chatTurns.forEach((item) => {
+      const { content, status, errorMessage } = item;
 
-      default:
-        break;
-    }
+      switch (status) {
+        case EModalAnswerStatus.SUCCESS:
+          clipContent = content;
+          break;
+        case EModalAnswerStatus.ERROR:
+          clipContent = errorMessage;
+          break;
+
+        default:
+          break;
+      }
+    });
 
     if (clipContent) {
       navigator.clipboard.writeText(clipContent).then(() => {

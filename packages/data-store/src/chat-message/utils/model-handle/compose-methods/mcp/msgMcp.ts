@@ -1,44 +1,30 @@
-import { TComposedContexts, TModelAnswer } from '@/chat-message/types';
+import { IModelConnRecord, TComposedContexts } from '@/chat-message/types';
 
-import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 import { XMLBuilder } from 'fast-xml-parser';
 
-export const composeCurMsgMcp = async (params: { answerConfig: TModelAnswer }) => {
-  const { answerConfig } = params;
+export const transMcpExecuteResultToXML = (params: {
+  executeResult: IModelConnRecord['mcpInfo']['executeResult'];
+}): string => {
+  const { executeResult } = params;
+  let result = '';
 
-  if (answerConfig.type !== 'mcp') return [];
+  if (!executeResult.length) return result;
 
-  const composeResult: TComposedContexts = [];
-
-  answerConfig.mcpExchanges.map((mcpRecord) => {
-    const { content: mcpContent, mcpExecuteResult } = mcpRecord;
-    mcpContent &&
-      composeResult.push({
-        role: 'assistant',
-        content: mcpContent,
-      });
-
-    if (mcpExecuteResult) {
-      const builder = new XMLBuilder({
-        ignoreAttributes: false,
-      });
-
-      composeResult.push({
-        role: 'user',
-        content: mcpExecuteResult
-          .map((item) =>
-            builder.build({
-              tool_use_result: {
-                mcp_id: item.mcp_id,
-                name: item.name,
-                result: item.result.map((data) => data.data).join(','),
-              },
-            })
-          )
-          .join('\n'),
-      });
-    }
+  const builder = new XMLBuilder({
+    ignoreAttributes: false,
   });
 
-  return composeResult;
+  result = executeResult
+    .map((item) =>
+      builder.build({
+        tool_use_result: {
+          mcp_id: item.mcp_id,
+          name: item.name,
+          result: item.result.content.map((data) => data.data).join(','),
+        },
+      })
+    )
+    .join('\n');
+
+  return result;
 };

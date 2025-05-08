@@ -17,52 +17,46 @@ export enum EModalAnswerStatus {
 }
 
 export interface IModelConnRecord {
-  startReasoningTime?: number;
-  endReasoningTime?: number;
+  type: 'llm';
+  errorMessage: string;
   content: string;
   reasoning_content: string;
+  startReasoningTime?: number;
+  endReasoningTime?: number;
   status: EModalAnswerStatus;
   usage?: ChatCompletionChunk['usage'];
-  errorMessage: string;
+  sendMessage: string;
+  mcpInfo: {
+    executeParams: Array<{
+      mcp_id: string;
+      name: string;
+      arguments: Record<any, any>;
+    }>;
+    executeResult: Array<{
+      mcp_id: string;
+      name: string;
+      result: IMCPCallToolResponse;
+    }>;
+  };
 }
+
+export type TChatTurnItem = IModelConnRecord;
 
 export interface IModelBaseAnswer {
   id: string;
   model: string;
   provider: string;
   createdTime?: number;
-  connResult: IModelConnRecord;
+  chatTurns: TChatTurnItem[];
 }
 
-export interface INormalAnswer extends IModelBaseAnswer {
-  type: 'normal';
-}
-
-export interface IMCPExchangeItem extends IModelConnRecord {
-  mcpExecuteParams: Array<{
-    mcp_id: string;
-    name: string;
-    arguments: Record<any, any>;
-  }>;
-  mcpExecuteResult: Array<{
-    mcp_id: string;
-    name: string;
-    result: IMCPCallToolResponse['content'];
-  }>;
-}
-
-export interface IMCPModelAnswer extends IModelBaseAnswer {
-  type: 'mcp';
-  mcpExchanges: Array<IMCPExchangeItem>;
-}
-
-export type TModelAnswer = INormalAnswer | IMCPModelAnswer;
+export type TModelAnswer = IModelBaseAnswer;
 
 export interface IMessageConfig {
   id: string;
+  sendMessage: string;
   createdTime: number;
   providers: { name: string; model: string }[];
-  sendMessage: string;
   answerIds: string[];
   attachFileInfos?: IFileMeta[];
   mcpIds?: string[];

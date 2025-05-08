@@ -1,6 +1,8 @@
 import { EModalAnswerStatus, IModelBaseAnswer, IModelConnRecord } from '../types';
 
-export const getEmptyModelConnResult = (): IModelConnRecord => ({
+export const getEmptyModelConnResult = (sendMessage: string = ''): IModelConnRecord => ({
+  type: 'llm',
+  sendMessage,
   status: EModalAnswerStatus.PENDING,
   content: '',
   reasoning_content: '',
@@ -12,9 +14,13 @@ export const getEmptyModelConnResult = (): IModelConnRecord => ({
     completion_tokens: 0,
     total_tokens: 0,
   },
+  mcpInfo: {
+    executeParams: [],
+    executeResult: [],
+  },
 });
 
-export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'connResult' | 'createdTime'> => ({
+export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'createdTime' | 'chatTurns'> => ({
   createdTime: +Date.now(),
-  connResult: getEmptyModelConnResult(),
+  chatTurns: [],
 });

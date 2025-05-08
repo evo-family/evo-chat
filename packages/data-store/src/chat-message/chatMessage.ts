@@ -12,16 +12,16 @@ import {
   EModalAnswerStatus,
   IChatMessageInitOptions,
   IChatMessageOptions,
-  IMCPExchangeItem,
   IMessageConfig,
   IModelConnRecord,
   TModelAnswer,
+  TModelAnswerCell,
 } from './types';
 import { IComposeModelContextParams, IModelConnParams } from './utils/model-handle/types';
-import { XMLBuilder, XMLParser, XMLValidator } from 'fast-xml-parser';
 
 import { AuthenticationError } from 'openai';
 import { McpBridgeFactory } from '@evo/platform-bridge';
+import { XMLParser } from 'fast-xml-parser';
 import { composeModelConnContext } from './utils/model-handle/modelConnContext';
 import { getEmptyAnswerData } from './constants/answer';
 import { modelConnHandle } from './utils/model-handle/handler';
@@ -36,10 +36,12 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     this.configState = persistenceCellSync<IMessageConfig>(options.id, {
       id: options.id,
-      sendMessage: '',
       createdTime: +Date.now(),
       providers: [],
       answerIds: [],
+      sendMessage: '',
+      attachFileInfos: [],
+      mcpIds: [],
     });
 
     this.init();
@@ -67,13 +69,16 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
               const answerData = cell.get();
 
               // 如果本地取回的数据的状态是pending或者receiving，则将其状态改为success(未完成接收前就刷新页面强制中断了)
-              if (
-                answerData.connResult.status === EModalAnswerStatus.PENDING ||
-                answerData.connResult.status === EModalAnswerStatus.RECEIVING
-              ) {
-                answerData.connResult.status = EModalAnswerStatus.SUCCESS;
-                cell.set(answerData);
-              }
+              answerData.chatTurns.forEach((turnItem) => {
+                if (
+                  turnItem.status === EModalAnswerStatus.PENDING ||
+                  turnItem.status === EModalAnswerStatus.RECEIVING
+                ) {
+                  turnItem.status = EModalAnswerStatus.SUCCESS;
+                }
+              });
+
+              cell.set(answerData);
 
               this.modelAnswers.connectCell(answerData.id, cell);
             })
@@ -137,11 +142,12 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
   async resolveModelConn(
     options: {
-      answerConfig: TModelAnswer;
-    } & Pick<IModelConnParams, 'onResolve'>,
+      answerCell: TModelAnswerCell;
+    } & Pick<IModelConnParams, 'onResolve' | 'userContent'>,
     params?: IComposeModelContextParams
   ) {
-    const { answerConfig, onResolve } = options;
+    const { answerCell, onResolve, userContent } = options;
+    const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
     const resolver = this.getModelConnSignal(answerConfig.id);
 
@@ -150,6 +156,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       taskSignal: resolver,
       answerConfig,
       onResolve,
+      userContent,
       getMessageContext: () =>
         composeModelConnContext({
           msgConfig,
@@ -181,47 +188,20 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         ...getEmptyAnswerData(),
       });
 
-      resolver.promise
-        .catch((error: any) => {
-          const curData = answerCell.get();
-          let errorMessage = error?.message ?? error?.toString() ?? '';
-
-          if (error instanceof AuthenticationError) {
-            errorMessage = 'API秘钥或令牌无效';
-          }
-
-          curData.connResult.errorMessage = errorMessage;
-          curData.connResult.status = EModalAnswerStatus.ERROR;
-
-          answerCell.set(curData);
-        })
-        .finally(() => {
-          this.stopResolveAnswer(answerConfig.id);
-        });
+      resolver.promise.finally(() => {
+        this.stopResolveAnswer(answerConfig.id);
+      });
 
       if (mcpIds?.length) {
-        let firstResolve = true;
-
         const connResult = await this.resolveModelConn(
           {
-            answerConfig,
+            answerCell,
+            userContent: msgConfig.sendMessage,
             onResolve: (data) => {
               const curData = answerCell.get();
+              console.log(11111, { curData, data });
 
-              if (firstResolve && curData.type === 'mcp') {
-                // @ts-ignore
-                data.mcpExecuteParams = [];
-                // @ts-ignore
-                data.mcpExecuteResult = [];
-                // @ts-ignore
-                curData.mcpExchanges.push(data);
-
-                answerCell.set(curData);
-
-                firstResolve = false;
-              } else {
-                answerCell.set(curData);
-              }
+              answerCell.set(curData);
             },
           },
           params
@@ -229,9 +209,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
         console.log(1111, connResult);
 
-        const mcpResult = connResult as IMCPExchangeItem;
-
-        if (mcpResult) {
+        if (connResult) {
           const parser = new XMLParser({
             ignoreAttributes: false,
           });
@@ -243,7 +221,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
             console.log(222222, { mcpExecuteParams, validToolUser });
 
             for await (const useToolInfo of validToolUser) {
-              mcpResult.mcpExecuteParams.push({
+              connResult.mcpInfo.executeParams.push({
                 mcp_id: useToolInfo.mcp_id,
                 name: useToolInfo.name,
                 arguments: useToolInfo.arguments,
@@ -257,53 +235,38 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
               console.log(3333, executeResult);
               if (executeResult?.success && executeResult.data) {
-                mcpResult.mcpExecuteResult.push({
+                connResult.mcpInfo.executeResult.push({
                   mcp_id: useToolInfo.mcp_id,
                   name: useToolInfo.name,
-                  result: executeResult.data.content,
+                  result: executeResult.data,
                 });
               } else {
                 throw executeResult;
               }
             }
-            firstResolve = false;
 
             const connResult2 = await this.resolveModelConn(
               {
-                answerConfig,
+                answerCell,
+                userContent: msgConfig.sendMessage,
                 onResolve: (data) => {
                   const curData = answerCell.get();
 
-                  if (firstResolve && curData.type === 'mcp') {
-                    curData.mcpExchanges.push({
-                      ...data,
-                      mcpExecuteParams: [],
-                      mcpExecuteResult: [],
-                    });
-                    answerCell.set(curData);
-
-                    firstResolve = false;
-                  } else {
-                    answerCell.set(curData);
-                  }
+                  answerCell.set(curData);
                 },
               },
-              {
-                ...params,
-                userMsg: '',
-              }
+              params
             );
-
             console.log(55555, connResult2);
           }
         }
       } else {
         await this.resolveModelConn(
           {
-            answerConfig,
+            answerCell,
+            userContent: msgConfig.sendMessage,
             onResolve: (data) => {
               const curData = answerCell.get();
-              curData.connResult = data;
 
               answerCell.set(curData);
             },
@@ -313,40 +276,48 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       }
 
       const curData = answerCell.get();
-      curData.connResult.status = EModalAnswerStatus.SUCCESS;
       answerCell.set(curData);
 
       resolver.resolve(undefined);
     } catch (error: any) {
       console.error(error);
+
+      const curData = answerCell.get();
+      let errorMessage = error?.message ?? error?.toString() ?? '';
+
+      if (error instanceof AuthenticationError) {
+        errorMessage = 'API秘钥或令牌无效';
+      }
+
+      // onnResult.status = EModalAnswerStatus.ERROR;
+
+      answerCell.set(curData);
+
       resolver.reject(error);
     }
   }
 
   async postMessage(
     params: Pick<IMessageConfig, 'sendMessage' | 'providers' | 'attachFileInfos'> &
-      IComposeModelContextParams
+      Omit<IComposeModelContextParams, 'userContent'>
   ) {
     await this.ready();
 
     const currentConfig = this.getConfigState();
 
     if (currentConfig.sendMessage) {
-      return Promise.reject('message already exists.');
+      return Promise.reject('Message already exist.');
     }
 
-    const { providers, sendMessage, attachFileInfos, mcpIds } = params;
+    const { providers, attachFileInfos, mcpIds, sendMessage } = params;
 
     const answerIds = providers.map(({ name, model }) => {
       const id = generateHashId(32, 'c_ans_');
-      const msgType = mcpIds?.length ? 'mcp' : 'normal';
 
       const initialAnswerData: TModelAnswer = {
         id,
         model,
         provider: name,
-        type: msgType,
-        mcpExchanges: [],
         ...getEmptyAnswerData(),
       };
       const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);
@@ -358,11 +329,11 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     this.configState.set({
       ...currentConfig,
-      sendMessage,
       providers,
       attachFileInfos,
       answerIds,
       mcpIds,
+      sendMessage,
     });
 
     answerIds.forEach((id) => this.initializeAnswer(id, params));

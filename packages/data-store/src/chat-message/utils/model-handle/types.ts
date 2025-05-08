@@ -15,15 +15,16 @@ export interface IComposeModelContextParams
   extends Pick<Partial<IChatWindowConfig>, 'agentIds' | 'knowledgeIds' | 'mcpIds'> {
   composedContexts?: TComposedContexts;
   historyMessages?: ChatMessage[];
-  userMsg?: '';
 }
 
 export interface IModelConnParams {
   getMessageContext: () => Promise<ChatCompletionMessageParam[]>;
+  userContent: string;
   msgConfig: IMessageConfig;
   answerConfig: TModelAnswer;
   taskSignal: PromiseWrap;
   onResolve?: (value: IModelConnRecord) => void;
+  firstResolve?: (value: IModelConnRecord) => void;
 }
 
 export interface IModelConnHandle {

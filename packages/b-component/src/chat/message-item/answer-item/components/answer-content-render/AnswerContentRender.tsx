@@ -11,7 +11,10 @@ export interface IReasoningRenderProps {
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
   const { answerCell } = props;
 
-  const [answerContent] = useCellValueSelector(answerCell, (value) => value.connResult.content);
+  const [answerContent] = useCellValueSelector(
+    answerCell,
+    (value) => value.chatTurns.at(-1)?.content
+  );
 
   if (!answerContent) return null;
 

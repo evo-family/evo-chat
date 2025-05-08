@@ -4,7 +4,6 @@ import { ChatCompletionMessageParam } from 'openai/resources.mjs';
 import { IComposeModelContextParams } from './types';
 import { composeAgentsMsg } from './compose-methods/agent';
 import { composeAttachment } from './compose-methods/attachment';
-import { composeCurMsgMcp } from './compose-methods/mcp/msgMcp';
 import { composeHistoryMsg } from './compose-methods/histroyMsg';
 import { composeMcpTools } from './compose-methods/mcp/mcp';
 import { composeUserMsg } from './compose-methods/user';
@@ -21,7 +20,6 @@ export const composeModelConnContext = async (
     knowledgeIds,
     agentIds,
     mcpIds,
-    userMsg = msgConfig.sendMessage,
   } = params;
   const { attachFileInfos } = msgConfig;
 
@@ -29,23 +27,20 @@ export const composeModelConnContext = async (
   const modelParams = modelProcessor.modelParams.get();
   const { context_count } = modelParams;
 
-  const [lastContext, agentContext, attachContext, userContext, mcpTools, curMsgMcpExecuteInfo] =
-    await Promise.all([
-      composeHistoryMsg(historyMessages, { context_count }),
-      composeAgentsMsg({ agentIds }),
-      composeAttachment({ fileInfos: attachFileInfos }),
-      composeUserMsg({ msgConfig, knowledgeIds }),
-      composeMcpTools({ mcpIds }),
-      composeCurMsgMcp({ answerConfig }),
-    ]);
+  const [lastContext, agentContext, attachContext, userContext, mcpTools] = await Promise.all([
+    composeHistoryMsg(historyMessages, { context_count }),
+    composeAgentsMsg({ agentIds }),
+    composeAttachment({ fileInfos: attachFileInfos }),
+    composeUserMsg({ answerConfig, knowledgeIds }),
+    composeMcpTools({ mcpIds }),
+  ]);
 
   const composeMessages: ChatCompletionMessageParam[] = (composedContexts ?? []).concat(
     agentContext,
     mcpTools,
     lastContext,
     attachContext,
-    userContext,
-    curMsgMcpExecuteInfo
+    userContext
   );
 
   return composeMessages;

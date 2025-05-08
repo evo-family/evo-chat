@@ -15,15 +15,15 @@ export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
 
   const [reasoning_content] = useCellValueSelector(
     answerCell,
-    (value) => value.connResult.reasoning_content
+    (value) => value.chatTurns.at(-1)?.reasoning_content
   );
   const [startReasoningTime] = useCellValueSelector(
     answerCell,
-    (value) => value.connResult.startReasoningTime
+    (value) => value.chatTurns.at(-1)?.startReasoningTime
   );
   const [endReasoningTime] = useCellValueSelector(
     answerCell,
-    (value) => value.connResult.endReasoningTime
+    (value) => value.chatTurns.at(-1)?.endReasoningTime
   );
 
   const computeCollapseLabel = useMemo(() => {

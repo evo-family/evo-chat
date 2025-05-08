@@ -23,9 +23,10 @@ export const defaultStreamResolver = async (
   params: {
     stream: ChatResponse<true>;
     connResult: IModelConnRecord;
-  } & Pick<IModelConnParams, 'onResolve'>
+  } & Pick<IModelConnParams, 'onResolve' | 'firstResolve'>
 ) => {
-  const { stream, connResult, onResolve } = params;
+  const { stream, connResult, onResolve, firstResolve } = params;
+  let firstResolved = false;
 
   for await (const content of stream) {
     const { usage, choices } = content;
@@ -49,6 +50,11 @@ export const defaultStreamResolver = async (
     // 更新使用量统计
     if (usage) {
       connResult.usage = usage;
+    }
+
+    if (!firstResolved) {
+      firstResolved = true;
+      firstResolve?.(connResult);
     }
 
     onResolve?.(connResult);
