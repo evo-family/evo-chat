@@ -13,6 +13,7 @@ import {
   IChatMessageInitOptions,
   IChatMessageOptions,
   IMessageConfig,
+  IModelAnserActionRecord,
   IModelConnRecord,
   TModelAnswer,
   TModelAnswerCell,
@@ -25,6 +26,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { composeModelConnContext } from './utils/model-handle/modelConnContext';
 import { getEmptyAnswerData } from './constants/answer';
 import { modelConnHandle } from './utils/model-handle/handler';
+import { transMcpExecuteResultToXML } from './utils/model-handle/compose-methods/mcp/msgMcp';
 
 export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<Context>> {
   configState: DataCell<IMessageConfig>;
@@ -69,13 +71,15 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
               const answerData = cell.get();
 
               // 如果本地取回的数据的状态是pending或者receiving，则将其状态改为success(未完成接收前就刷新页面强制中断了)
-              answerData.chatTurns.forEach((turnItem) => {
-                if (
-                  turnItem.status === EModalAnswerStatus.PENDING ||
-                  turnItem.status === EModalAnswerStatus.RECEIVING
-                ) {
-                  turnItem.status = EModalAnswerStatus.SUCCESS;
-                }
+              answerData.histroy.forEach((record) => {
+                record.chatTurns.forEach((turnItem) => {
+                  if (
+                    turnItem.status === EModalAnswerStatus.PENDING ||
+                    turnItem.status === EModalAnswerStatus.RECEIVING
+                  ) {
+                    turnItem.status = EModalAnswerStatus.SUCCESS;
+                  }
+                });
               });
 
               cell.set(answerData);
@@ -143,26 +147,32 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
   async resolveModelConn(
     options: {
       answerCell: TModelAnswerCell;
-    } & Pick<IModelConnParams, 'onResolve' | 'userContent'>,
+    } & Pick<IModelConnParams, 'onResolve' | 'userContent' | 'actionRecord'>,
     params?: IComposeModelContextParams
   ) {
-    const { answerCell, onResolve, userContent } = options;
+    const { answerCell, userContent, actionRecord } = options;
     const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
     const resolver = this.getModelConnSignal(answerConfig.id);
 
     return await modelConnHandle({
       msgConfig,
-      taskSignal: resolver,
-      answerConfig,
-      onResolve,
       userContent,
+      answerConfig,
+      actionRecord,
+      taskSignal: resolver,
       getMessageContext: () =>
         composeModelConnContext({
           msgConfig,
           answerConfig,
           ...params,
         }),
+      onResolve: (data) => {
+        const curData = answerCell.get();
+
+        answerCell.set(curData);
+      },
+
       ...params,
     });
   }
@@ -175,6 +185,10 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
     const { mcpIds } = msgConfig;
+    const actionRecord: IModelAnserActionRecord = {
+      chatTurns: [],
+    };
+    answerConfig.histroy.push(actionRecord);
 
     // 先尝试停止前一个model连接接收
     this.stopResolveAnswer(answerConfig.id);
@@ -196,13 +210,8 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         const connResult = await this.resolveModelConn(
           {
             answerCell,
+            actionRecord,
             userContent: msgConfig.sendMessage,
-            onResolve: (data) => {
-              const curData = answerCell.get();
-              console.log(11111, { curData, data });
-
-              answerCell.set(curData);
-            },
           },
           params
         );
@@ -245,15 +254,15 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
               }
             }
 
+            const XMLContent = transMcpExecuteResultToXML({
+              executeResult: connResult.mcpInfo.executeResult,
+            });
+
             const connResult2 = await this.resolveModelConn(
               {
                 answerCell,
-                userContent: msgConfig.sendMessage,
-                onResolve: (data) => {
-                  const curData = answerCell.get();
-
-                  answerCell.set(curData);
-                },
+                actionRecord,
+                userContent: XMLContent,
               },
               params
             );
@@ -264,12 +273,8 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         await this.resolveModelConn(
           {
             answerCell,
+            actionRecord,
             userContent: msgConfig.sendMessage,
-            onResolve: (data) => {
-              const curData = answerCell.get();
-
-              answerCell.set(curData);
-            },
           },
           params
         );
@@ -318,6 +323,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
         id,
         model,
         provider: name,
+        histroy: [],
         ...getEmptyAnswerData(),
       };
       const answerCell = persistenceCellSync<TModelAnswer>(id, initialAnswerData);

@@ -18,12 +18,18 @@ const AnswerScrollTrigger = React.memo((props: { answerCell: TModelAnswerCell })
 
   const [tryScrollToBtmIfNeed] = useChatWinCtx((ctx) => ctx.tryScrollToBtmIfNeed);
 
-  const [content] = useCellValueSelector(answerCell, (value) => value.chatTurns.at(-1)?.content);
+  const [content] = useCellValueSelector(
+    answerCell,
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.content
+  );
   const [reasoning_content] = useCellValueSelector(
     answerCell,
-    (value) => value.chatTurns.at(-1)?.reasoning_content
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.reasoning_content
   );
-  const [status] = useCellValueSelector(answerCell, (value) => value.chatTurns.at(-1)?.status);
+  const [status] = useCellValueSelector(
+    answerCell,
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
+  );
 
   useUpdateEffect(() => {
     tryScrollToBtmIfNeed();
@@ -35,10 +41,13 @@ const AnswerScrollTrigger = React.memo((props: { answerCell: TModelAnswerCell })
 export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
   const { answerCell } = props;
 
-  const [status] = useCellValueSelector(answerCell, (value) => value.chatTurns.at(-1)?.status);
+  const [status] = useCellValueSelector(
+    answerCell,
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
+  );
   const [errorMessage] = useCellValueSelector(
     answerCell,
-    (value) => value.chatTurns.at(-1)?.errorMessage
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.errorMessage
   );
 
   if (status === EModalAnswerStatus.PENDING) {

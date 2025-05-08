@@ -1,6 +1,7 @@
 import { ChatResponse, DataCell, OpenAiClient, PromiseWrap } from '@evo/utils';
 import {
   IMessageConfig,
+  IModelAnserActionRecord,
   IModelConnRecord,
   TComposedContexts,
   TModelAnswer,
@@ -22,6 +23,7 @@ export interface IModelConnParams {
   userContent: string;
   msgConfig: IMessageConfig;
   answerConfig: TModelAnswer;
+  actionRecord: IModelAnserActionRecord;
   taskSignal: PromiseWrap;
   onResolve?: (value: IModelConnRecord) => void;
   firstResolve?: (value: IModelConnRecord) => void;

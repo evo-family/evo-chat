@@ -42,12 +42,16 @@ export interface IModelConnRecord {
 
 export type TChatTurnItem = IModelConnRecord;
 
+export interface IModelAnserActionRecord {
+  chatTurns: TChatTurnItem[];
+}
+
 export interface IModelBaseAnswer {
   id: string;
   model: string;
   provider: string;
   createdTime?: number;
-  chatTurns: TChatTurnItem[];
+  histroy: IModelAnserActionRecord[];
 }
 
 export type TModelAnswer = IModelBaseAnswer;

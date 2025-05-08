@@ -18,8 +18,9 @@ export const composeHistoryMsg = async (
     await msgIns.ready();
 
     msgIns.modelAnswers.getCellsValue({ all: true }).map.forEach((answerData) => {
-      if (answerData?.chatTurns.length) {
-        answerData.chatTurns.map((turnItem) => {
+      const targetChatTurn = answerData?.histroy.at(-1)?.chatTurns;
+      if (targetChatTurn?.length) {
+        targetChatTurn.map((turnItem) => {
           const { sendMessage, content } = turnItem;
 
           collectContext.push([

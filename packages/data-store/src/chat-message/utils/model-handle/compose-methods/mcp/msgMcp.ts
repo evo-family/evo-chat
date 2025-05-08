@@ -20,7 +20,7 @@ export const transMcpExecuteResultToXML = (params: {
         tool_use_result: {
           mcp_id: item.mcp_id,
           name: item.name,
-          result: item.result.content.map((data) => data.data).join(','),
+          result: item.result.content.map((data) => data.text).join(','),
         },
       })
     )

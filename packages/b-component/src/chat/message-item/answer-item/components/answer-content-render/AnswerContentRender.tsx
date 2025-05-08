@@ -13,7 +13,7 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
 
   const [answerContent] = useCellValueSelector(
     answerCell,
-    (value) => value.chatTurns.at(-1)?.content
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.content
   );
 
   if (!answerContent) return null;

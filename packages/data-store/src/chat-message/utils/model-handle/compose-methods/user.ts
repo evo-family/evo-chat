@@ -57,7 +57,11 @@ export const composeUserMsg = async (params: {
   answerConfig: TModelAnswer;
 }): Promise<TComposedContexts> => {
   const { knowledgeIds, answerConfig } = params;
-  const { chatTurns } = answerConfig;
+  const { histroy } = answerConfig;
+  const latestRecord = histroy.at(-1);
+
+  if (!latestRecord) return [];
+  const { chatTurns } = latestRecord;
 
   if (!chatTurns?.length) return [];
 

@@ -20,7 +20,6 @@ export const getEmptyModelConnResult = (sendMessage: string = ''): IModelConnRec
   },
 });
 
-export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'createdTime' | 'chatTurns'> => ({
+export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'createdTime'> => ({
   createdTime: +Date.now(),
-  chatTurns: [],
 });

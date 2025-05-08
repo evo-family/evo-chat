@@ -22,7 +22,10 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
 
-  const [status] = useCellValueSelector(answerCell, (value) => value.chatTurns.at(-1)?.status);
+  const [status] = useCellValueSelector(
+    answerCell,
+    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
+  );
 
   const retryModel = useMemoizedFn(() => {
     chatWin.retryAnswer({
