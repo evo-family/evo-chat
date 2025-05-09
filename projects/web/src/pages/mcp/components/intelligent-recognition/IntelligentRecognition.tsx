@@ -43,7 +43,7 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
         description: `MCP Server for ${serverName}`,
         command: serverConfig.command || 'npx',
         args: Array.isArray(serverConfig.args) ? serverConfig.args.join('\n') : '',
-        env: Object.entries(serverConfig.env || {}).map(([key, value]) => ({
+        env: Object.entries(serverConfig?.env || {}).map(([key, value]) => ({
           key,
           value: String(value),
         })),
@@ -53,6 +53,7 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
       message.success('识别成功');
       setVisible(false);
     } catch (error) {
+      console.log(error);
       message.error('请输入有效的 JSON 格式');
     }
   };
