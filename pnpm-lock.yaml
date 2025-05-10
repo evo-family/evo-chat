@@ -514,6 +514,9 @@ importers:
       electron-updater:
         specifier: ^6.3.9
         version: 6.6.2
+      fix-path:
+        specifier: ^4.0.0
+        version: 4.0.0
     devDependencies:
       '@electron-toolkit/eslint-config-prettier':
         specifier: ^3.0.0
@@ -3390,6 +3393,10 @@ packages:
     resolution: {integrity: sha512-WY/3TUME0x3KPYdRRxEJJvXRHV4PyPoUsxtZa78lwItwRQRHhd2U9xOscaT/YTf8uCXIAjeJOFBVEh/7FtD8Xg==}
     engines: {node: '>=18'}
 
+  default-shell@2.2.0:
+    resolution: {integrity: sha512-sPpMZcVhRQ0nEMDtuMJ+RtCxt7iHPAMBU+I4tAlo5dU1sjRpNax0crj6nR3qKpvVnckaQ9U38enXcwW9nZJeCw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
 
@@ -3947,6 +3954,10 @@ packages:
   find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
+
+  fix-path@4.0.0:
+    resolution: {integrity: sha512-g31GX207Tt+psI53ZSaB1egprYbEN0ZYl90aKcO22A2LmCNnFsSq3b5YpoKp3E/QEiWByTXGJOkFQG4S07Bc1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
@@ -6740,6 +6751,14 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  shell-env@4.0.1:
+    resolution: {integrity: sha512-w3oeZ9qg/P6Lu6qqwavvMnB/bwfsz67gPB3WXmLd/n6zuh7TWQZtGa3iMEdmua0kj8rivkwl+vUjgLWlqZOMPw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  shell-path@3.0.0:
+    resolution: {integrity: sha512-HNIZ+W/3P0JuVTV03xjGqYKt3e3h0/Z4AH8TQWeth1LBtCusSjICgkdNdb3VZr6mI7ijE2AiFFpgkVMNKsALeQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   shell-quote@1.8.2:
     resolution: {integrity: sha512-AzqKpGKjrj7EM6rKVQEPpB288oCfnrEIuyoT9cyF4nmGa7V8Zk6f7RRqYisX8X9m+Q7bd632aZW4ky7EhbQztA==}
@@ -10968,6 +10987,8 @@ snapshots:
       bundle-name: 4.1.0
       default-browser-id: 5.0.0
 
+  default-shell@2.2.0: {}
+
   defaults@1.0.4:
     dependencies:
       clone: 1.0.4
@@ -11768,6 +11789,10 @@ snapshots:
     dependencies:
       locate-path: 6.0.0
       path-exists: 4.0.0
+
+  fix-path@4.0.0:
+    dependencies:
+      shell-path: 3.0.0
 
   flat-cache@4.0.1:
     dependencies:
@@ -15138,6 +15163,16 @@ snapshots:
   shebang-regex@1.0.0: {}
 
   shebang-regex@3.0.0: {}
+
+  shell-env@4.0.1:
+    dependencies:
+      default-shell: 2.2.0
+      execa: 5.1.1
+      strip-ansi: 7.1.0
+
+  shell-path@3.0.0:
+    dependencies:
+      shell-env: 4.0.1
 
   shell-quote@1.8.2: {}
 

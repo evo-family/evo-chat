@@ -10,7 +10,7 @@ export interface IAddOrUpdateMcpCategoryProps {}
 
 export const AddOrUpdateMcpCategory: FC<IAddOrUpdateMcpCategoryProps> = memo(() => {
   const dialogData = useMcpSelector((s) => s.addOrUpdateCategoryDialog.dialogData);
-  const openDialog = useMcpSelector((s) => s.addOrUpdateCategoryDialog.openDialog);
+  const setCreateModalData = useMcpSelector((s) => s.addOrUpdateCategoryDialog.setCreateModalData);
   const closeDialog = useMcpSelector((s) => s.addOrUpdateCategoryDialog.closeDialog);
   const [isElectron] = useGlobalCtx((s) => s.envProcessor?.isElectron);
   const createCategory = useMcpSelector((s) => s.createCategory);
@@ -21,7 +21,7 @@ export const AddOrUpdateMcpCategory: FC<IAddOrUpdateMcpCategoryProps> = memo(() 
       message.info('MCP 功能仅支持在桌面端使用');
       return;
     }
-    openDialog();
+    setCreateModalData();
   };
 
   return (
@@ -51,7 +51,7 @@ export const AddOrUpdateMcpCategory: FC<IAddOrUpdateMcpCategoryProps> = memo(() 
               });
             }
             if (res.success) {
-              message.success(dialogData.type === 'create' ? '创建成功' : '更新成功1');
+              message.success(dialogData.type === 'create' ? '创建成功' : '更新成功');
               closeDialog();
               return true;
             } else {

@@ -5,6 +5,7 @@ export async function checkCommand(command: string): Promise<boolean> {
     await which(command);
     return true;
   } catch (error) {
+    console.error('common-check-error', error);
     return false;
   }
 }

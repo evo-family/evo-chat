@@ -30,11 +30,6 @@ export function setupAutoUpdataHandler() {
   autoUpdater.allowDowngrade = false;
   autoUpdater.channel = 'latest';
 
-  // Force updates in development mode
-  if (!app.isPackaged) {
-    autoUpdater.forceDevUpdateConfig = true;
-  }
-
   autoUpdater.on('checking-for-update', () => {
     log.info('正在检查更新...');
   });
@@ -84,6 +79,11 @@ export function setupAutoUpdataHandler() {
 
   // 手动检查更新的 IPC 处理
   ipcMain.handle(IPC_EVENTS.UPDATE.CHECK, () => {
+    // 开发环境下不执行更新检查
+    if (!app.isPackaged) {
+      log.info('开发环境下不检查更新');
+      return;
+    }
     autoUpdater.checkForUpdatesAndNotify();
   });
 }

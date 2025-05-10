@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { app, BrowserWindow, session, Menu, MenuItem } from 'electron';
 import { createMainWindow, showMainWindow } from './MainWindow';
 import { TrayService } from './services/TrayService';
 import { isMacOS } from './utils/PlatformUtil';
 import { ipcInit } from './ipc';
+import fixPath from 'fix-path';
+
+// @ts-ignore
+fixPath?.default?.();
 
 // 如果返回 false，说明另一个实例已经在运行
 if (!app.requestSingleInstanceLock()) {
