@@ -31,7 +31,6 @@ export const McpList: FC = () => {
   if (!selectCategory) {
     return <Empty description="请先选择分类" />;
   }
-  console.log('evo=>mcp-list', mcpList?.data);
   return (
     <div className={s.container}>
       <ProList
@@ -47,50 +46,52 @@ export const McpList: FC = () => {
           subTitle: {
             render: (_, record) => (
               <Tag color={record.type === EMcpType.STDIO ? 'blue' : 'green'}>
-                {record.type === EMcpType.STDIO ? '标准输入/输出' : '服务器发送事件'}
+                {record.type === EMcpType.STDIO ? 'STDIO' : 'SSE'}
               </Tag>
             ),
           },
           actions: {
             render: (_, record) => {
               return (
-                <Space split={<Divider type="vertical" />} size={0}>
+                <Space>
                   <McpEnableSwitch record={record} onUpdateSuccess={() => {}} />
                   <McpTools record={record} />
-                  <a
-                    key="edit"
-                    onClick={() =>
-                      setDialogData({
-                        open: true,
-                        type: 'update',
-                        data: record,
-                      })
-                    }
-                  >
-                    编辑
-                  </a>
-                  <a
-                    key="delete"
-                    style={{ color: 'var(--evo-color-error-text)' }}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: '确认删除',
-                        content: `确定要删除 "${record.name}" 吗？`,
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk: async () => {
-                          const res = await deleteMcp(record.id);
-                          if (res.success) {
-                            message.success('删除成功');
-                          } else {
-                            message.error(res.error || '删除失败');
-                          }
-                        },
-                      });
-                    }}
-                  >
-                    删除
-                  </a>
+                  <Space style={{ marginLeft: 10 }} split={<Divider type="vertical" />} size={0}>
+                    <a
+                      key="edit"
+                      onClick={() =>
+                        setDialogData({
+                          open: true,
+                          type: 'update',
+                          data: record,
+                        })
+                      }
+                    >
+                      编辑
+                    </a>
+                    <a
+                      key="delete"
+                      style={{ color: 'var(--evo-color-error-text)' }}
+                      onClick={() => {
+                        Modal.confirm({
+                          title: '确认删除',
+                          content: `确定要删除 "${record.name}" 吗？`,
+                          okText: '确认',
+                          cancelText: '取消',
+                          onOk: async () => {
+                            const res = await deleteMcp(record.id);
+                            if (res.success) {
+                              message.success('删除成功');
+                            } else {
+                              message.error(res.error || '删除失败');
+                            }
+                          },
+                        });
+                      }}
+                    >
+                      删除
+                    </a>
+                  </Space>
                 </Space>
               );
             },

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Drawer, Collapse, Descriptions, Tag, message } from 'antd';
+import { Drawer, Collapse, Descriptions, Tag, message, Button } from 'antd';
 import { JsonSchemaType } from './types';
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { IMcpMeta } from '@evo/types';
@@ -77,7 +77,9 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
 
   return (
     <>
-      <a onClick={() => setOpen(true)}>工具</a>
+      <Button color="default" variant="filled" onClick={() => setOpen(true)}>
+        工具
+      </Button>
       <Drawer
         title="可用工具"
         placement="right"
