@@ -1,20 +1,12 @@
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import React from 'react';
-import { TModelAnswerCell } from '@evo/data-store';
-import style from './Style.modules.scss';
-import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
-  answerCell: TModelAnswerCell;
+  answerContent?: string;
 }
 
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerCell } = props;
-
-  const [answerContent] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.content
-  );
+  const { answerContent } = props;
 
   if (!answerContent) return null;
 

@@ -9,14 +9,14 @@ Tool use is formatted using XML-style tags. The tool name is enclosed in opening
 
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
-  <name>{tool_name}</name>
+  <tool_name>{tool_name}</tool_name>
   <arguments>{json_arguments}</arguments>
 </tool_use>
 
 The tool name should be the exact name of the tool you are using, and the arguments should be a JSON object containing the parameters required by that tool. For example:
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
-  <name>python_interpreter</name>
+  <tool_name>python_interpreter</tool_name>
   <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
 </tool_use>
 
@@ -24,7 +24,7 @@ The user will respond with the result of the tool use, which should be formatted
 
 <tool_use_result>
   <mcp_id>{mcp_id}</mcp_id>
-  <name>{tool_name}</name>
+  <tool_name>{tool_name}</tool_name>
   <result>{result}</result>
 </tool_use_result>
 
@@ -33,7 +33,7 @@ For example, if the result of the tool use is an image file, you can use it in t
 
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
-  <name>image_transformer</name>
+  <tool_name>image_transformer</tool_name>
   <arguments>{"image": "image_1.jpg"}</arguments>
 </tool_use>
 
@@ -68,26 +68,26 @@ User: Generate an image of the oldest person in this document.
 Assistant: I can use the document_qa tool to find out who the oldest person is in the document.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>document_qa</name>
+  <tool_name>document_qa</tool_name>
   <arguments>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>document_qa</name>
+  <tool_name>document_qa</tool_name>
   <result>John Doe, a 55 year old lumberjack living in Newfoundland.</result>
 </tool_use_result>
 
 Assistant: I can use the image_generator tool to create a portrait of John Doe.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>image_generator</name>
+  <tool_name>image_generator</tool_name>
   <arguments>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</arguments>
 </tool_use>
 
 User: <tool_use_result>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>image_generator</name>
+  <tool_name>image_generator</tool_name>
   <result>image.png</result>
 </tool_use_result>
 
@@ -99,13 +99,13 @@ User: "What is the result of the following operation: 5 + 3 + 1294.678?"
 Assistant: I can use the python_interpreter tool to calculate the result of the operation.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>python_interpreter</name>
+  <tool_name>python_interpreter</tool_name>
   <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>python_interpreter</name>
+  <tool_name>python_interpreter</tool_name>
   <result>1302.678</result>
 </tool_use_result>
 
@@ -117,26 +117,26 @@ User: "Which city has the highest population , Guangzhou or Shanghai?"
 Assistant: I can use the search tool to find the population of Guangzhou.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>search</name>
+  <tool_name>search</tool_name>
   <arguments>{"query": "Population Guangzhou"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>search</name>
+  <tool_name>search</tool_name>
   <result>Guangzhou has a population of 15 million inhabitants as of 2021.</result>
 </tool_use_result>
 
 Assistant: I can use the search tool to find the population of Shanghai.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>search</name>
+  <tool_name>search</tool_name>
   <arguments>{"query": "Population Shanghai"}</arguments>
 </tool_use>
 
 User: <tool_use_result>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
-  <name>search</name>
+  <tool_name>search</tool_name>
   <result>26 million (2019)</result>
 </tool_use_result>
 Assistant: The population of Shanghai is 26 million, while Guangzhou has a population of 15 million. Therefore, Shanghai has the highest population.
@@ -148,7 +148,7 @@ export const getPromptTools = (tools: IMcpTool[], mcpId: string) => {
       return `
 <tool>
   <mcp_id>${mcpId}</mcp_id>
-  <name>${tool.name}</name>
+  <tool_name>${tool.name}</tool_name>
   <description>${tool.description}</description>
   <arguments>
     ${tool.inputSchema ? JSON.stringify(tool.inputSchema) : ''}

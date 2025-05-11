@@ -13,9 +13,11 @@
     }
   }
 
-  .reasoning-wrap {
-    margin-top: 10px;
-    border: 1px solid var(--evo-collapse-header-bg);
+  :global {
+    .ant-collapse {
+      margin-top: 10px;
+      border: 1px solid var(--evo-collapse-header-bg);
+    }
   }
 }
 

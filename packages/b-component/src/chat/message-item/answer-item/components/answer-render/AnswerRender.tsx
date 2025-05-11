@@ -1,54 +1,42 @@
-import { EModalAnswerStatus, TModelAnswerCell, useChatWinCtx } from '@evo/data-store';
-import React, { useLayoutEffect } from 'react';
+import {
+  EModalAnswerStatus,
+  useChatAnswerCtx,
+  useChatAnswerOrgCtx,
+  useChatWinCtx,
+} from '@evo/data-store';
+import React, { useLayoutEffect, useMemo } from 'react';
 
 import { AnswerContentRender } from '../answer-content-render/AnswerContentRender';
-import { AnswerToolbar } from '../answer-toolbar/AnswerToolbar';
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Divider } from 'antd';
+import { McpExecuteInfo } from '../mcp-execute-info/McpExecuteInfo';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
 import { useCellValueSelector } from '@evo/utils';
 import { useUpdateEffect } from 'ahooks';
 
-export interface IAnswerRenderProps {
-  answerCell: TModelAnswerCell;
+export interface AnswerRenderTurnItemProps {
+  turnIndex: number;
 }
 
-const AnswerScrollTrigger = React.memo((props: { answerCell: TModelAnswerCell }) => {
-  const { answerCell } = props;
+export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
+  const { turnIndex } = props;
 
   const [tryScrollToBtmIfNeed] = useChatWinCtx((ctx) => ctx.tryScrollToBtmIfNeed);
-
-  const [content] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.content
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.status);
+  const [errorMessage] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.errorMessage
   );
   const [reasoning_content] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.reasoning_content
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.reasoning_content
   );
-  const [status] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
-  );
+  const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
 
   useUpdateEffect(() => {
     tryScrollToBtmIfNeed();
   }, [content, reasoning_content, status]);
-
-  return null;
-});
-
-export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
-  const { answerCell } = props;
-
-  const [status] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
-  );
-  const [errorMessage] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.errorMessage
-  );
 
   if (status === EModalAnswerStatus.PENDING) {
     return (
@@ -78,13 +66,26 @@ export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
         />
       ) : (
         <>
-          <ReasoningRender answerCell={answerCell} />
-          <AnswerContentRender answerCell={answerCell} />
+          <ReasoningRender turnIndex={turnIndex} />
+          <McpExecuteInfo turnIndex={turnIndex} />
+          <AnswerContentRender answerContent={content} />
         </>
       )}
-      <Divider />
-      <AnswerToolbar answerCell={answerCell} />
-      <AnswerScrollTrigger answerCell={answerCell} />
     </>
   );
+});
+
+export interface IAnswerRenderProps {}
+
+export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
+  const [chatTurns] = useChatAnswerCtx((ctx) => ctx.chatTurnsCell);
+
+  return chatTurns.map((turnItem, index) => {
+    return (
+      <div key={index}>
+        <AnswerTurnItem turnIndex={index} />
+        <Divider />
+      </div>
+    );
+  });
 });

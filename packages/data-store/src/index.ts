@@ -16,6 +16,7 @@ export * from './utils/mergeObject';
 export * from './react-context/global';
 export * from './react-context/window/context';
 export * from './react-context/message';
+export * from './react-context/answer';
 export * from './glob-state/assistant';
 export * from './hooks/assistant';
 export * from './hooks/chat-list/useChatList';

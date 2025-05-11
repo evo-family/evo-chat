@@ -56,21 +56,6 @@ export const modelConnHandle: IModelConnHandle = (params) => {
         onResolve?.(connResult);
 
         return connResult;
-      })
-      .catch((error) => {
-        taskSignal.reject(error);
-
-        let errorMessage = error?.message ?? error?.toString() ?? '';
-
-        if (error instanceof AuthenticationError) {
-          errorMessage = 'API秘钥或令牌无效';
-        }
-
-        baseConnResult.status = EModalAnswerStatus.ERROR;
-
-        onResolve?.(baseConnResult);
-
-        return Promise.reject(error);
       });
   });
 };

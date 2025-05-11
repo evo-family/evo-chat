@@ -11,6 +11,7 @@ import { Flex, GetRef } from 'antd';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { AnswerItem } from './answer-item/AnswerItem';
+import { ChatAnswerContextProvider } from '../../../../data-store/src/react-context/answer';
 import { CollectionLayout } from '../../collection-layout/CollectionLayout';
 import { ICollectionLayoutProps } from '../../collection-layout/types';
 import { MessageLayout } from './message-layout//MessageLayout';
@@ -50,7 +51,11 @@ const MessageItemAnswers = React.memo(() => {
   const [answerIds] = useCellValueSelector(msgConfigStateCell, (state) => state.answerIds);
 
   const ItemRender = useMemoizedFn<ICollectionLayoutProps<string>['itemRender']>((id, index) => {
-    return <AnswerItem key={id} answerId={id} />;
+    return (
+      <ChatAnswerContextProvider key={id} answerId={id}>
+        <AnswerItem />
+      </ChatAnswerContextProvider>
+    );
   });
 
   return (

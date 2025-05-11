@@ -1,5 +1,5 @@
 import React, { useDeferredValue, useLayoutEffect, useMemo } from 'react';
-import { TModelAnswerCell, useChatWinCtx } from '@evo/data-store';
+import { useChatAnswerOrgCtx, useChatWinCtx } from '@evo/data-store';
 
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Collapse } from 'antd';
@@ -7,23 +7,25 @@ import style from './Reasoning.module.scss';
 import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
-  answerCell: TModelAnswerCell;
+  turnIndex: number;
 }
 
 export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerCell } = props;
+  const { turnIndex } = props;
+
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
 
   const [reasoning_content] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.reasoning_content
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.reasoning_content
   );
   const [startReasoningTime] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.startReasoningTime
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.startReasoningTime
   );
   const [endReasoningTime] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.endReasoningTime
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.endReasoningTime
   );
 
   const computeCollapseLabel = useMemo(() => {
@@ -38,7 +40,6 @@ export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
 
   return (
     <Collapse
-      className={style['reasoning-wrap']}
       bordered={false}
       defaultActiveKey={'1'}
       size="small"

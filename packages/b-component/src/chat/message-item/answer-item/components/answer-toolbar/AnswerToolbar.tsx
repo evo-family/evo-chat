@@ -1,7 +1,7 @@
 import { CopyOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
   EModalAnswerStatus,
-  TModelAnswerCell,
+  useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
@@ -12,20 +12,15 @@ import style from './Style.module.scss';
 import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
-export interface IAnswerToolbarProps {
-  answerCell: TModelAnswerCell;
-}
+export interface IAnswerToolbarProps {}
 
 export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
-  const { answerCell } = props;
-
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
+  const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
 
-  const [status] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
-  );
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(-1)?.status);
 
   const retryModel = useMemoizedFn(() => {
     chatWin.retryAnswer({
@@ -39,10 +34,9 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   });
 
   const copyModelAnswer = useMemoizedFn(() => {
-    const { chatTurns } = answerCell.get();
     let clipContent = '';
 
-    chatTurns.forEach((item) => {
+    chatTurnsCell.get().forEach((item) => {
       const { content, status, errorMessage } = item;
 
       switch (status) {

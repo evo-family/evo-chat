@@ -1,7 +1,7 @@
 import { ArrowsAltOutlined, XFilled } from '@ant-design/icons';
 import {
   EModalAnswerStatus,
-  TModelAnswerCell,
+  useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
@@ -14,20 +14,18 @@ import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
 export interface IAnswerActionsProps {
-  answerCell: TModelAnswerCell;
   showMaximize?: boolean;
   onExpandClick?: (event: MouseEvent) => any;
 }
 
 export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
-  const { answerCell, showMaximize, onExpandClick } = props;
+  const { showMaximize, onExpandClick } = props;
 
   const [chatWinOptions] = useChatWinCtx((ctx) => ctx.options);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
-  const [status] = useCellValueSelector(
-    answerCell,
-    (value) => value.histroy.at(0)?.chatTurns.at(-1)?.status
-  );
+  const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(-1)?.status);
 
   const stopModel = useMemoizedFn(() => {
     chatMsg.stopResolveAnswer(answerCell.get().id);

@@ -16,6 +16,20 @@ export enum EModalAnswerStatus {
   RECEIVING = 'receiving',
 }
 
+export enum EMCPExecuteStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
+export interface IMCPExecuteRecord {
+  mcp_id: string;
+  tool_name: string;
+  arguments: Record<any, any>;
+  status: EMCPExecuteStatus;
+  result?: IMCPCallToolResponse;
+}
+
 export interface IModelConnRecord {
   type: 'llm';
   errorMessage: string;
@@ -27,16 +41,7 @@ export interface IModelConnRecord {
   usage?: ChatCompletionChunk['usage'];
   sendMessage: string;
   mcpInfo: {
-    executeParams: Array<{
-      mcp_id: string;
-      name: string;
-      arguments: Record<any, any>;
-    }>;
-    executeResult: Array<{
-      mcp_id: string;
-      name: string;
-      result: IMCPCallToolResponse;
-    }>;
+    executeRecords: Array<IMCPExecuteRecord>;
   };
 }
 

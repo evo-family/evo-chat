@@ -15,8 +15,7 @@ export const getEmptyModelConnResult = (sendMessage: string = ''): IModelConnRec
     total_tokens: 0,
   },
   mcpInfo: {
-    executeParams: [],
-    executeResult: [],
+    executeRecords: [],
   },
 });
 
