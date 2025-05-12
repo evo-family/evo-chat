@@ -9,7 +9,7 @@ import {
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources';
 import { IFileMeta, IMCPCallToolResponse } from '@evo/types';
 
-export enum EModalAnswerStatus {
+export enum EModalConnStatus {
   SUCCESS = 'success',
   ERROR = 'error',
   PENDING = 'pending',
@@ -37,7 +37,7 @@ export interface IModelConnRecord {
   reasoning_content: string;
   startReasoningTime?: number;
   endReasoningTime?: number;
-  status: EModalAnswerStatus;
+  status: EModalConnStatus;
   usage?: ChatCompletionChunk['usage'];
   sendMessage: string;
   mcpInfo: {
@@ -51,11 +51,17 @@ export interface IModelAnserActionRecord {
   chatTurns: TChatTurnItem[];
 }
 
+export enum EChatAnswerStatus {
+  PENDING = 'pending',
+  END = 'end',
+}
+
 export interface IModelBaseAnswer {
   id: string;
   model: string;
   provider: string;
   createdTime?: number;
+  status: EChatAnswerStatus;
   histroy: IModelAnserActionRecord[];
 }
 

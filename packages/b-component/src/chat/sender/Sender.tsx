@@ -1,12 +1,10 @@
 import { Sender as AntdXSender, Attachments, AttachmentsProps, SenderProps } from '@ant-design/x';
+import { EModalConnStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 import { GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
-import { CloudUploadOutlined } from '@ant-design/icons';
-import { SystemBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
-import { EModalAnswerStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 import { IFileMeta, MobilePermissionType } from '@evo/types';
 import React, { FC, memo, useEffect, useLayoutEffect } from 'react';
 import { SenderProvider, useSenderSelector } from './sender-processor/SenderProvider';
-
+import { SystemBridgeFactory, UploadBridgeFactory } from '@evo/platform-bridge';
 import {
   getFileExtension,
   getPlatformFileAccept,
@@ -19,12 +17,14 @@ import {
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 
 import { ActionsRender } from '@ant-design/x/es/sender';
+import { CloudUploadOutlined } from '@ant-design/icons';
 import { EvoIcon } from '../../icon';
 import { ISenderContentProps } from './types';
 import { SenderToolbar } from './SenderToolbar';
 import { noop } from 'lodash';
-import { useAntdToken } from '../../hooks';
 import s from './SenderToolbar.module.scss';
+import { useAntdToken } from '../../hooks';
+
 const SENDER_ATTACH_STYLES = {
   content: {
     padding: 0,
@@ -230,8 +230,8 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
 
         const isResolving = arrayAnswers.some(
           (info) =>
-            info?.connResult?.status === EModalAnswerStatus.PENDING ||
-            info?.connResult?.status === EModalAnswerStatus.RECEIVING
+            info?.connResult?.status === EModalConnStatus.PENDING ||
+            info?.connResult?.status === EModalConnStatus.RECEIVING
         );
 
         setLoading(isResolving);

@@ -9,8 +9,9 @@ import {
   persistenceCellSync,
 } from '@evo/utils';
 import {
+  EChatAnswerStatus,
   EMCPExecuteStatus,
-  EModalAnswerStatus,
+  EModalConnStatus,
   IChatMessageInitOptions,
   IChatMessageOptions,
   IMCPExecuteRecord,
@@ -71,15 +72,16 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
           answerIds.map((id) =>
             persistenceCell<TModelAnswer>(id).then((cell) => {
               const answerData = cell.get();
+              answerData.status = EChatAnswerStatus.END;
 
               // 如果本地取回的数据的状态是pending或者receiving，则将其状态改为success(未完成接收前就刷新页面强制中断了)
               answerData.histroy.forEach((record) => {
                 record.chatTurns.forEach((turnItem) => {
                   if (
-                    turnItem.status === EModalAnswerStatus.PENDING ||
-                    turnItem.status === EModalAnswerStatus.RECEIVING
+                    turnItem.status === EModalConnStatus.PENDING ||
+                    turnItem.status === EModalConnStatus.RECEIVING
                   ) {
-                    turnItem.status = EModalAnswerStatus.SUCCESS;
+                    turnItem.status = EModalConnStatus.SUCCESS;
                   }
                 });
               });
@@ -191,6 +193,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     answerCell.set({
       ...answerCell.get(),
       ...getEmptyAnswerData(),
+      status: EChatAnswerStatus.PENDING,
     });
 
     const actionRecord: IModelAnserActionRecord = {
@@ -210,13 +213,13 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       const latestRecord = actionRecord.chatTurns.at(-1);
 
       if (latestRecord) {
-        let errorMessage = error?.message ?? error?.toString() ?? '';
+        let errorMessage = error?.error ?? error?.message ?? error?.toString() ?? '';
 
         if (error instanceof AuthenticationError) {
           errorMessage = 'API秘钥或令牌无效';
         }
 
-        latestRecord.status = EModalAnswerStatus.ERROR;
+        latestRecord.status = EModalConnStatus.ERROR;
         latestRecord.errorMessage = errorMessage;
         this.flushAnswerListen(answerCell);
       }
@@ -259,7 +262,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
           const validToolUser = Array.isArray(tool_user) ? tool_user : [tool_user];
 
           for await (const useToolInfo of validToolUser) {
-            const parseAguments = JSON.parse(useToolInfo.arguments);
+            const parseAguments = JSON.parse(useToolInfo.exe_param);
             const executeRecord: IMCPExecuteRecord = {
               mcp_id: useToolInfo.mcp_id,
               tool_name: useToolInfo.tool_name,
@@ -310,6 +313,11 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       console.trace(error);
 
       resolver.reject(error);
+    } finally {
+      answerCell.set({
+        ...answerCell.get(),
+        status: EChatAnswerStatus.END,
+      });
     }
   }
 

@@ -1,5 +1,5 @@
 import { ChatResponse, DataCell } from '@evo/utils';
-import { EModalAnswerStatus, IModelConnRecord, TModelAnswerCell } from '@/chat-message/types';
+import { EModalConnStatus, IModelConnRecord, TModelAnswerCell } from '@/chat-message/types';
 
 import { IModelConnParams } from './types';
 
@@ -32,8 +32,8 @@ export const defaultStreamResolver = async (
     const { usage, choices } = content;
 
     // 更新接收状态
-    if (connResult.status === EModalAnswerStatus.PENDING) {
-      connResult.status = EModalAnswerStatus.RECEIVING;
+    if (connResult.status === EModalConnStatus.PENDING) {
+      connResult.status = EModalConnStatus.RECEIVING;
     }
 
     // 处理每个选项的内容

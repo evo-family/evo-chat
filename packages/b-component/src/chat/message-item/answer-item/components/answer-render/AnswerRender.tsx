@@ -1,5 +1,5 @@
 import {
-  EModalAnswerStatus,
+  EModalConnStatus,
   useChatAnswerCtx,
   useChatAnswerOrgCtx,
   useChatWinCtx,
@@ -38,7 +38,7 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
     tryScrollToBtmIfNeed();
   }, [content, reasoning_content, status]);
 
-  if (status === EModalAnswerStatus.PENDING) {
+  if (status === EModalConnStatus.PENDING) {
     return (
       <BubbleChat
         contents={[
@@ -54,7 +54,7 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
 
   return (
     <>
-      {status === EModalAnswerStatus.ERROR ? (
+      {status === EModalConnStatus.ERROR ? (
         <BubbleChat
           contents={[
             {

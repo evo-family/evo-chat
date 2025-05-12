@@ -1,9 +1,9 @@
-import { EModalAnswerStatus, IModelBaseAnswer, IModelConnRecord } from '../types';
+import { EChatAnswerStatus, EModalConnStatus, IModelBaseAnswer, IModelConnRecord } from '../types';
 
 export const getEmptyModelConnResult = (sendMessage: string = ''): IModelConnRecord => ({
   type: 'llm',
   sendMessage,
-  status: EModalAnswerStatus.PENDING,
+  status: EModalConnStatus.PENDING,
   content: '',
   reasoning_content: '',
   errorMessage: '',
@@ -19,7 +19,11 @@ export const getEmptyModelConnResult = (sendMessage: string = ''): IModelConnRec
   },
 });
 
-export const getEmptyAnswerData = (): Pick<IModelBaseAnswer, 'createdTime' | 'histroy'> => ({
+export const getEmptyAnswerData = (): Pick<
+  IModelBaseAnswer,
+  'createdTime' | 'histroy' | 'status'
+> => ({
   createdTime: +Date.now(),
   histroy: [],
+  status: EChatAnswerStatus.PENDING,
 });

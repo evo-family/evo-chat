@@ -1,5 +1,5 @@
 import { AuthenticationError } from 'openai';
-import { EModalAnswerStatus } from '@/chat-message/types';
+import { EModalConnStatus } from '@/chat-message/types';
 import { IModelConnHandle } from './types';
 import { OpenAiClient } from '@evo/utils';
 import { defaultStreamResolver } from './stream';
@@ -52,7 +52,7 @@ export const modelConnHandle: IModelConnHandle = (params) => {
         });
       })
       .then((connResult) => {
-        baseConnResult.status = EModalAnswerStatus.SUCCESS;
+        baseConnResult.status = EModalConnStatus.SUCCESS;
         onResolve?.(connResult);
 
         return connResult;

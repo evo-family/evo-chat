@@ -20,6 +20,7 @@ import { json, jsonParseLinter } from '@codemirror/lang-json';
 import { lintGutter, linter } from '@codemirror/lint';
 
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
+import { MarkdownRender } from '@/markdown-render/MarkdownRender';
 import style from './McpExecuteInfo.module.scss';
 import { useCellValueSelector } from '@evo/utils';
 
@@ -49,14 +50,20 @@ const McpExecuteRecord = (props: { record: IMCPExecuteRecord }) => {
 
   const [renderContentType, setRenderContentType] = useState(EXECUTE_PARAM);
 
-  const extensions = useMemo<ReactCodeMirrorProps['extensions']>(() => {
-    return [json(), linter(jsonParseLinter()), lintGutter()];
-  }, []);
+  // const extensions = useMemo<ReactCodeMirrorProps['extensions']>(() => {
+  //   return [json(), linter(jsonParseLinter()), lintGutter()];
+  // }, []);
 
   const jsonText = useMemo(() => {
     const value = renderContentType === EXECUTE_RESULT ? result : ececuteParams;
     return JSON.stringify(value, null, 2);
   }, [ececuteParams, renderContentType]);
+
+  const markdownContent = useMemo(() => {
+    return `\`\`\`json
+${jsonText}
+\`\`\``;
+  }, [jsonText]);
 
   return (
     <Collapse
@@ -82,7 +89,8 @@ const McpExecuteRecord = (props: { record: IMCPExecuteRecord }) => {
                   onChange={setRenderContentType}
                 />
               </div>
-              <CodeMirror
+              <MarkdownRender className={style['json-editor']} content={markdownContent} />
+              {/* <CodeMirror
                 editable={false}
                 className={style['json-editor']}
                 readOnly
@@ -95,7 +103,7 @@ const McpExecuteRecord = (props: { record: IMCPExecuteRecord }) => {
                   foldGutter: true,
                   highlightActiveLine: true,
                 }}
-              />
+              /> */}
             </div>
           ),
         },
@@ -114,7 +122,6 @@ export const McpExecuteInfo = React.memo<IReasoningRenderProps>((props) => {
   const [chatTurns] = useChatAnswerCtx((ctx) => ctx.chatTurnsCell);
 
   const mcpInfo = chatTurns.at(turnIndex)?.mcpInfo;
-  console.log(1111, mcpInfo);
 
   if (!mcpInfo?.executeRecords?.length) return null;
 

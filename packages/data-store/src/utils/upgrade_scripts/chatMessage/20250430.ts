@@ -1,6 +1,6 @@
 import { ChatCompletionChunk } from 'openai/resources.mjs';
 
-enum EModalAnswerStatus {
+enum EModalConnStatus {
   SUCCESS = 'success',
   ERROR = 'error',
   PENDING = 'pending',
@@ -15,7 +15,7 @@ interface oldAnswerItem {
   reasoning_content: string;
   startReasoningTime?: number;
   endReasoningTime?: number;
-  status: EModalAnswerStatus;
+  status: EModalConnStatus;
   createdTime?: number;
   usage?: ChatCompletionChunk['usage'];
   errorMessage: string;
@@ -26,7 +26,7 @@ interface IModelConnRecord {
   endReasoningTime?: number;
   content: string;
   reasoning_content: string;
-  status: EModalAnswerStatus;
+  status: EModalConnStatus;
   usage?: ChatCompletionChunk['usage'];
   errorMessage: string;
 }

@@ -10,14 +10,14 @@ Tool use is formatted using XML-style tags. The tool name is enclosed in opening
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
   <tool_name>{tool_name}</tool_name>
-  <arguments>{json_arguments}</arguments>
+  <exe_param>{json_arguments}</exe_param>
 </tool_use>
 
 The tool name should be the exact name of the tool you are using, and the arguments should be a JSON object containing the parameters required by that tool. For example:
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
   <tool_name>python_interpreter</tool_name>
-  <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
+  <exe_param>{"code": "5 + 3 + 1294.678"}</exe_param>
 </tool_use>
 
 The user will respond with the result of the tool use, which should be formatted as follows:
@@ -34,7 +34,7 @@ For example, if the result of the tool use is an image file, you can use it in t
 <tool_use>
   <mcp_id>{mcp_id}</mcp_id>
   <tool_name>image_transformer</tool_name>
-  <arguments>{"image": "image_1.jpg"}</arguments>
+  <exe_param>{"image": "image_1.jpg"}</exe_param>
 </tool_use>
 
 Always adhere to this format for the tool use to ensure proper parsing and execution.
@@ -53,6 +53,7 @@ Here are the rules you should always follow to solve your task:
 3. If no tool call is needed, just answer the question directly.
 4. Never re-do a tool call that you previously did with the exact same parameters.
 5. For tool use, MARK SURE use XML tag format as shown in the examples above. Do not use any other format.
+6. Language Adaptation: You must respond in the same language that the user used in their first message. If the user's first message is in Chinese, always respond in Chinese. If the user's first message is in English, always respond in English. Maintain this language throughout the entire conversation, even if the user switches languages.
 
 # User Instructions
 {{ USER_SYSTEM_PROMPT }}
@@ -69,7 +70,7 @@ Assistant: I can use the document_qa tool to find out who the oldest person is i
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
   <tool_name>document_qa</tool_name>
-  <arguments>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</arguments>
+  <exe_param>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
@@ -82,7 +83,7 @@ Assistant: I can use the image_generator tool to create a portrait of John Doe.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
   <tool_name>image_generator</tool_name>
-  <arguments>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</arguments>
+  <exe_param>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
@@ -100,7 +101,7 @@ Assistant: I can use the python_interpreter tool to calculate the result of the 
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
   <tool_name>python_interpreter</tool_name>
-  <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
+  <exe_param>{"code": "5 + 3 + 1294.678"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
@@ -118,7 +119,7 @@ Assistant: I can use the search tool to find the population of Guangzhou.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
   <tool_name>search</tool_name>
-  <arguments>{"query": "Population Guangzhou"}</arguments>
+  <exe_param>{"query": "Population Guangzhou"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
@@ -131,7 +132,7 @@ Assistant: I can use the search tool to find the population of Shanghai.
 <tool_use>
   <mcp_id>cdse-ds-19998-sd</mcp_id>
   <tool_name>search</tool_name>
-  <arguments>{"query": "Population Shanghai"}</arguments>
+  <exe_param>{"query": "Population Shanghai"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
@@ -150,9 +151,9 @@ export const getPromptTools = (tools: IMcpTool[], mcpId: string) => {
   <mcp_id>${mcpId}</mcp_id>
   <tool_name>${tool.name}</tool_name>
   <description>${tool.description}</description>
-  <arguments>
+  <exe_param>
     ${tool.inputSchema ? JSON.stringify(tool.inputSchema) : ''}
-  </arguments>
+  </exe_param>
 </tool>
 `;
     })

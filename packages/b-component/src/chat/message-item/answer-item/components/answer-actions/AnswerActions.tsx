@@ -1,6 +1,7 @@
 import { ArrowsAltOutlined, XFilled } from '@ant-design/icons';
 import {
-  EModalAnswerStatus,
+  EChatAnswerStatus,
+  EModalConnStatus,
   useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
@@ -24,17 +25,13 @@ export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
   const [chatWinOptions] = useChatWinCtx((ctx) => ctx.options);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
   const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
-  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
-  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(-1)?.status);
+  const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
   const stopModel = useMemoizedFn(() => {
     chatMsg.stopResolveAnswer(answerCell.get().id);
   });
 
-  const showStopButton = useMemo(
-    () => status === EModalAnswerStatus.PENDING || status === EModalAnswerStatus.RECEIVING,
-    [status]
-  );
+  const showStopButton = useMemo(() => status === EChatAnswerStatus.PENDING, [status]);
 
   const answerMaximizable = useMemo(() => {
     return chatWinOptions?.features?.messageList?.answerMaximizable;

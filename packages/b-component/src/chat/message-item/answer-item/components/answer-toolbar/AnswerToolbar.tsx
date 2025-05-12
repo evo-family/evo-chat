@@ -1,6 +1,7 @@
 import { CopyOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
-  EModalAnswerStatus,
+  EChatAnswerStatus,
+  EModalConnStatus,
   useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
@@ -20,7 +21,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
   const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
 
-  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(-1)?.status);
+  const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
   const retryModel = useMemoizedFn(() => {
     chatWin.retryAnswer({
@@ -40,10 +41,10 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
       const { content, status, errorMessage } = item;
 
       switch (status) {
-        case EModalAnswerStatus.SUCCESS:
+        case EModalConnStatus.SUCCESS:
           clipContent = content;
           break;
-        case EModalAnswerStatus.ERROR:
+        case EModalConnStatus.ERROR:
           clipContent = errorMessage;
           break;
 
@@ -59,7 +60,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
     }
   });
 
-  if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
+  if (status === EChatAnswerStatus.END) {
     return (
       <Flex className={style.container}>
         <Tooltip title="重新生成">
