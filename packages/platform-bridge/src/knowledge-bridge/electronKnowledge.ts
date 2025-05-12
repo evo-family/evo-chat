@@ -13,8 +13,12 @@ import {
 } from '@evo/types';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { BaseBridge } from '../common/baseBridge';
+import { IPC_EVENTS } from '@evo/utils';
 
 export class ElectronKnowledge extends BaseBridge implements IKnowledgeService {
+  delete(id: string): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.KNOWLEDGE.DELETE, id);
+  }
   getVectorsByFileId(fileId: string): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
     return window.__ELECTRON__.knowledgeService.getVectorsByFileId(fileId);
   }

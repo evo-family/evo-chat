@@ -5,7 +5,6 @@ import { BaseResult, IKnowledgeMeta, IKnowledgeService, IKnowledgeVectorMetaVo }
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 
 export class KnowledgeProcessor extends BaseProcessor {
-
   addOrUploadDialog: DialogProcessor;
 
   private modelProcessor: ModelProcessor;
@@ -47,19 +46,22 @@ export class KnowledgeProcessor extends BaseProcessor {
   }
 
   listen() {
-    this.modelProcessor?.availableModels?.listen(({ next }) => {
-      const map = arrayToMap(next!, 'id')
-      this.knowledgeService.setModelEmbeddingMap(map)
-    }, {
-      debounceTime: 10,
-      immediate: true,
-    })
+    this.modelProcessor?.availableModels?.listen(
+      ({ next }) => {
+        const map = arrayToMap(next!, 'id');
+        this.knowledgeService.setModelEmbeddingMap(map);
+      },
+      {
+        debounceTime: 10,
+        immediate: true,
+      }
+    );
   }
 
   setSelectKnowledge = (knowledge: IKnowledgeMeta) => {
     this.selectKnowledge.set(knowledge);
     // this.getVectorsByKnowledgeId(knowledge.id);
-  }
+  };
 
   createKnowledge = async (meta: IKnowledgeMeta) => {
     const res = await this.knowledgeService.create(meta);
@@ -67,7 +69,15 @@ export class KnowledgeProcessor extends BaseProcessor {
       this.getKnowledgeList();
     }
     return res;
-  }
+  };
+
+  updateKnowledge = async (meta: IKnowledgeMeta) => {
+    const res = await this.knowledgeService.update(meta);
+    if (res.success) {
+      this.getKnowledgeList();
+    }
+    return res;
+  };
 
   /**
    * 添加文件到向量
@@ -75,13 +85,13 @@ export class KnowledgeProcessor extends BaseProcessor {
   get addFileToVector() {
     return this.bindServiceMethod(null, this.knowledgeService.addFileToVector, () => {
       this.getVectorsByKnowledgeId(this.selectKnowledge.get()!.id);
-    })
+    });
   }
 
   get addFolderToVector() {
     return this.bindServiceMethod(null, this.knowledgeService.addFolderToVector, () => {
       this.getVectorsByKnowledgeId(this.selectKnowledge.get()!.id);
-    })
+    });
   }
 
   /**
@@ -110,9 +120,19 @@ export class KnowledgeProcessor extends BaseProcessor {
   }
 
   get searchVectors() {
-    return this.bindServiceMethod(
-      this.searchVectorsResult,
-      this.knowledgeService.searchVectors
-    )
+    return this.bindServiceMethod(this.searchVectorsResult, this.knowledgeService.searchVectors);
   }
+
+  resetSearchVectorsResult = () => {
+    this.searchVectorsResult.set({} as any);
+  };
+
+  deleteKnowledge = async (id: string) => {
+    const res = await this.knowledgeService.delete(id);
+    if (res.success) {
+      const list = await this.getKnowledgeList();
+      this.setSelectKnowledge(list?.data?.[0]!);
+    }
+    return res;
+  };
 }
