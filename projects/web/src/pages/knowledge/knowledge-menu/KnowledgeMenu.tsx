@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo } from 'react';
-import { Button, Menu, Space, Dropdown, MenuProps } from 'antd';
+import { Button, Menu, Space, Dropdown, MenuProps, message, Modal } from 'antd';
 import { DatabaseOutlined, MoreOutlined } from '@ant-design/icons';
 import styles from './KnowledgeMenu.module.scss';
 import { AddOrUpdateKnowledge } from '../components/add-or-update/AddOrUpdateKnowledge';
@@ -8,6 +8,7 @@ import { MenuItem } from '@evo/component';
 import Item from 'antd/es/list/Item';
 import { useGlobalCtx } from '@evo/data-store';
 import { isElectron } from '@evo/utils';
+import { useMemoizedFn } from 'ahooks';
 
 export interface IKnowledgeMenuProps {
   onMenuClick?: (key: string) => void;
@@ -19,11 +20,44 @@ export const KnowledgeMenu: FC<IKnowledgeMenuProps> = ({ onMenuClick, selectable
   const getKnowledgeList = useKnowledgeSelector((s) => s.getKnowledgeList);
   const selectKnowledge = useKnowledgeSelector((s) => s.selectKnowledge);
   const setSelectKnowledge = useKnowledgeSelector((s) => s.setSelectKnowledge);
+  const setUpdateModalData = useKnowledgeSelector((s) => s.addOrUploadDialog.setUpdateModalData);
+  const deleteKnowledge = useKnowledgeSelector((s) => s.deleteKnowledge);
   useEffect(() => {
     if (isElectron()) {
       getKnowledgeList();
     }
   }, []);
+
+  const update = useMemoizedFn(() => {
+    const data = knowledgeListResult?.data?.find((f) => f.id === selectKnowledge?.id);
+    setUpdateModalData({ data });
+  });
+
+  const handleDelete = useMemoizedFn(async () => {
+    if (!selectKnowledge) return;
+
+    try {
+      Modal.confirm({
+        title: '删除确认',
+        content: '确定要删除该知识库吗？',
+        okText: '确认删除',
+        cancelText: '取消',
+        okType: 'danger',
+        onOk: async () => {
+          try {
+            const result = await deleteKnowledge(selectKnowledge?.id);
+            if (!result.success) {
+              message.error('删除失败');
+            }
+          } catch (error) {
+            message.error('删除失败');
+          }
+        },
+      });
+    } catch (error) {
+      message.error('删除失败');
+    }
+  });
 
   const dropdownMenu: MenuProps = useMemo(() => {
     const menuProps: MenuProps = {
@@ -43,15 +77,17 @@ export const KnowledgeMenu: FC<IKnowledgeMenuProps> = ({ onMenuClick, selectable
       ],
       onClick: ({ key }) => {
         if (key === 'edit') {
+          update();
           return;
         }
 
         if (key === 'delete') {
+          handleDelete();
         }
       },
     };
     return menuProps;
-  }, []);
+  }, [selectKnowledge]);
 
   const menuItems = useMemo(() => {
     return (

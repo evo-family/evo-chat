@@ -336,4 +336,38 @@ export class KnowledgeManager implements IKnowledgeService {
       return ResultUtil.error(error);
     }
   }
+
+  async delete(id: string): Promise<BaseResult<boolean>> {
+    try {
+      // 1. 获取知识库下的所有向量信息
+      const vectorsResult = await this.getVectorsByKnowledgeId(id);
+      if (!vectorsResult.success) {
+        return ResultUtil.error('获取知识库向量信息失败');
+      }
+
+      if (vectorsResult.data?.length) {
+        // 2. 获取RAG管理器
+        const ragManager = await this.getRagManager(id);
+        // 3. 删除所有向量
+        await Promise.all(
+          vectorsResult.data?.map((vector) => ragManager.deleteLoader(vector.loaderId)) || []
+        );
+
+        // 4. 删除向量记录
+        await this.dbManager.delete('knowledge_vector', {
+          knowledge_id: id,
+        });
+      }
+
+      // 5. 删除知识库记录
+      await this.dbManager.delete('knowledge', {
+        id,
+      });
+
+      return ResultUtil.success(true);
+    } catch (error) {
+      console.error('删除知识库失败:', error);
+      return ResultUtil.error(error);
+    }
+  }
 }

@@ -8,11 +8,11 @@ import { KnowledgeFileList } from './FileList';
 import { KnowledgeWebsite } from './Website';
 import { useKnowledgeSelector } from '../knowledge-processor/KnowledgeProvider';
 import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
+import { useContentPanelSelector } from '../../../components';
 
 export const KnowledgeList: FC = () => {
-
-  const selectKnowledge = useKnowledgeSelector(s => s.selectKnowledge)
-
+  const selectKnowledge = useKnowledgeSelector((s) => s.selectKnowledge);
+  const ToolbarPortal = useContentPanelSelector((s) => s.ToolbarPortal);
   const items: TabsProps['items'] = [
     {
       key: 'file',
@@ -23,23 +23,17 @@ export const KnowledgeList: FC = () => {
       key: 'website',
       label: '网址',
       children: <KnowledgeWebsite />,
-    }
+    },
   ];
 
-  // 搜索向量数据
-  // KnowledgeBridgeFactory.getKnowledge().searchVectors({})
-
   return (
-    <div className={s.container}>
-      <EvoIcon type="icon-yuyin" size={20} />
-      <div className={s.header}>
+    <>
+      <ToolbarPortal>
         <KnowledgeActions />
+      </ToolbarPortal>
+      <div className={s.container}>
+        <Tabs items={items} defaultActiveKey="files"></Tabs>
       </div>
-      <div className={s.content}>
-        <Tabs items={items} defaultActiveKey="files">
-        </Tabs>
-      </div>
-    </div>
+    </>
   );
 };
-

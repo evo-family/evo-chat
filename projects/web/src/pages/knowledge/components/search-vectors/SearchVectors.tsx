@@ -1,4 +1,4 @@
-import React, { FC, memo, useState } from 'react';
+import React, { FC, memo, useEffect, useState } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Badge } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -18,6 +18,7 @@ export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
 
   const searchVectors = useKnowledgeSelector((s) => s.searchVectors);
   const searchVectorsResult = useKnowledgeSelector((s) => s.searchVectorsResult);
+  const resetSearchVectorsResult = useKnowledgeSelector((s) => s.resetSearchVectorsResult);
 
   const handleSearch = (value: string) => {
     setSearched(true);
@@ -27,12 +28,20 @@ export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
     });
   };
 
+  useEffect(() => {
+    if (!isModalOpen) {
+      resetSearchVectorsResult();
+    }
+  }, [isModalOpen]);
+
   console.log('evo-data', searchVectorsResult?.data);
 
   return (
     <div className={s.container}>
       <Button
-        type="primary"
+        className={'evo-button-icon'}
+        color="default"
+        variant="filled"
         icon={<SearchOutlined />}
         onClick={() => {
           setIsModalOpen(true);
@@ -49,6 +58,15 @@ export const SearchVectors: FC<ISearchVectorsProps> = memo((props) => {
           setIsModalOpen(false);
           setSearched(false);
         }}
+        destroyOnClose
+        styles={{
+          body: {
+            minHeight: 300,
+            maxHeight: 'calc(100vh - 200px)',
+            overflow: 'auto',
+          },
+        }}
+        centered
         footer={null}
         width={800}
       >
