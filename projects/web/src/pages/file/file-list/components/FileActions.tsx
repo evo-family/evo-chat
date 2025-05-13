@@ -5,7 +5,7 @@ import { UploadBridgeFactory } from '@evo/platform-bridge';
 import { useFileSelector } from '../../file-processor/FileProvider';
 
 export const FileActions: FC = () => {
-  const tableActionRef = useFileSelector(s => s.tableActionRef)
+  const tableActionRef = useFileSelector((s) => s.tableActionRef);
   const handleUploadFile = async () => {
     try {
       const result = await UploadBridgeFactory.getUpload().uploadFile();
@@ -39,17 +39,16 @@ export const FileActions: FC = () => {
   return (
     <Space>
       <Button
-        type="primary"
-        icon={<UploadOutlined />}
-        onClick={handleUploadFile}
-      >
-        上传文件
-      </Button>
-      <Button
+        className={'evo-button-icon'}
+        color="default"
+        variant="filled"
         icon={<FolderOpenOutlined />}
         onClick={handleUploadFolder}
       >
         上传文件夹
+      </Button>
+      <Button type="primary" icon={<UploadOutlined />} onClick={handleUploadFile}>
+        上传文件
       </Button>
     </Space>
   );

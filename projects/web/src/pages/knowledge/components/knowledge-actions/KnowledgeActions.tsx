@@ -5,16 +5,12 @@ import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 import { useKnowledgeSelector } from '../../knowledge-processor/KnowledgeProvider';
 import { SearchVectors } from '../search-vectors/SearchVectors';
 
-export interface IKnowledgeActionsProps {
-}
+export interface IKnowledgeActionsProps {}
 
-export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({
-
-}) => {
-
-  const selectKnowledge = useKnowledgeSelector(s => s.selectKnowledge)
-  const addFileToVector = useKnowledgeSelector(s => s.addFileToVector)
-  const addFolderToVector = useKnowledgeSelector(s => s.addFolderToVector)
+export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({}) => {
+  const selectKnowledge = useKnowledgeSelector((s) => s.selectKnowledge);
+  const addFileToVector = useKnowledgeSelector((s) => s.addFileToVector);
+  const addFolderToVector = useKnowledgeSelector((s) => s.addFolderToVector);
 
   const handleUploadFile = async () => {
     try {
@@ -29,7 +25,7 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({
     } catch (error) {
       message.error('上传文件时发生错误');
     }
-  }
+  };
   const handleUploadDirectory = async () => {
     try {
       const result = await addFolderToVector({
@@ -45,33 +41,32 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({
     } catch (error) {
       message.error('上传文件时发生错误');
     }
-
-  }
-  const handleWebsite = () => {
-
-  }
+  };
+  const handleWebsite = () => {};
   return (
     <Space>
       <SearchVectors />
       <Button
-        icon={<FileAddOutlined />}
-        onClick={handleUploadFile}
-      >
-        上传文件
-      </Button>
-      <Button
-        icon={<FolderAddOutlined />}
-        onClick={handleUploadDirectory}
-      >
-        上传文件夹
-      </Button>
-      <Button
+        className={'evo-button-icon'}
+        color="default"
+        variant="filled"
         icon={<LinkOutlined />}
         onClick={handleWebsite}
       >
         添加网址
       </Button>
+      <Button
+        className={'evo-button-icon'}
+        color="default"
+        variant="filled"
+        icon={<FolderAddOutlined />}
+        onClick={handleUploadDirectory}
+      >
+        上传文件夹
+      </Button>
+      <Button type="primary" icon={<FileAddOutlined />} onClick={handleUploadFile}>
+        上传文件
+      </Button>
     </Space>
   );
 };
-

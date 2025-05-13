@@ -16,6 +16,7 @@ export const AddOrUpdateKnowledge: FC<IAddOrUpdateKnowledgeProps> = memo(({}) =>
   const [isElectron] = useGlobalCtx((s) => s.envProcessor?.isElectron);
 
   const createKnowledge = useKnowledgeSelector((s) => s.createKnowledge);
+  const updateKnowledge = useKnowledgeSelector((s) => s.updateKnowledge);
   // 找出所有embedding模型
   const modelOptions = useMemo(() => {
     const embeddingModels = getAvailableModelsByModelType(availableModels!, [EModelType.embedding]);
@@ -51,9 +52,10 @@ export const AddOrUpdateKnowledge: FC<IAddOrUpdateKnowledgeProps> = memo(({}) =>
         <Button type="text" icon={<PlusOutlined />} onClick={handleClick} />
       </Tooltip>
       <ModalForm<IKnowledgeMeta>
-        title="创建知识库"
+        title={dialogData.type === 'create' ? '创建知识库' : '修改知识库'}
         open={dialogData.open}
         width={600}
+        initialValues={dialogData.data}
         modalProps={{
           destroyOnClose: true,
           onCancel: closeDialog,
@@ -61,19 +63,24 @@ export const AddOrUpdateKnowledge: FC<IAddOrUpdateKnowledgeProps> = memo(({}) =>
         submitTimeout={2000}
         onFinish={async (values) => {
           try {
-            // 创建数据
+            let res;
             if (dialogData.type === 'create') {
-              const res = await createKnowledge({
+              res = await createKnowledge({
                 ...values,
                 modelProviderId: getProviderIdByModelId(values.modelId)!,
               });
-              console.log('evo=>', res);
+            } else {
+              res = await updateKnowledge({
+                ...dialogData.data,
+                ...values,
+                modelProviderId: getProviderIdByModelId(values.modelId)!,
+              });
+            }
 
-              if (res.success) {
-                message.success('创建成功');
-              } else {
-                message.error(res.error);
-              }
+            if (res.success) {
+              message.success(dialogData.type === 'create' ? '创建成功' : '更新成功');
+            } else {
+              message.error(res.error);
             }
 
             closeDialog();

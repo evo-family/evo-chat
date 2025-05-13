@@ -78,6 +78,10 @@ export const IPC_EVENTS = {
     GET_MCP_PROMPT: 'mcp-get-prompt',
     CALL_TOOL: 'mcp-call-tool',
   },
+
+  KNOWLEDGE: {
+    DELETE: 'knowledge-delete',
+  },
 } as const;
 
 // 类型导出
@@ -88,3 +92,4 @@ export type SystemEvents = IpcEvents['SYSTEM'];
 export type DialogEvents = IpcEvents['DIALOG'];
 export type CliEvents = IpcEvents['CLI'];
 export type McpEvents = IpcEvents['MCP'];
+export type KNowledgeEvents = IpcEvents['KNOWLEDGE'];
