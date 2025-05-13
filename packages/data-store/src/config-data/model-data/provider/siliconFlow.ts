@@ -56,7 +56,7 @@ export const siliconFlowModelProvider: IModel = {
   webSite: {
     official: 'https://www.siliconflow.cn/',
     docs: 'https://docs.siliconflow.cn/',
-    models: 'https://api.siliconflow.com/v1/models',
+    models: 'https://api.siliconflow.cn/v1/models',
   },
   groups: siliconFlowModelGroup,
   enable: false,
