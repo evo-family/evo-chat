@@ -85,6 +85,8 @@ export interface IKnowledgeService {
 
   update(meta: IKnowledgeMeta): Promise<BaseResult<IKnowledgeMeta>>;
 
+  delete(id: string): Promise<BaseResult<boolean>>;
+
   /**
    * 知识库添加文件到向量库
    * @param filePath

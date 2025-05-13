@@ -71,7 +71,8 @@ export class McpProcessor extends BaseProcessor {
   createCategory = async (meta: Partial<IMcpCategoryMeta>) => {
     const res = await this.mcpService.createCategory(meta);
     if (res.success) {
-      this.getCategoryList();
+      const list = await this.getCategoryList();
+      this.setSelectCategory(list?.data?.[0]!);
     }
     return res;
   };
@@ -80,6 +81,15 @@ export class McpProcessor extends BaseProcessor {
     const res = await this.mcpService.updateCategory(meta);
     if (res.success) {
       this.getCategoryList();
+    }
+    return res;
+  };
+
+  deleteCategory = async (id: string) => {
+    const res = await this.mcpService.deleteCategory(id);
+    if (res.success) {
+      const list = await this.getCategoryList();
+      this.setSelectCategory(list?.data?.[0]!);
     }
     return res;
   };

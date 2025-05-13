@@ -15,6 +15,9 @@ import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { BaseBridge } from '../common/baseBridge';
 
 export class WebKnowledge extends BaseBridge implements IKnowledgeService {
+  delete(id: string): Promise<BaseResult<boolean>> {
+    throw new Error('Method not implemented.');
+  }
   getVectorsByFileId(fileId: string): Promise<BaseResult<IKnowledgeVectorMeta[]>> {
     throw new Error('Method not implemented.');
   }

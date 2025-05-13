@@ -19,9 +19,10 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
 
   const handleRecognition = (value: string) => {
     try {
+      // 预处理 JSON 字符串，移除尾随逗号
+      const cleanedValue = value.replace(/,(\s*[}\]])/g, '$1');
       // 尝试解析 JSON
-      const data = JSON.parse(value);
-
+      const data = JSON.parse(cleanedValue);
       // 验证数据结构
       if (!data.mcpServers || typeof data.mcpServers !== 'object') {
         message.error('无效的 MCP 配置格式');
@@ -43,7 +44,7 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
         description: `MCP Server for ${serverName}`,
         command: serverConfig.command || 'npx',
         args: Array.isArray(serverConfig.args) ? serverConfig.args.join('\n') : '',
-        env: Object.entries(serverConfig.env || {}).map(([key, value]) => ({
+        env: Object.entries(serverConfig?.env || {}).map(([key, value]) => ({
           key,
           value: String(value),
         })),
@@ -53,6 +54,7 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
       message.success('识别成功');
       setVisible(false);
     } catch (error) {
+      console.log(error);
       message.error('请输入有效的 JSON 格式');
     }
   };

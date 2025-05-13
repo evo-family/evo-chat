@@ -31,7 +31,7 @@ export class MCPCategoryManager {
         ...meta,
         modifiedTime: Date.now(),
       };
-      await this.depManager.dbManager.update('mcp_category', { id: meta.id }, updateData);
+      await this.depManager.dbManager.update('mcp_category', updateData, { id: meta.id });
       return ResultUtil.success(updateData);
     } catch (error) {
       return ResultUtil.error(error);
@@ -40,7 +40,12 @@ export class MCPCategoryManager {
 
   async delete(id: string): Promise<BaseResult<boolean>> {
     try {
+      // 先删除该分类下的所有 mcp
+      await this.depManager.dbManager.delete('mcp', { category_id: id });
+
+      // 再删除分类本身
       await this.depManager.dbManager.delete('mcp_category', { id });
+
       return ResultUtil.success(true);
     } catch (error) {
       return ResultUtil.error(error);

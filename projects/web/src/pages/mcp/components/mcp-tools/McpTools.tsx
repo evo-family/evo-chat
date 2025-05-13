@@ -1,4 +1,4 @@
-import { Collapse, Descriptions, Drawer, Tag, message } from 'antd';
+import { Button, Collapse, Descriptions, Drawer, Tag, message } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 
 import { IMcpMeta } from '@evo/types';
@@ -78,7 +78,9 @@ export const McpTools: FC<IMcpToolsProps> = ({ record }) => {
 
   return (
     <>
-      <a onClick={() => setOpen(true)}>工具</a>
+      <Button color="default" variant="filled" onClick={() => setOpen(true)}>
+        工具
+      </Button>
       <Drawer
         title="可用工具"
         placement="right"

@@ -42,6 +42,7 @@ export const FieList: FC<IFieListProps> = memo((props) => {
         const vectorResult = await KnowledgeBridgeFactory.getKnowledge().getVectorsByFileId(
           record.id
         );
+
         if (vectorResult.success && vectorResult?.data && vectorResult?.data?.length > 0) {
           // 2. 如果已向量化，二次确认是否同时删除向量
           Modal.confirm({
@@ -134,14 +135,14 @@ export const FieList: FC<IFieListProps> = memo((props) => {
   ];
 
   return (
-    <div className={s.container}>
+    <>
       <ToolbarPortal>
         <Space>
           <SearchInput placeholder="搜索文件" onSearch={setSearchKey} />
           <FileActions />
         </Space>
       </ToolbarPortal>
-      <div className={s.content}>
+      <div className={s.container}>
         <ProTable<IFileMeta>
           actionRef={tableActionRef}
           columns={columns}
@@ -173,6 +174,6 @@ export const FieList: FC<IFieListProps> = memo((props) => {
           toolBarRender={false}
         />
       </div>
-    </div>
+    </>
   );
 });
