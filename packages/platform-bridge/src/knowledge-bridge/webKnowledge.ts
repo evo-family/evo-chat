@@ -4,6 +4,7 @@ import {
   IAddFilesMetaToVectorParams,
   IAddFileToVectorParams,
   IAddFolderToVectorParams,
+  IDeleteVectorParams,
   IKnowledgeMeta,
   IKnowledgeService,
   IKnowledgeVectorMeta,
@@ -15,6 +16,9 @@ import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { BaseBridge } from '../common/baseBridge';
 
 export class WebKnowledge extends BaseBridge implements IKnowledgeService {
+  deleteVector(params: IDeleteVectorParams): Promise<BaseResult<boolean>> {
+    throw new Error('Method not implemented.');
+  }
   delete(id: string): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }

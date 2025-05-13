@@ -13,6 +13,7 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({}) => {
   const addFolderToVector = useKnowledgeSelector((s) => s.addFolderToVector);
 
   const handleUploadFile = async () => {
+    const hide = message.loading('正在处理文件，请稍候...', 0);
     try {
       const result = await addFileToVector({
         knowledgeId: selectKnowledge?.id!,
@@ -24,14 +25,15 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({}) => {
       }
     } catch (error) {
       message.error('上传文件时发生错误');
+    } finally {
+      hide();
     }
   };
   const handleUploadDirectory = async () => {
+    const hide = message.loading('正在处理文件夹，请稍候...', 0);
     try {
       const result = await addFolderToVector({
         knowledgeId: selectKnowledge?.id!,
-        // onProgress: (progress) => {
-        // },
       });
       if (result.success) {
         message.success('成功');
@@ -40,6 +42,8 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({}) => {
       }
     } catch (error) {
       message.error('上传文件时发生错误');
+    } finally {
+      hide();
     }
   };
   const handleWebsite = () => {};

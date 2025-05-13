@@ -4,6 +4,7 @@ import {
   IAddFilesMetaToVectorParams,
   IAddFileToVectorParams,
   IAddFolderToVectorParams,
+  IDeleteVectorParams,
   IKnowledgeMeta,
   IKnowledgeService,
   IKnowledgeVectorMeta,
@@ -16,6 +17,9 @@ import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
 
 export class ElectronKnowledge extends BaseBridge implements IKnowledgeService {
+  deleteVector(params: IDeleteVectorParams): Promise<BaseResult<boolean>> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.KNOWLEDGE.DELETE_VECTOR, params);
+  }
   delete(id: string): Promise<BaseResult<boolean>> {
     return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.KNOWLEDGE.DELETE, id);
   }

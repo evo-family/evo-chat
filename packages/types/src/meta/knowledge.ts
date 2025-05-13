@@ -1,5 +1,5 @@
-import { IBaseMeta, OmitBaseMeta } from "../common";
-import { IFileMeta } from "./file";
+import { IBaseMeta, OmitBaseMeta } from '../common';
+import { IFileMeta } from './file';
 
 export interface IKnowledgeMeta extends IBaseMeta {
   /**
@@ -45,6 +45,10 @@ export interface IKnowledgeVectorMeta extends IBaseMeta {
 /**
  * 知识库向量信息vo
  */
-export interface IKnowledgeVectorMetaVo extends IKnowledgeVectorMeta, OmitBaseMeta<IFileMeta> {
-
+export interface IKnowledgeVectorMetaVo extends IKnowledgeVectorMeta {
+  fileId: string;
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  fileType: string;
 }

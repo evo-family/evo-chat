@@ -81,6 +81,7 @@ export const IPC_EVENTS = {
 
   KNOWLEDGE: {
     DELETE: 'knowledge-delete',
+    DELETE_VECTOR: 'knowledge-delete-vector',
   },
 } as const;
 

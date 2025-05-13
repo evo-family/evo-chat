@@ -76,6 +76,14 @@ export interface IGetMcpToolParams {
     removeInputSchemaKeys?: Array<string>;
   };
 }
+
+export interface IDeleteVectorParams {
+  id: string;
+  /**
+   * 是否连带文件一起删除
+   */
+  isDeleteFile?: boolean;
+}
 export interface IKnowledgeService {
   setModelEmbeddingMap(modelEmbeddingMap: TAvailableModelMap): void;
 
@@ -143,6 +151,12 @@ export interface IKnowledgeService {
    * @param fileId
    */
   deleteVectorByFileId(fileId: string): Promise<BaseResult<boolean>>;
+
+  /**
+   * 删除向量
+   * @param id
+   */
+  deleteVector(params: IDeleteVectorParams): Promise<BaseResult<boolean>>;
 }
 
 export interface ICliService {
