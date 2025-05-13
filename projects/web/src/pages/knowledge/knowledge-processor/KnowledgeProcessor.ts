@@ -3,6 +3,8 @@ import { DialogProcessor, modelProcessor, ModelProcessor } from '@evo/data-store
 import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 import { BaseResult, IKnowledgeMeta, IKnowledgeService, IKnowledgeVectorMetaVo } from '@evo/types';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
+import React from 'react';
+import { ActionType } from '@ant-design/pro-components';
 
 export class KnowledgeProcessor extends BaseProcessor {
   addOrUploadDialog: DialogProcessor;
@@ -18,6 +20,8 @@ export class KnowledgeProcessor extends BaseProcessor {
   searchVectorsResult: DataCell<BaseResult<ExtractChunkData[]>>;
 
   selectKnowledge: DataCell<IKnowledgeMeta | null>;
+
+  tableActionRef = React.useRef<ActionType>();
 
   private bindServiceMethod<T, P extends any[]>(
     dataCell: DataCell<BaseResult<T>> | null,
@@ -134,5 +138,13 @@ export class KnowledgeProcessor extends BaseProcessor {
       this.setSelectKnowledge(list?.data?.[0]!);
     }
     return res;
+  };
+
+  deleteVector = async (id: string, isDeleteFile: boolean = false) => {
+    await KnowledgeBridgeFactory.getKnowledge().deleteVector({
+      id,
+      isDeleteFile,
+    });
+    this.tableActionRef.current?.reload();
   };
 }
