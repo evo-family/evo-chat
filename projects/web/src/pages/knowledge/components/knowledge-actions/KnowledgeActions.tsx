@@ -29,7 +29,6 @@ export const KnowledgeActions: FC<IKnowledgeActionsProps> = ({}) => {
       hide();
     }
   };
-
   const handleUploadDirectory = async () => {
     const hide = message.loading('正在处理文件夹，请稍候...', 0);
     try {
