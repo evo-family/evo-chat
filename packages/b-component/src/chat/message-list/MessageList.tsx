@@ -8,14 +8,17 @@ import Style from './Style.module.scss';
 import { initAllChatAnswers } from '../../utils/scroll';
 import { useCellValue } from '@evo/utils';
 import { PromptInfo } from '../prompt-info/PromptInfo';
+import classNames from 'classnames';
 
 export interface IMessageListProps {
+  style?: React.CSSProperties;
+  className?: string;
   initialScrollEnd?: boolean;
   onFirstRendered?: (cbContext: { virtualizer: Virtualizer<HTMLDivElement, Element> }) => void;
 }
 
 export const ChatMessageList = React.memo<IMessageListProps>((props) => {
-  const { initialScrollEnd = true, onFirstRendered } = props;
+  const { initialScrollEnd = true, onFirstRendered, style, className } = props;
 
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [messageIds] = useCellValue(chatWin.configState.getCellSync('messageIds'));
@@ -54,7 +57,12 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
 
   return (
     <>
-      <div ref={listDOMRef} className={Style.message_list} onScroll={onListScroll}>
+      <div
+        ref={listDOMRef}
+        style={style}
+        className={classNames(Style.message_list, className)}
+        onScroll={onListScroll}
+      >
         <PromptInfo />
         <div
           style={{
