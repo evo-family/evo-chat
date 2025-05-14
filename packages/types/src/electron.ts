@@ -215,6 +215,12 @@ export interface ISystemService {
   getVersion(): Promise<string>;
 
   /**
+   * 获取当前操作系统类型
+   * @returns 返回操作系统类型：
+   */
+  getOsType(): Promise<'darwin' | 'win32' | 'linux'>;
+
+  /**
    * 检查应用权限，移动端
    */
   checkPermission(permissions: MobilePermissionType[]): Promise<Boolean>;

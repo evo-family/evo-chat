@@ -47,4 +47,11 @@ export function setupSystemsHandlers() {
   ipcMain.handle(IPC_EVENTS.SYSTEM.GET_VERSION, () => {
     return SystemService.getInstance().getVersion();
   });
+
+  /**
+   * 获取当前操作系统类型
+   */
+  ipcMain.handle(IPC_EVENTS.SYSTEM.GET_OS_TYPE, () => {
+    return process.platform;
+  });
 }
