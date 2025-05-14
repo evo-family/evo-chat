@@ -1,22 +1,29 @@
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export interface IReasoningRenderProps {
   answerContent?: string;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerContent } = props;
+  const { answerContent, style, className } = props;
 
-  if (!answerContent) return null;
+  const rAnswerContent = useMemo(() => {
+    return answerContent?.trim();
+  }, [answerContent]);
 
+  if (!rAnswerContent) return null;
   return (
     <BubbleChat
+      style={style}
+      className={className}
       contents={[
         {
           key: 3,
           role: 'user',
-          content: answerContent,
+          content: rAnswerContent,
         },
       ]}
     />
