@@ -1,5 +1,5 @@
 import { Sender as AntdXSender, Attachments, AttachmentsProps, SenderProps } from '@ant-design/x';
-import { EModalConnStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
+import { EChatAnswerStatus, EModalConnStatus, useChatWinCtx, useGlobalCtx } from '@evo/data-store';
 import { GetProp, GetRef, Space, Spin, Tag, Upload, UploadProps, message } from 'antd';
 import { IFileMeta, MobilePermissionType } from '@evo/types';
 import React, { FC, memo, useEffect, useLayoutEffect } from 'react';
@@ -228,11 +228,7 @@ export const SenderContent: FC<ISenderContentProps> = memo((props) => {
         const allAnswersInfo = latestMsg.modelAnswers.getCellsValue({ all: true });
         const arrayAnswers = allAnswersInfo.array;
 
-        const isResolving = arrayAnswers.some(
-          (info) =>
-            info?.connResult?.status === EModalConnStatus.PENDING ||
-            info?.connResult?.status === EModalConnStatus.RECEIVING
-        );
+        const isResolving = arrayAnswers.some((info) => info?.status === EChatAnswerStatus.PENDING);
 
         setLoading(isResolving);
       },
