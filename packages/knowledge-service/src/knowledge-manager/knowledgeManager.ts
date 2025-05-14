@@ -402,7 +402,7 @@ export class KnowledgeManager implements IKnowledgeService {
 
       // 5. 如果需要删除文件
       if (isDeleteFile && vector.fileId) {
-        await this.fileManager.deleteFile(vector.fileId);
+        await this.fileManager.deleteFile({ fileId: vector.fileId });
       }
 
       return ResultUtil.success(true);

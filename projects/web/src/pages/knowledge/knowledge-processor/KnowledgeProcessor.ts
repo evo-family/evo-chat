@@ -141,10 +141,13 @@ export class KnowledgeProcessor extends BaseProcessor {
   };
 
   deleteVector = async (id: string, isDeleteFile: boolean = false) => {
-    await KnowledgeBridgeFactory.getKnowledge().deleteVector({
+    const result = await KnowledgeBridgeFactory.getKnowledge().deleteVector({
       id,
       isDeleteFile,
     });
-    this.tableActionRef.current?.reload();
+    if (result.success) {
+      this.getVectorsByKnowledgeId(this.selectKnowledge.get()!.id);
+    }
+    return result;
   };
 }
