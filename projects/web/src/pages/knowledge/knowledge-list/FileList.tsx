@@ -5,6 +5,7 @@ import { IFileMeta, IKnowledgeVectorMetaVo } from '@evo/types';
 import dayjs from 'dayjs';
 import { formatFileSize } from '@evo/utils';
 import { useKnowledgeSelector } from '../knowledge-processor/KnowledgeProvider';
+import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 
 interface FileItem extends IFileMeta {
   vectorProgress: number;
