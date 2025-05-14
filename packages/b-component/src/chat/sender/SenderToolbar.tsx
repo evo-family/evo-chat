@@ -53,7 +53,7 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
           </Badge>
         </Tooltip>
         <ModelParamConfig />
-        <Tooltip title="清除上下文">
+        {/* <Tooltip title="清除上下文">
           <Badge dot={fileItems.length > 0 && !open}>
             <Button
               className={classNames('evo-button-icon')}
@@ -62,7 +62,7 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
               icon={<EvoIcon size={'small'} type="icon-file" />}
             />
           </Badge>
-        </Tooltip>
+        </Tooltip> */}
         {isEl && <KnowledgeToolbar />}
         {isEl && <McpSelectToolbar />}
         <Divider type="vertical" style={{ margin: '0 10px' }} />

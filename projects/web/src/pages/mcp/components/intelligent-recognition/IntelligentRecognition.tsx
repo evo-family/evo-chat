@@ -1,13 +1,13 @@
-import { ButtonWrapper } from '@evo/component';
 import { Button, Input, message } from 'antd';
 import React, { FC, memo, useState } from 'react';
 
-export interface IIntelligentRecognitionData {
+import { ButtonWrapper } from '@evo/component';
+import { EMcpType } from '@evo/types';
+import { IFormData } from '../add-or-update/AddOrUpdateMcp';
+
+export interface IIntelligentRecognitionData extends Partial<IFormData> {
   name: string;
   description: string;
-  command: string;
-  args: string;
-  env: { key: string; value: string }[];
 }
 
 export interface IIntelligentRecognitionProps {
@@ -16,9 +16,14 @@ export interface IIntelligentRecognitionProps {
 
 export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((props) => {
   const [visible, setVisible] = useState(false);
-
-  const handleRecognition = (value: string) => {
+  const [textAreaValue, setTextAreaValue] = useState<string>();
+  const handleRecognition = () => {
     try {
+      const value = textAreaValue!;
+      if (!value) {
+        message.info('请输入要识别的内容');
+        return;
+      }
       // 预处理 JSON 字符串，移除尾随逗号
       const cleanedValue = value.replace(/,(\s*[}\]])/g, '$1');
       // 尝试解析 JSON
@@ -39,16 +44,27 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
       }
 
       // 转换为 IIntelligentRecognitionData 格式
-      const recognitionData: IIntelligentRecognitionData = {
-        name: serverName,
-        description: `MCP Server for ${serverName}`,
-        command: serverConfig.command || 'npx',
-        args: Array.isArray(serverConfig.args) ? serverConfig.args.join('\n') : '',
-        env: Object.entries(serverConfig?.env || {}).map(([key, value]) => ({
-          key,
-          value: String(value),
-        })),
-      };
+      let recognitionData: IIntelligentRecognitionData;
+      if (serverConfig?.type?.toLocaleLowerCase() === 'sse') {
+        recognitionData = {
+          name: serverName,
+          description: `MCP Server for ${serverName}`,
+          type: EMcpType.SSE,
+          url: serverConfig?.url,
+        };
+      } else {
+        recognitionData = {
+          name: serverName,
+          description: `MCP Server for ${serverName}`,
+          command: serverConfig.command || 'npx',
+          type: EMcpType.STDIO,
+          args: Array.isArray(serverConfig.args) ? serverConfig.args.join('\n') : '',
+          env: Object.entries(serverConfig?.env || {}).map(([key, value]) => ({
+            key,
+            value: String(value),
+          })),
+        };
+      }
 
       props.onRecognition?.(recognitionData);
       message.success('识别成功');
@@ -64,22 +80,15 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
       {visible && (
         <ButtonWrapper
           buttonNode={
-            <Button
-              onClick={() => {
-                const textArea = document.querySelector('textarea');
-                if (textArea) {
-                  handleRecognition(textArea.value);
-                }
-              }}
-              type="default"
-              style={{ width: '100%' }}
-            >
+            <Button onClick={handleRecognition} type="default" style={{ width: '100%' }}>
               识别MCP地址
             </Button>
           }
         >
           <Input.TextArea
             rows={12}
+            value={textAreaValue}
+            onChange={(e) => setTextAreaValue(e.target.value!)}
             placeholder={`{
   "mcpServers": {
     "github": {

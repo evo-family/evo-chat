@@ -37,9 +37,9 @@ export const ChatMessageHeader: FC<IChatMessageHeaderProps> = ({}) => {
         <div className={classNames(s['chat-title'], 'app-region-no-drag')}>{chatTitle}</div>
       </FlexFillWidth>
       <div className={classNames(s.right, 'app-region-no-drag')}>
-        <Tooltip title="模型设置">
+        {/* <Tooltip title="模型设置">
           <Button type="text" icon={<SettingOutlined />} onClick={collapseDrawer} />
-        </Tooltip>
+        </Tooltip> */}
       </div>
     </div>
   );

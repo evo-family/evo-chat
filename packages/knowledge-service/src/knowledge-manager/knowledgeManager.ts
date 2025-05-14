@@ -4,6 +4,7 @@ import {
   IAddFilesMetaToVectorParams,
   IAddFileToVectorParams,
   IAddFolderToVectorParams,
+  IDeleteVectorParams,
   IFileMeta,
   IKnowledgeMeta,
   IKnowledgeService,
@@ -367,6 +368,46 @@ export class KnowledgeManager implements IKnowledgeService {
       return ResultUtil.success(true);
     } catch (error) {
       console.error('删除知识库失败:', error);
+      return ResultUtil.error(error);
+    }
+  }
+
+  async deleteVector(params: IDeleteVectorParams): Promise<BaseResult<boolean>> {
+    try {
+      const { id, isDeleteFile } = params;
+
+      // 1. 获取向量信息
+      const sql = `
+        SELECT kv.*
+        FROM knowledge_vector kv
+        WHERE kv.id = $1
+      `;
+      const result = await this.dbManager.query(sql, [id]);
+      const vector = result?.rows?.[0];
+
+      if (!vector) {
+        return ResultUtil.error('未找到向量信息');
+      }
+
+      // 2. 获取RAG管理器
+      const ragManager = await this.getRagManager(vector.knowledgeId);
+
+      // 3. 删除向量数据
+      await ragManager.deleteLoader(vector.loaderId);
+
+      // 4. 从数据库中删除记录
+      await this.dbManager.delete('knowledge_vector', {
+        id,
+      });
+
+      // 5. 如果需要删除文件
+      if (isDeleteFile && vector.fileId) {
+        await this.fileManager.deleteFile({ fileId: vector.fileId });
+      }
+
+      return ResultUtil.success(true);
+    } catch (error) {
+      console.error('删除向量失败:', error);
       return ResultUtil.error(error);
     }
   }

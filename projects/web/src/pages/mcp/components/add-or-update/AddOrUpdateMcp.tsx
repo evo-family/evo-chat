@@ -131,7 +131,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
   );
 
   const handleRecognition = (data: IIntelligentRecognitionData) => {
-    form.setFieldsValue({ ...data, type: EMcpType.STDIO });
+    form.setFieldsValue({ ...data });
   };
 
   return (
