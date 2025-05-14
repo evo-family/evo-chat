@@ -1,6 +1,6 @@
 {
   "name": "@evo/utils",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "types": "./src/index.ts",
   "exports": {
