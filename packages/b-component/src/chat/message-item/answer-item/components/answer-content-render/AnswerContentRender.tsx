@@ -23,6 +23,10 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
   );
 
   if (status === EModalConnStatus.ERROR) {
+    if (!errorMessage?.trim().length) {
+      return null;
+    }
+
     return (
       <BubbleChat
         style={style}
@@ -37,6 +41,10 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
       />
     );
   } else {
+    if (!content?.trim().length) {
+      return null;
+    }
+
     return (
       <BubbleChat
         style={style}
