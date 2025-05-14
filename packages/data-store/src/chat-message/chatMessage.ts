@@ -112,6 +112,19 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
   stopResolveAnswer(id: string) {
     const modelResolver = this.answerResolver.get(id);
+    const answerCell = this.modelAnswers.getCellSync(id);
+
+    if (answerCell) {
+      const answerData = answerCell.get();
+      answerData.status = EChatAnswerStatus.END;
+      const latestTurnItem = answerData.histroy.at(-1)?.chatTurns.at(-1);
+
+      if (latestTurnItem) {
+        latestTurnItem.status = EModalConnStatus.SUCCESS;
+      }
+
+      answerCell.set(answerData);
+    }
 
     // 先清理前一个model连接接收
     if (modelResolver) {

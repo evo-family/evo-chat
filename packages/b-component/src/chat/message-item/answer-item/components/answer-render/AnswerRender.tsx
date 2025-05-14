@@ -5,14 +5,16 @@ import {
   useChatWinCtx,
 } from '@evo/data-store';
 import React, { useLayoutEffect, useMemo } from 'react';
+import { cxb, useCellValueSelector } from '@evo/utils';
 
 import { AnswerContentRender } from '../answer-content-render/AnswerContentRender';
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Divider } from 'antd';
 import { McpExecuteInfo } from '../mcp-execute-info/McpExecuteInfo';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
-import { useCellValueSelector } from '@evo/utils';
-import { useUpdateEffect } from 'ahooks';
+import Style from './Style.module.scss';
+
+const cx = cxb.bind(Style);
 
 export interface AnswerRenderTurnItemProps {
   turnIndex: number;
@@ -34,6 +36,21 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
     tryScrollToBtmIfNeed();
   }, [content, reasoning_content, status]);
 
+  if (status === EModalConnStatus.PENDING) {
+    return (
+      <BubbleChat
+        contents={[
+          {
+            key: 3,
+            role: 'user',
+            className: cx('loading'),
+            loading: true,
+          },
+        ]}
+      />
+    );
+  }
+
   return (
     <>
       <ReasoningRender turnIndex={turnIndex} />
@@ -52,7 +69,7 @@ export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
     return (
       <div key={index}>
         <AnswerTurnItem turnIndex={index} />
-        <Divider style={{ margin: '10px 0' }} />
+        {index ? <Divider style={{ margin: '10px 0' }} /> : null}
       </div>
     );
   });
