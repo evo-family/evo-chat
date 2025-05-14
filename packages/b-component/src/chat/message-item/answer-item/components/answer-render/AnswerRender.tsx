@@ -52,7 +52,7 @@ export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
     return (
       <div key={index}>
         <AnswerTurnItem turnIndex={index} />
-        <Divider />
+        <Divider style={{ margin: '10px 0' }} />
       </div>
     );
   });

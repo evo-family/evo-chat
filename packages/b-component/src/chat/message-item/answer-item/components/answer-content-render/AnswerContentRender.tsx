@@ -6,10 +6,12 @@ import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
   turnIndex: number;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
-  const { turnIndex } = props;
+  const { turnIndex, style, className } = props;
 
   const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
 
@@ -23,6 +25,8 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
   if (status === EModalConnStatus.ERROR) {
     return (
       <BubbleChat
+        style={style}
+        className={className}
         contents={[
           {
             key: 3,
@@ -35,6 +39,8 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
   } else {
     return (
       <BubbleChat
+        style={style}
+        className={className}
         contents={[
           {
             key: 3,

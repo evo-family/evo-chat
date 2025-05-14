@@ -30,10 +30,10 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
   const listDOMRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
-    count: messageIds?.length ?? 0,
+    count: (messageIds?.length ?? 0) + 1, // 增加1个位置给
     getScrollElement: () => listDOMRef.current,
     estimateSize: () => 200, // 预估高度
-    getItemKey: (index) => messageIds?.[index] ?? index, // 使用消息ID作为缓存key
+    getItemKey: (index) => (index === 0 ? 'prompt-info' : messageIds?.[index - 1] ?? index),
     overscan: 3, // 预渲染数量
     gap: 20,
   });
@@ -63,7 +63,6 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
         className={classNames(Style.message_list, className)}
         onScroll={onListScroll}
       >
-        <PromptInfo />
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,
@@ -73,8 +72,7 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
             const { key, index, start } = virtualItem;
-            const msgId = messageIds?.[index]; // 获取数据
-
+            const msgId = messageIds?.[index - 1]; // 获取数据
             return (
               <div
                 key={key}
@@ -88,7 +86,7 @@ export const ChatMessageList = React.memo<IMessageListProps>((props) => {
                   transform: `translateY(${start ?? 0}px)`,
                 }}
               >
-                <MessageItem id={msgId!} />
+                {index === 0 ? <PromptInfo /> : <MessageItem id={msgId!} />}
               </div>
             );
           })}
