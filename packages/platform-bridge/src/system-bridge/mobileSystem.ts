@@ -2,6 +2,9 @@ import { BaseResult, EThemeMode, ISystemService, MobilePermissionType } from '@e
 import { BaseBridge } from '../common/baseBridge';
 
 export class MobileSystem extends BaseBridge implements ISystemService {
+  getOsType(): Promise<'darwin' | 'win32' | 'linux'> {
+    throw new Error('Method not implemented.');
+  }
   clearLocalData(): Promise<BaseResult<boolean>> {
     throw new Error('Method not implemented.');
   }

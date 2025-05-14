@@ -3,6 +3,9 @@ import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
 
 export class ElectronSystem extends BaseBridge implements ISystemService {
+  async getOsType(): Promise<'darwin' | 'win32' | 'linux'> {
+    return window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.SYSTEM.GET_OS_TYPE);
+  }
   checkPermission(permissions: MobilePermissionType[]): Promise<Boolean> {
     throw new Error('Method not implemented.');
   }
