@@ -4,7 +4,7 @@ import { SettingPanel, SettingPanelItem } from '../../../setting-panel';
 import { defaultModelParamsConfig, useGlobalCtx } from '@evo/data-store';
 
 import { EvoIcon } from '../../../icon';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import s from './ModelParamConfig.module.scss';
 import { useAntdToken } from '../../../hooks';
@@ -139,7 +139,7 @@ export const ModelParamConfig: FC<IModelParamConfigProps> = React.memo((props) =
             className={classNames('evo-button-icon')}
             size="small"
             type="text"
-            icon={<EvoIcon size={'small'} type="icon-config" />}
+            icon={<SettingOutlined />}
           />
         </Tooltip>
       </Dropdown>

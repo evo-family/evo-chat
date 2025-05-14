@@ -5,7 +5,6 @@ import { IFileMeta, IKnowledgeVectorMetaVo } from '@evo/types';
 import dayjs from 'dayjs';
 import { formatFileSize } from '@evo/utils';
 import { useKnowledgeSelector } from '../knowledge-processor/KnowledgeProvider';
-import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
 
 interface FileItem extends IFileMeta {
   vectorProgress: number;
@@ -23,6 +22,19 @@ export const KnowledgeFileList: FC = () => {
     }
     getVectorsByKnowledgeId(selectKnowledge.id);
   }, [selectKnowledge?.id]);
+
+  const commonDel = async (id: string, isDeleteFile: boolean = false) => {
+    try {
+      const result = await deleteVector(id, isDeleteFile);
+      if (result.success) {
+        message.success('删除成功');
+      } else {
+        message.error(result.error);
+      }
+    } catch (error) {
+      message.error('删除失败');
+    }
+  };
 
   const columns: ProColumns<IKnowledgeVectorMetaVo>[] = [
     {
@@ -64,12 +76,22 @@ export const KnowledgeFileList: FC = () => {
               cancelText: '取消',
               okType: 'danger',
               onOk: async () => {
-                try {
-                  await deleteVector(record.id);
-                  message.success('删除成功');
-                  tableActionRef.current?.reload();
-                } catch (error) {
-                  message.error('删除失败');
+                if (record.fileId) {
+                  Modal.confirm({
+                    title: '删除文件确认',
+                    content: '是否同时删除该向量的原始文件？',
+                    okText: '同时删除',
+                    okType: 'danger',
+                    cancelText: '仅删除向量',
+                    onOk: async () => {
+                      commonDel(record.id, true);
+                    },
+                    onCancel: async () => {
+                      commonDel(record.id, false);
+                    },
+                  });
+                } else {
+                  commonDel(record.id, false);
                 }
               },
             });
