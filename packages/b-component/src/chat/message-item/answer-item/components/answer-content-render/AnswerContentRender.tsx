@@ -1,31 +1,55 @@
+import { EModalConnStatus, useChatAnswerCtx, useChatAnswerOrgCtx } from '@evo/data-store';
+
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
-import React, { useMemo } from 'react';
+import React from 'react';
+import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
-  answerContent?: string;
+  turnIndex: number;
   style?: React.CSSProperties;
   className?: string;
 }
 
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerContent, style, className } = props;
+  const { turnIndex, style, className } = props;
 
-  const rAnswerContent = useMemo(() => {
-    return answerContent?.trim();
-  }, [answerContent]);
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
 
-  if (!rAnswerContent) return null;
-  return (
-    <BubbleChat
-      style={style}
-      className={className}
-      contents={[
-        {
-          key: 3,
-          role: 'user',
-          content: rAnswerContent,
-        },
-      ]}
-    />
+  const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.status);
+  const [errorMessage] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.errorMessage
   );
+
+  if (status === EModalConnStatus.ERROR) {
+    return (
+      <BubbleChat
+        style={style}
+        className={className}
+        contents={[
+          {
+            key: 3,
+            role: 'error',
+            content: errorMessage,
+          },
+        ]}
+      />
+    );
+  } else {
+    return (
+      <BubbleChat
+        style={style}
+        className={className}
+        contents={[
+          {
+            key: 3,
+            role: 'user',
+            content: content,
+            loading: status === EModalConnStatus.PENDING,
+          },
+        ]}
+      />
+    );
+  }
 });

@@ -24,53 +24,21 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
   const [tryScrollToBtmIfNeed] = useChatWinCtx((ctx) => ctx.tryScrollToBtmIfNeed);
   const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
   const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.status);
-  const [errorMessage] = useCellValueSelector(
-    chatTurnsCell,
-    (value) => value.at(turnIndex)?.errorMessage
-  );
   const [reasoning_content] = useCellValueSelector(
     chatTurnsCell,
     (value) => value.at(turnIndex)?.reasoning_content
   );
   const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
 
-  useUpdateEffect(() => {
+  useLayoutEffect(() => {
     tryScrollToBtmIfNeed();
   }, [content, reasoning_content, status]);
 
-  if (status === EModalConnStatus.PENDING) {
-    return (
-      <BubbleChat
-        contents={[
-          {
-            key: 2,
-            role: 'user',
-            loading: true,
-          },
-        ]}
-      />
-    );
-  }
-
   return (
     <>
-      {status === EModalConnStatus.ERROR ? (
-        <BubbleChat
-          contents={[
-            {
-              key: 2,
-              role: 'error',
-              content: errorMessage,
-            },
-          ]}
-        />
-      ) : (
-        <>
-          <ReasoningRender turnIndex={turnIndex} />
-          <McpExecuteInfo turnIndex={turnIndex} />
-          <AnswerContentRender answerContent={content} />
-        </>
-      )}
+      <ReasoningRender turnIndex={turnIndex} />
+      <McpExecuteInfo turnIndex={turnIndex} />
+      <AnswerContentRender turnIndex={turnIndex} />
     </>
   );
 });
