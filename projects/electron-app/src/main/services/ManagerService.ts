@@ -1,9 +1,9 @@
 import { KnowledgeService } from '@evo/knowledge-service';
-import { SchemaManager } from '@evo/pglite-manager';
 import { MCPService } from '@evo/mcp-service';
+import { ResourceService } from './ResourceService';
+import { SchemaManager } from '@evo/pglite-manager';
 import { app } from 'electron';
 import path from 'path';
-import { ResourceService } from './ResourceService';
 
 /**
  * 管理其它包的Server

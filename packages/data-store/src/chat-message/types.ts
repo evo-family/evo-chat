@@ -7,39 +7,74 @@ import {
   HookRunnerContext,
 } from '@evo/utils';
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources';
+import { IFileMeta, IMCPCallToolResponse } from '@evo/types';
 
-import { IFileMeta } from '@evo/types';
-
-export enum EModalAnswerStatus {
+export enum EModalConnStatus {
   SUCCESS = 'success',
   ERROR = 'error',
   PENDING = 'pending',
   RECEIVING = 'receiving',
 }
 
-export interface IModelBaseAnswer {
-  id: string;
-  model: string;
-  provider: string;
+export enum EMCPExecuteStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
+export interface IMCPExecuteRecord {
+  mcp_id: string;
+  tool_name: string;
+  arguments: Record<any, any>;
+  status: EMCPExecuteStatus;
+  result?: IMCPCallToolResponse;
+}
+
+export interface IModelConnRecord {
+  type: 'llm';
+  errorMessage: string;
   content: string;
   reasoning_content: string;
   startReasoningTime?: number;
   endReasoningTime?: number;
-  status: EModalAnswerStatus;
-  createdTime?: number;
+  status: EModalConnStatus;
   usage?: ChatCompletionChunk['usage'];
-  errorMessage: string;
+  sendMessage: string;
+  mcpInfo: {
+    executeRecords: Array<IMCPExecuteRecord>;
+  };
+}
+
+export type TChatTurnItem = IModelConnRecord;
+
+export interface IModelAnserActionRecord {
+  chatTurns: TChatTurnItem[];
+}
+
+export enum EChatAnswerStatus {
+  PENDING = 'pending',
+  END = 'end',
+}
+
+export interface IModelBaseAnswer {
+  id: string;
+  model: string;
+  provider: string;
+  createdTime?: number;
+  status: EChatAnswerStatus;
+  histroy: IModelAnserActionRecord[];
 }
 
 export type TModelAnswer = IModelBaseAnswer;
 
 export interface IMessageConfig {
   id: string;
+  sendMessage: string;
   createdTime: number;
   providers: { name: string; model: string }[];
-  sendMessage: string;
-  attachFileInfos: IFileMeta[];
   answerIds: string[];
+  attachFileInfos?: IFileMeta[];
+  mcpIds?: string[];
 }
 
 export interface IChatMessageHooks extends BaseServiceHooks {

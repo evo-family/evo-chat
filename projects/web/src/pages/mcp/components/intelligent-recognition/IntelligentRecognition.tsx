@@ -1,8 +1,9 @@
-import { ButtonWrapper } from '@evo/component';
 import { Button, Input, message } from 'antd';
 import React, { FC, memo, useState } from 'react';
-import { IFormData } from '../add-or-update/AddOrUpdateMcp';
+
+import { ButtonWrapper } from '@evo/component';
 import { EMcpType } from '@evo/types';
+import { IFormData } from '../add-or-update/AddOrUpdateMcp';
 
 export interface IIntelligentRecognitionData extends Partial<IFormData> {
   name: string;
@@ -27,7 +28,6 @@ export const IntelligentRecognition: FC<IIntelligentRecognitionProps> = memo((pr
       const cleanedValue = value.replace(/,(\s*[}\]])/g, '$1');
       // 尝试解析 JSON
       const data = JSON.parse(cleanedValue);
-
       // 验证数据结构
       if (!data.mcpServers || typeof data.mcpServers !== 'object') {
         message.error('无效的 MCP 配置格式');

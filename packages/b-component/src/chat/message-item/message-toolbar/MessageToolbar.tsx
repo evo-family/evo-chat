@@ -19,10 +19,13 @@ export const MessageToolbar = React.memo<IMessageToolbarProps>((props) => {
   const {} = props;
 
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
+  const [handlePostMessage] = useChatWinCtx((ctx) => ctx.handlePostMessage);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
 
   const resendMessage = useMemoizedFn(() => {
-    chatWin.resendMessage({ msgId: chatMsg.getConfigState('id') });
+    const { sendMessage, attachFileInfos: fileInfos } = chatMsg.getConfigState();
+
+    handlePostMessage(sendMessage, { fileInfos });
   });
 
   const retryMessage = useMemoizedFn(() => {

@@ -1,14 +1,22 @@
-import { IBaseModelHandler, IModelConnHandle } from './types';
-
+import { AuthenticationError } from 'openai';
+import { EModalConnStatus } from '@/chat-message/types';
+import { IModelConnHandle } from './types';
 import { OpenAiClient } from '@evo/utils';
-import { defaultMsgSend } from './default-handler/handle';
+import { defaultStreamResolver } from './stream';
+import { getEmptyModelConnResult } from '@/chat-message/constants/answer';
 import { modelProcessor } from '../../../processor';
 
-const modelHandlerMap = new Map<string, IBaseModelHandler>([]);
-
-export const modelConnHandle: IModelConnHandle = async (params) => {
-  const { answerCell } = params;
-  const providerName = answerCell.get().provider;
+export const modelConnHandle: IModelConnHandle = (params) => {
+  const {
+    answerConfig,
+    getMessageContext,
+    taskSignal,
+    userContent,
+    actionRecord,
+    onResolve,
+    firstResolve,
+  } = params;
+  const providerName = answerConfig.provider;
 
   // 根据供应商获取对应的连接
   const provider = modelProcessor.availableModels?.get().find((f) => f.id == providerName);
@@ -16,13 +24,38 @@ export const modelConnHandle: IModelConnHandle = async (params) => {
     throw new Error('provider is empty');
   }
 
-  const matchConn = new OpenAiClient({
+  const modelConnection = new OpenAiClient({
     apiKey: provider?.apiInfo.key!,
     baseURL: provider?.apiInfo.url!,
-    defaultModel: answerCell.get().model,
+    defaultModel: answerConfig.model,
   });
+  const modelParams = modelProcessor.modelParams.get();
+  const baseConnResult = getEmptyModelConnResult(userContent);
 
-  const matchHandler = modelHandlerMap.get(providerName) ?? defaultMsgSend;
+  actionRecord.chatTurns.push(baseConnResult);
 
-  return matchHandler(matchConn, params);
+  return getMessageContext().then((composeMessages) => {
+    return modelConnection
+      .chat(composeMessages, {
+        stream: true,
+        model: answerConfig.model,
+        ...modelParams,
+      })
+      .then((modelConnResult) => {
+        taskSignal.promise.finally(() => modelConnResult.controller.abort());
+
+        return defaultStreamResolver({
+          stream: modelConnResult,
+          connResult: baseConnResult,
+          onResolve,
+          firstResolve,
+        });
+      })
+      .then((connResult) => {
+        baseConnResult.status = EModalConnStatus.SUCCESS;
+        onResolve?.(connResult);
+
+        return connResult;
+      });
+  });
 };

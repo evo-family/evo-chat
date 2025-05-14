@@ -1,5 +1,5 @@
 import Dexie, { IndexableType } from 'dexie';
-import { asyncBufferThrottle, bufferDebounce, PromiseWrap } from '../utils/common';
+import { PromiseWrap, asyncBufferThrottle, bufferDebounce } from '../utils/common';
 import { bufferCount, bufferTime } from 'rxjs';
 
 /**
@@ -11,7 +11,7 @@ export interface IBaseIDBStoreOptions {
   /** 数据库版本 */
   version: number;
   /** 表结构定义 */
-  schema?: Record<string, string>;
+  schema: Record<string, string>;
 }
 
 /**
@@ -21,6 +21,14 @@ interface IStoreItem<D> {
   id: string;
   data: D;
 }
+
+const DEFAULT_OPTIONS: IBaseIDBStoreOptions = {
+  defaultTable: 'cache',
+  version: 2,
+  schema: {
+    cache: '&id, data',
+  },
+};
 
 /**
  * 基础 IndexedDB 存储类
@@ -45,12 +53,20 @@ export class BaseIDBStore<T = any> {
    * @param key 数据库名称
    * @param options 存储选项
    */
-  constructor(key: string, options: IBaseIDBStoreOptions = { defaultTable: 'cache', version: 2 }) {
+  constructor(key: string, options: Partial<IBaseIDBStoreOptions>) {
     this.key = key;
-    this.options = {
+    const mergedOptions = {
+      ...DEFAULT_OPTIONS,
       ...options,
-      schema: options.schema || { [options.defaultTable]: '&id, data' },
     };
+
+    if (!mergedOptions.schema) {
+      mergedOptions.schema = {
+        [mergedOptions.defaultTable]: '&id, data',
+      };
+    }
+
+    this.options = mergedOptions;
     this.db = this.initDB();
   }
 
@@ -77,11 +93,17 @@ export class BaseIDBStore<T = any> {
       const dbIns = new Dexie(this.key);
 
       // 配置数据库版本和表结构
-      dbIns.version(this.version).stores(
-        this.options.schema || {
-          [this.defaultTable]: '&id, data',
-        }
-      );
+      dbIns
+        .version(this.version)
+        .stores(this.options.schema)
+        .upgrade((tx) => {
+          // 在版本升级时清除所有表中的数据
+          console.log(`数据库 ${this.key} 版本升级至 ${this.version}，清除所有数据`);
+
+          Object.keys(this.options.schema).forEach((tableName) => {
+            tx.table(tableName).clear();
+          });
+        });
 
       // 预先打开表以验证连接
       dbIns.table(this.defaultTable);

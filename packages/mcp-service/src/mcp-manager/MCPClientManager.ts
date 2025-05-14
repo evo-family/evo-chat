@@ -9,17 +9,18 @@ import {
   IMcpStdioConfig,
   IMcpTool,
 } from '@evo/types';
-import { generateUUID, ResultUtil } from '@evo/utils';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { ErrorCode, McpError } from '../utils/errors';
+import { ResultUtil, generateUUID } from '@evo/utils';
 import {
   SSEClientTransport,
   SSEClientTransportOptions,
 } from '@modelcontextprotocol/sdk/client/sse.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { IDepManager } from '../types/common';
-import { getCommandPath } from '../utils/cliCheck';
-import { ErrorCode, McpError } from '../utils/errors';
 import { getCommandArgs, getCommandEnv } from '../utils/mcp';
+
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { IDepManager } from '../types/common';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { getCommandPath } from '../utils/cliCheck';
 
 export interface IMCPClientManagerOptions {
   depManager: IDepManager;
@@ -121,6 +122,7 @@ export class MCPClientManager {
     try {
       const mcp = await this.getMcpInfo(mcpId);
       const startResult = await this.startClientByMcpId(mcp.id);
+      console.log('startResult', startResult);
       if (!startResult.success) {
         return ResultUtil.error(startResult.error);
       }

@@ -1,7 +1,8 @@
 import { CopyOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import {
-  EModalAnswerStatus,
-  TModelAnswerCell,
+  EChatAnswerStatus,
+  EModalConnStatus,
+  useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
@@ -12,15 +13,13 @@ import style from './Style.module.scss';
 import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
-export interface IAnswerToolbarProps {
-  answerCell: TModelAnswerCell;
-}
+export interface IAnswerToolbarProps {}
 
 export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
-  const { answerCell } = props;
-
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
+  const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
 
   const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
@@ -36,21 +35,23 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
   });
 
   const copyModelAnswer = useMemoizedFn(() => {
-    const { content: answerContent, errorMessage, status } = answerCell.get();
-
     let clipContent = '';
 
-    switch (status) {
-      case EModalAnswerStatus.SUCCESS:
-        clipContent = answerContent;
-        break;
-      case EModalAnswerStatus.ERROR:
-        clipContent = errorMessage;
-        break;
+    chatTurnsCell.get().forEach((item) => {
+      const { content, status, errorMessage } = item;
 
-      default:
-        break;
-    }
+      switch (status) {
+        case EModalConnStatus.SUCCESS:
+          clipContent = content;
+          break;
+        case EModalConnStatus.ERROR:
+          clipContent = errorMessage;
+          break;
+
+        default:
+          break;
+      }
+    });
 
     if (clipContent) {
       navigator.clipboard.writeText(clipContent).then(() => {
@@ -59,8 +60,7 @@ export const AnswerToolbar = React.memo<IAnswerToolbarProps>((props) => {
     }
   });
 
-
-  if (status === EModalAnswerStatus.SUCCESS || status === EModalAnswerStatus.ERROR) {
+  if (status === EChatAnswerStatus.END) {
     return (
       <Flex className={style.container}>
         <Tooltip title="重新生成">

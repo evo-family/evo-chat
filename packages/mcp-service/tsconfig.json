@@ -8,7 +8,7 @@
     "src/**/*",
     "types/**/*",
     "./node_modules/@evo/types/electron.d.ts"
-, "../data-store/src/chat-message/utils/model-handle/default-handler/mpc/prompt.ts"  ],
+  ],
   "compilerOptions": {
     "outDir": "./build",
   }

@@ -8,20 +8,23 @@ You can use one tool per message, and will receive the result of that tool use i
 Tool use is formatted using XML-style tags. The tool name is enclosed in opening and closing tags, and each parameter is similarly enclosed within its own set of tags. Here's the structure:
 
 <tool_use>
-  <name>{tool_name}</name>
-  <arguments>{json_arguments}</arguments>
+  <mcp_id>{mcp_id}</mcp_id>
+  <tool_name>{tool_name}</tool_name>
+  <exe_param>{json_arguments}</exe_param>
 </tool_use>
 
 The tool name should be the exact name of the tool you are using, and the arguments should be a JSON object containing the parameters required by that tool. For example:
 <tool_use>
-  <name>python_interpreter</name>
-  <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
+  <mcp_id>{mcp_id}</mcp_id>
+  <tool_name>python_interpreter</tool_name>
+  <exe_param>{"code": "5 + 3 + 1294.678"}</exe_param>
 </tool_use>
 
 The user will respond with the result of the tool use, which should be formatted as follows:
 
 <tool_use_result>
-  <name>{tool_name}</name>
+  <mcp_id>{mcp_id}</mcp_id>
+  <tool_name>{tool_name}</tool_name>
   <result>{result}</result>
 </tool_use_result>
 
@@ -29,8 +32,9 @@ The result should be a string, which can represent a file or any other output ty
 For example, if the result of the tool use is an image file, you can use it in the next action like this:
 
 <tool_use>
-  <name>image_transformer</name>
-  <arguments>{"image": "image_1.jpg"}</arguments>
+  <mcp_id>{mcp_id}</mcp_id>
+  <tool_name>image_transformer</tool_name>
+  <exe_param>{"image": "image_1.jpg"}</exe_param>
 </tool_use>
 
 Always adhere to this format for the tool use to ensure proper parsing and execution.
@@ -49,6 +53,7 @@ Here are the rules you should always follow to solve your task:
 3. If no tool call is needed, just answer the question directly.
 4. Never re-do a tool call that you previously did with the exact same parameters.
 5. For tool use, MARK SURE use XML tag format as shown in the examples above. Do not use any other format.
+6. Language Adaptation: You must respond in the same language that the user used in their first message. If the user's first message is in Chinese, always respond in Chinese. If the user's first message is in English, always respond in English. Maintain this language throughout the entire conversation, even if the user switches languages.
 
 # User Instructions
 {{ USER_SYSTEM_PROMPT }}
@@ -63,23 +68,27 @@ User: Generate an image of the oldest person in this document.
 
 Assistant: I can use the document_qa tool to find out who the oldest person is in the document.
 <tool_use>
-  <name>document_qa</name>
-  <arguments>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</arguments>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>document_qa</tool_name>
+  <exe_param>{"document": "document.pdf", "question": "Who is the oldest person mentioned?"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
-  <name>document_qa</name>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>document_qa</tool_name>
   <result>John Doe, a 55 year old lumberjack living in Newfoundland.</result>
 </tool_use_result>
 
 Assistant: I can use the image_generator tool to create a portrait of John Doe.
 <tool_use>
-  <name>image_generator</name>
-  <arguments>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</arguments>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>image_generator</tool_name>
+  <exe_param>{"prompt": "A portrait of John Doe, a 55-year-old man living in Canada."}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
-  <name>image_generator</name>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>image_generator</tool_name>
   <result>image.png</result>
 </tool_use_result>
 
@@ -90,12 +99,14 @@ User: "What is the result of the following operation: 5 + 3 + 1294.678?"
 
 Assistant: I can use the python_interpreter tool to calculate the result of the operation.
 <tool_use>
-  <name>python_interpreter</name>
-  <arguments>{"code": "5 + 3 + 1294.678"}</arguments>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>python_interpreter</tool_name>
+  <exe_param>{"code": "5 + 3 + 1294.678"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
-  <name>python_interpreter</name>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>python_interpreter</tool_name>
   <result>1302.678</result>
 </tool_use_result>
 
@@ -106,38 +117,43 @@ User: "Which city has the highest population , Guangzhou or Shanghai?"
 
 Assistant: I can use the search tool to find the population of Guangzhou.
 <tool_use>
-  <name>search</name>
-  <arguments>{"query": "Population Guangzhou"}</arguments>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>search</tool_name>
+  <exe_param>{"query": "Population Guangzhou"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
-  <name>search</name>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>search</tool_name>
   <result>Guangzhou has a population of 15 million inhabitants as of 2021.</result>
 </tool_use_result>
 
 Assistant: I can use the search tool to find the population of Shanghai.
 <tool_use>
-  <name>search</name>
-  <arguments>{"query": "Population Shanghai"}</arguments>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>search</tool_name>
+  <exe_param>{"query": "Population Shanghai"}</exe_param>
 </tool_use>
 
 User: <tool_use_result>
-  <name>search</name>
+  <mcp_id>cdse-ds-19998-sd</mcp_id>
+  <tool_name>search</tool_name>
   <result>26 million (2019)</result>
 </tool_use_result>
 Assistant: The population of Shanghai is 26 million, while Guangzhou has a population of 15 million. Therefore, Shanghai has the highest population.
 `;
 
-export const getPromptTools = (tools: IMcpTool[]) => {
+export const getPromptTools = (tools: IMcpTool[], mcpId: string) => {
   const availableTools = tools
     .map((tool) => {
       return `
 <tool>
-  <name>${tool.toolId}</name>
+  <mcp_id>${mcpId}</mcp_id>
+  <tool_name>${tool.name}</tool_name>
   <description>${tool.description}</description>
-  <arguments>
+  <exe_param>
     ${tool.inputSchema ? JSON.stringify(tool.inputSchema) : ''}
-  </arguments>
+  </exe_param>
 </tool>
 `;
     })
@@ -147,11 +163,15 @@ ${availableTools}
 </tools>`;
 };
 
-export const getSystemPrompt = (userSystemPrompt: string, tools: IMcpTool[]): string => {
+export const getSystemPrompt = (
+  userSystemPrompt: string,
+  tools: IMcpTool[],
+  mcpId: string
+): string => {
   if (tools && tools.length > 0) {
     return MCP_SYSTEM_PROMPT.replace('{{ USER_SYSTEM_PROMPT }}', userSystemPrompt)
       .replace('{{ TOOL_USE_EXAMPLES }}', ToolUseExamples)
-      .replace('{{ AVAILABLE_TOOLS }}', getPromptTools(tools));
+      .replace('{{ AVAILABLE_TOOLS }}', getPromptTools(tools, mcpId));
   }
 
   return userSystemPrompt;

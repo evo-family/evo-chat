@@ -1,6 +1,6 @@
 .container {
   padding: 10px 20px 20px 10px;
-  background-color: #fff;
+  background-color: var(--evo-color-bg-container);
   border-radius: 8px;
   outline: none;
 
@@ -8,14 +8,16 @@
     .ant-collapse-content-box {
       border-radius: 8px;
       overflow: hidden;
-      background-color: #fff;
+      background-color: var(--evo-color-bg-container);
       margin: 4px;
     }
   }
 
-  .reasoning-wrap {
-    margin-top: 10px;
-    border: 1px solid var(--evo-collapse-header-bg);
+  :global {
+    .ant-collapse {
+      margin-top: 10px;
+      border: 1px solid var(--evo-collapse-header-bg);
+    }
   }
 }
 

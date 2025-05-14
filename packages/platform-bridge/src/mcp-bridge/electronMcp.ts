@@ -6,6 +6,7 @@ import {
   IMcpMeta,
   IMcpService,
 } from '@evo/types';
+
 import { BaseBridge } from '../common/baseBridge';
 import { IPC_EVENTS } from '@evo/utils';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

@@ -20,13 +20,12 @@ export const MarkdownRender: FC<IMarkdownRenderProps> = memo(({ content, classNa
   const formattedContent = useMemo(() => formatBrackets(content), [content]);
 
   return (
-    <div className={classNames(s.markdown, className)}>
-      <MarkdownPreview
-        components={{}}
-        source={formattedContent}
-        remarkPlugins={[remarkMath, remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeKatex]}
-      />
-    </div>
+    <MarkdownPreview
+      className={classNames(s.markdown, className)}
+      components={{}}
+      source={formattedContent}
+      remarkPlugins={[remarkMath, remarkGfm]}
+      rehypePlugins={[rehypeRaw, rehypeKatex]}
+    />
   );
 });

@@ -26,5 +26,5 @@ export interface IChatWindowContext {
   scrollToBottom: () => any;
   scrollList: (params: { direction: 'top' | 'bottom'; distance: number }) => any;
   onListScroll: (event: any) => any;
-  handlePostMessage: (text: string, params: { fileInfos: IFileMeta[] }) => any;
+  handlePostMessage: (text: string, params: { fileInfos?: IFileMeta[] }) => any;
 }

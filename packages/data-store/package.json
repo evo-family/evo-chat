@@ -16,11 +16,13 @@
     "@tanstack/query-core": "^5.66.4",
     "@tanstack/query-persist-client-core": "^5.66.4",
     "ahooks": "^3.7.8",
+    "execall": "^3.0.0",
+    "fast-xml-parser": "^5.2.2",
     "openai": "^4.85.4",
     "react": "18.3.1",
+    "rxjs": "^7.8.2",
     "use-context-selector": "^2.0.0",
-    "uuid": "^11.1.0",
-    "execall": "^3.0.0"
+    "uuid": "^11.1.0"
   },
   "keywords": [],
   "author": "",
