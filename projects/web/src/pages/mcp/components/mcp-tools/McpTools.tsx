@@ -1,8 +1,9 @@
+import { Button, Collapse, Descriptions, Drawer, Tag, message } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
-import { Drawer, Collapse, Descriptions, Tag, message, Button } from 'antd';
+
+import { IMcpMeta } from '@evo/types';
 import { JsonSchemaType } from './types';
 import { McpBridgeFactory } from '@evo/platform-bridge';
-import { IMcpMeta } from '@evo/types';
 import { ProDescriptions } from '@ant-design/pro-components';
 import { Switch } from 'antd'; // 添加 Switch 导入
 

@@ -1,7 +1,8 @@
 import { BaseProcessor, DataCell } from '@evo/utils';
+import { BaseResult, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
+
 import { DialogProcessor } from '@evo/data-store';
 import { McpBridgeFactory } from '@evo/platform-bridge';
-import { BaseResult, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
 
 export class McpProcessor extends BaseProcessor {
   // 弹窗管理
@@ -46,6 +47,7 @@ export class McpProcessor extends BaseProcessor {
   };
 
   updateMcp = async (meta: Partial<IMcpMeta>) => {
+    console.log(111, meta);
     const res = await this.mcpService.updateMcp(meta);
     if (res.success) {
       this.getMcpListByCategoryId(this.selectCategory.get()?.id!);

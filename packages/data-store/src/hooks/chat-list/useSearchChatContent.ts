@@ -114,12 +114,12 @@ export const useSearchChatContent = () => {
             asnwers.forEach((answerConfig) => {
               if (!answerConfig) return;
 
-              const result = getMatchedRange(answerConfig.content, keywords);
+              const result = getMatchedRange(answerConfig.connResult.content, keywords);
 
               if (result) {
                 const start = Math.max(result.range.start - 8, 0);
                 const end = result.range.end + 8;
-                const matchContent = answerConfig.content.slice(start, end);
+                const matchContent = answerConfig.connResult.content.slice(start, end);
 
                 answerSearchResult.push({ matchText: matchContent, answerConfig, type: 'answer' });
               }

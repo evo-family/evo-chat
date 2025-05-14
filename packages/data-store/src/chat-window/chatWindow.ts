@@ -15,6 +15,7 @@ import {
 
 import { ChatMessage } from '../chat-message/chatMessage';
 import { DEFAULT_WINDOW_CONFIG } from './constants';
+import { IComposeModelContextParams } from '@/chat-message/utils/model-handle/types';
 import { IFileMeta } from '@evo/types';
 import { StateTissue } from '@evo/utils';
 import { TComposedContexts } from '@/chat-message/types';
@@ -194,17 +195,21 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
     return this.messageStore.getCellValue(id);
   }
 
-  async composeMessageContext(modelParams = modelProcessor.modelParams.get()) {
+  async composeMessageContext(modelParams = modelProcessor.modelParams.get()): Promise<
+    Omit<IComposeModelContextParams, 'messageIds'> & {
+      messageIds: string[];
+    }
+  > {
     const composedContexts: TComposedContexts = [];
 
     const messageIds = this.configState.getCellValueSync('messageIds') ?? [];
-    const { context_count = 0 } = modelParams;
-    const lastCountMsgIds = context_count ? messageIds.slice(-context_count) : [];
+    const lastCountMsgIds = messageIds.slice();
     const historyMessages = await Promise.all(
       lastCountMsgIds.map((msgId) => this.getMessage(msgId))
     );
+    const mcpIds = this.configState.getCellValueSync('mcpIds') ?? [];
 
-    return { composedContexts, historyMessages, messageIds };
+    return { composedContexts, historyMessages, messageIds, mcpIds };
   }
 
   async createMessage(sendMessage: string, params: { fileInfos?: IFileMeta[] }) {
@@ -216,17 +221,16 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
     const newMessageId = generateHashId(32, 'c_msg_');
     const providers = composeProviders(this);
 
-    const [messageIns, { composedContexts, historyMessages, messageIds }] = await Promise.all([
+    const [messageIns, { messageIds, ...restContextParams }] = await Promise.all([
       this.messageStore.getCellValue(newMessageId),
       await this.composeMessageContext(),
     ]);
 
     messageIns.postMessage({
+      ...restContextParams,
       sendMessage,
       providers,
-      composedContexts,
-      historyMessages,
-      attachFileInfos: fileInfos ?? [],
+      attachFileInfos: fileInfos,
       knowledgeIds,
       agentIds,
     });
@@ -240,15 +244,12 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
   async retryAnswer(params: { msgId: string; answerId: string }) {
     const { msgId, answerId } = params;
 
-    const [messageIns, { composedContexts, historyMessages }] = await Promise.all([
+    const [messageIns, { messageIds, ...restContextParams }] = await Promise.all([
       this.messageStore.getCellValue(msgId),
       await this.composeMessageContext(),
     ]);
 
-    return messageIns.reinitializeAnswer(answerId, {
-      composedContexts,
-      historyMessages,
-    });
+    return messageIns.initializeAnswer(answerId, restContextParams);
   }
 
   async retryMessage(params: { msgId: string }) {
@@ -264,17 +265,5 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
   async stopResolveMessage(msgId: string) {
     const messageIns = await this.getMessage(msgId);
     messageIns.stopResolveAllAnswer();
-  }
-
-  async resendMessage(params: { msgId: string }) {
-    const { msgId } = params;
-
-    const messageIns = await this.messageStore.getCellValue(msgId);
-
-    const msgConfig = messageIns.getConfigState();
-
-    this.createMessage(msgConfig.sendMessage, {
-      fileInfos: msgConfig.attachFileInfos,
-    });
   }
 }

@@ -1,7 +1,8 @@
 import { ArrowsAltOutlined, XFilled } from '@ant-design/icons';
 import {
-  EModalAnswerStatus,
-  TModelAnswerCell,
+  EChatAnswerStatus,
+  EModalConnStatus,
+  useChatAnswerOrgCtx,
   useChatMsgCtx,
   useChatWinCtx,
 } from '@evo/data-store';
@@ -14,26 +15,23 @@ import { useCellValueSelector } from '@evo/utils';
 import { useMemoizedFn } from 'ahooks';
 
 export interface IAnswerActionsProps {
-  answerCell: TModelAnswerCell;
   showMaximize?: boolean;
   onExpandClick?: (event: MouseEvent) => any;
 }
 
 export const AnswerActions = React.memo<IAnswerActionsProps>((props) => {
-  const { answerCell, showMaximize, onExpandClick } = props;
+  const { showMaximize, onExpandClick } = props;
 
   const [chatWinOptions] = useChatWinCtx((ctx) => ctx.options);
   const [chatMsg] = useChatMsgCtx((ctx) => ctx.chatMsg);
+  const answerCell = useChatAnswerOrgCtx((ctx) => ctx.answerCell);
   const [status] = useCellValueSelector(answerCell, (value) => value.status);
 
   const stopModel = useMemoizedFn(() => {
     chatMsg.stopResolveAnswer(answerCell.get().id);
   });
 
-  const showStopButton = useMemo(
-    () => status === EModalAnswerStatus.PENDING || status === EModalAnswerStatus.RECEIVING,
-    [status]
-  );
+  const showStopButton = useMemo(() => status === EChatAnswerStatus.PENDING, [status]);
 
   const answerMaximizable = useMemo(() => {
     return chatWinOptions?.features?.messageList?.answerMaximizable;

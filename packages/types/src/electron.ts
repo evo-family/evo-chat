@@ -1,4 +1,5 @@
 import { EResourceType, IVectorProgress, TUploadDirectoryResult, TUploadResult } from './file';
+import { EThemeMode, MobilePermissionType } from './setting';
 import {
   IFileMeta,
   IKnowledgeMeta,
@@ -10,7 +11,6 @@ import {
 } from './meta';
 
 import { BaseResult } from './common';
-import { EThemeMode, MobilePermissionType } from './setting';
 import { ExtractChunkData } from '@llm-tools/embedjs-interfaces';
 import { TAvailableModelMap } from './model';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';

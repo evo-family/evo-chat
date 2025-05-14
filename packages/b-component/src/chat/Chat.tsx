@@ -18,7 +18,7 @@ export const Chat: FC<IChatProps> = React.memo((props) => {
   return display ? (
     <Flex vertical className={s.chat}>
       <Flex vertical flex={1} style={{ position: 'relative', overflow: 'auto' }}>
-        <ChatMessageList />
+        <ChatMessageList className={s.messageList} />
       </Flex>
       <div className={s.sender}>
         <Sender onPostMessage={handlePostMessage} />

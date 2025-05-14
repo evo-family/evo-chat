@@ -1,6 +1,7 @@
-import { ipcMain } from 'electron';
-import { IPC_EVENTS, ResultUtil } from '@evo/utils';
 import { BaseResult, IGetMcpToolParams, IMcpCategoryMeta, IMcpMeta, IMcpService } from '@evo/types';
+import { IPC_EVENTS, ResultUtil } from '@evo/utils';
+
+import { ipcMain } from 'electron';
 import { managerService } from '../services/ManagerService';
 
 export async function setupMcpHandlers() {

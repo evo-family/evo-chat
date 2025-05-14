@@ -1,13 +1,12 @@
 import { BaseIDBStore } from '../../base-idb-store/store';
 import { DataCellWithStorageDriver } from './types';
-import { debounce } from 'lodash';
 import { injectPersistenceCellDriver } from './withStorage';
 
 export type TDataCellWebStorageCache = Map<any, any>;
 
 const PERSISTENCE_IDB_KEY = '_data_cell_persistence_';
 
-const driverIDBStore = new BaseIDBStore(PERSISTENCE_IDB_KEY);
+const driverIDBStore = new BaseIDBStore(PERSISTENCE_IDB_KEY, { version: 3 });
 
 const WEB_DRIVER: DataCellWithStorageDriver = {
   get: async <T = any>(cacheKey: string) => {

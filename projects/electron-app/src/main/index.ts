@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { app, BrowserWindow, session, Menu, MenuItem } from 'electron';
 import { createMainWindow, showMainWindow } from './MainWindow';
+
 import { TrayService } from './services/TrayService';
-import { isMacOS } from './utils/PlatformUtil';
 import { ipcInit } from './ipc';
+import { isMacOS } from './utils/PlatformUtil';
 import fixPath from 'fix-path';
 
 // @ts-ignore

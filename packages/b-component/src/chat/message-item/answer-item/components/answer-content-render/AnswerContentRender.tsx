@@ -1,29 +1,63 @@
+import { EModalConnStatus, useChatAnswerCtx, useChatAnswerOrgCtx } from '@evo/data-store';
+
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import React from 'react';
-import { TModelAnswerCell } from '@evo/data-store';
-import style from './Style.modules.scss';
 import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
-  answerCell: TModelAnswerCell;
+  turnIndex: number;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
 export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerCell } = props;
+  const { turnIndex, style, className } = props;
 
-  const [answerContent] = useCellValueSelector(answerCell, (value) => value.content);
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
 
-  if (!answerContent) return null;
-
-  return (
-    <BubbleChat
-      contents={[
-        {
-          key: 3,
-          role: 'user',
-          content: answerContent,
-        },
-      ]}
-    />
+  const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.status);
+  const [errorMessage] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.errorMessage
   );
+
+  if (status === EModalConnStatus.ERROR) {
+    if (!errorMessage?.trim().length) {
+      return null;
+    }
+
+    return (
+      <BubbleChat
+        style={style}
+        className={className}
+        contents={[
+          {
+            key: 3,
+            role: 'error',
+            content: errorMessage,
+          },
+        ]}
+      />
+    );
+  } else {
+    if (!content?.trim().length) {
+      return null;
+    }
+
+    return (
+      <BubbleChat
+        style={style}
+        className={className}
+        contents={[
+          {
+            key: 3,
+            role: 'user',
+            content: content,
+            loading: status === EModalConnStatus.PENDING,
+          },
+        ]}
+      />
+    );
+  }
 });

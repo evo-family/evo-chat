@@ -27,7 +27,6 @@ export const useCellValueSelector: IUseCellValueSelector = <CellIns extends Data
     cellIns ? selector(cellIns.get()) : undefined
   );
 
-  // 原来想用useEffect，但是发现他执行时机和预期不符（不像17是立即执行，甚至不执行了干脆。），所以改用useMemo来触发对ref赋值
   useLayoutEffect(() => {
     if (!cellIns) return;
 

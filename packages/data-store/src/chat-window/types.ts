@@ -25,7 +25,7 @@ export interface IChatWindowConfig {
   /**
    * 当前窗口使用的MCP工具列表
    */
-  mcpIds: string[];
+  mcpIds?: string[];
   /**
    * 当前窗口使用的助手列表
    */

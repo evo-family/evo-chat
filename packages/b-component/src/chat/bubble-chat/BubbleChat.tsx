@@ -7,9 +7,12 @@ import { ErrorMessage } from './components/error-message/ErrorMsg';
 import { MarkdownRender } from '../../markdown-render/MarkdownRender';
 import { UserOutlined } from '@ant-design/icons';
 import style from './BubbleChat.module.scss';
+import classNames from 'classnames';
 
 export interface IBubbleChatProps {
   contents: BubbleDataType[];
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 const roles: GetProp<typeof Bubble.List, 'roles'> = {
@@ -61,5 +64,13 @@ const roles: GetProp<typeof Bubble.List, 'roles'> = {
 };
 
 export const BubbleChat: FC<IBubbleChatProps> = memo((props) => {
-  return <Bubble.List className={style.container} roles={roles} items={props.contents} />;
+  const { style: innerStyle, className } = props;
+  return (
+    <Bubble.List
+      style={innerStyle}
+      className={classNames(style.container, className)}
+      roles={roles}
+      items={props.contents}
+    />
+  );
 });

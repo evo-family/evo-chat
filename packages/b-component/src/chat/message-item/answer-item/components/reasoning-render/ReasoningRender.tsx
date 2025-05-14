@@ -1,5 +1,5 @@
 import React, { useDeferredValue, useLayoutEffect, useMemo } from 'react';
-import { TModelAnswerCell, useChatWinCtx } from '@evo/data-store';
+import { EModalConnStatus, useChatAnswerOrgCtx, useChatWinCtx } from '@evo/data-store';
 
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Collapse } from 'antd';
@@ -7,18 +7,30 @@ import style from './Reasoning.module.scss';
 import { useCellValueSelector } from '@evo/utils';
 
 export interface IReasoningRenderProps {
-  answerCell: TModelAnswerCell;
+  turnIndex: number;
 }
 
 export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
-  const { answerCell } = props;
+  const { turnIndex } = props;
 
-  const [reasoning_content] = useCellValueSelector(answerCell, (value) => value.reasoning_content);
-  const [startReasoningTime] = useCellValueSelector(
-    answerCell,
-    (value) => value.startReasoningTime
+  const chatTurnsCell = useChatAnswerOrgCtx((ctx) => ctx.chatTurnsCell);
+
+  const [reasoning_content] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.reasoning_content
   );
-  const [endReasoningTime] = useCellValueSelector(answerCell, (value) => value.endReasoningTime);
+  const [startReasoningTime] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.startReasoningTime
+  );
+  const [endReasoningTime] = useCellValueSelector(
+    chatTurnsCell,
+    (value) => value.at(turnIndex)?.endReasoningTime
+  );
+
+  const [status] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.status);
+
+  const isReceiving = status === EModalConnStatus.RECEIVING;
 
   const computeCollapseLabel = useMemo(() => {
     return startReasoningTime && endReasoningTime
@@ -32,9 +44,8 @@ export const ReasoningRender = React.memo<IReasoningRenderProps>((props) => {
 
   return (
     <Collapse
-      className={style['reasoning-wrap']}
       bordered={false}
-      defaultActiveKey={'1'}
+      defaultActiveKey={isReceiving ? '1' : ''}
       size="small"
       items={[
         {
