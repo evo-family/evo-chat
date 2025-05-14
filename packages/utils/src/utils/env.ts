@@ -1,3 +1,4 @@
+import { IPC_EVENTS } from './electron';
 import { DOCUMENT_EXTS } from './file';
 
 /**
@@ -11,17 +12,49 @@ export function isWeb(): boolean {
  * 是否是 Electron 环境
  */
 export function isElectron(): boolean {
-  // @ts-ignore
   return window?.__ELECTRON__ !== undefined;
+}
+
+/**
+ * 获取当前os type
+ */
+export async function getOsType(): Promise<'darwin' | 'win32' | 'linux'> {
+  const osType = await window.__ELECTRON__.ipcRenderer.invoke(IPC_EVENTS.SYSTEM.GET_OS_TYPE);
+  return osType;
+}
+
+/**
+ * 判断是否是 Electron MacOS 环境
+ */
+export async function isElectronMacOS(): Promise<boolean> {
+  if (!isElectron()) return false;
+  const osType = await getOsType();
+  return osType === 'darwin';
+}
+
+/**
+ * 判断是否是 Electron Windows 环境
+ */
+export async function isElectronWindows(): Promise<boolean> {
+  if (!isElectron()) return false;
+  const osType = await getOsType();
+  return osType === 'win32';
+}
+
+/**
+ * 判断是否是 Electron Linux 环境
+ */
+export async function isElectronLinux(): Promise<boolean> {
+  if (!isElectron()) return false;
+  const osType = await getOsType();
+  return osType === 'linux';
 }
 
 /**
  * 是否是移动设备
  */
 export function isMobile(): boolean {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 /**
@@ -70,4 +103,3 @@ export function isDocumentFile(fileName: string): boolean {
   const ext = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
   return DOCUMENT_EXTS.includes(ext);
 }
-

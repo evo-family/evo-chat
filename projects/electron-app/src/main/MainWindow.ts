@@ -1,6 +1,8 @@
-import { app, BrowserWindow, Menu, MenuItem } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem, nativeTheme } from 'electron';
 import { logger } from './logger';
 import { getAppIcon, getHtmlPath, getPreloadPath } from './utils/AppUtil';
+import { titleBarOverlayDark, titleBarOverlayLight } from './constants/windowConfig';
+import { isMacOS } from './utils/PlatformUtil';
 let mainWindow: BrowserWindow | null = null;
 /**
  * 获取主窗口
@@ -17,7 +19,7 @@ export function createMainWindow() {
   if (currMainWindow) {
     return mainWindow!;
   }
-  const appIcon = getAppIcon('logo.png');
+  const appIcon = getAppIcon(isMacOS() ? 'logo.png' : 'logo-windows.png');
   const win = (mainWindow = new BrowserWindow({
     width: 1080,
     height: 600,
@@ -25,8 +27,9 @@ export function createMainWindow() {
     minHeight: 600,
     autoHideMenuBar: true,
     icon: appIcon,
-    frame: true, // 使用原生窗口框架
-    titleBarStyle: process.platform === 'darwin' ? 'hidden' : 'default', // macOS 隐藏标题栏，Windows 使用默认
+    // frame: true, // 使用原生窗口框架
+    titleBarStyle: 'hidden', // process.platform === 'darwin' ? 'hidden' : 'default', // macOS 隐藏标题栏，Windows 使用默认
+    titleBarOverlay: nativeTheme.shouldUseDarkColors ? titleBarOverlayDark : titleBarOverlayLight,
     webPreferences: {
       nodeIntegration: true,
       preload: getPreloadPath(),
