@@ -407,9 +407,6 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.9.0
         version: 1.9.0
-      which:
-        specifier: ^5.0.0
-        version: 5.0.0
 
   packages/pglite-manager:
     dependencies:
@@ -539,6 +536,9 @@ importers:
       fix-path:
         specifier: ^4.0.0
         version: 4.0.0
+      which:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@electron-toolkit/eslint-config-prettier':
         specifier: ^3.0.0
