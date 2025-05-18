@@ -3,7 +3,6 @@ import {
   EMcpType,
   IGetMcpToolParams,
   IMCPCallToolResponse,
-  IMcpConfig,
   IMcpMeta,
   IMcpSseConfig,
   IMcpStdioConfig,
@@ -15,15 +14,13 @@ import {
   SSEClientTransport,
   SSEClientTransportOptions,
 } from '@modelcontextprotocol/sdk/client/sse.js';
-import { getCommandArgs, getCommandEnv } from '../utils/mcp';
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { IDepManager } from '../types/common';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { getCommandPath } from '../utils/cliCheck';
+import { IDepManager, IStdioClientConfigFunction } from '../types/common';
 
 export interface IMCPClientManagerOptions {
   depManager: IDepManager;
+  stdioClientConfigFunction?: IStdioClientConfigFunction;
   version?: string;
 }
 
@@ -31,11 +28,13 @@ export class MCPClientManager {
   private appVersion: string;
   private clients: Map<string, Client>;
   private depManager: IDepManager;
+  private stdioClientConfigFunction: IStdioClientConfigFunction;
 
   constructor(options: IMCPClientManagerOptions) {
-    const { version, depManager } = options;
+    const { version, depManager, stdioClientConfigFunction } = options;
     this.depManager = depManager;
     this.clients = new Map();
+    this.stdioClientConfigFunction = stdioClientConfigFunction!;
     this.appVersion = version!;
   }
 
@@ -67,26 +66,32 @@ export class MCPClientManager {
 
       const client = new Client({ name: 'evo chat', version: this.appVersion || '1.0.0' });
 
-      let transport: StdioClientTransport | SSEClientTransport;
+      let transport: SSEClientTransport | any;
 
       const config = JSON.parse(mcp.config);
 
       if (mcp.type.toLowerCase() === EMcpType.STDIO) {
+        const { getCommandPath, getCommandArgs, getCommandEnv } = this.stdioClientConfigFunction;
         const currConfig = config as IMcpStdioConfig;
         const command = await getCommandPath(currConfig.command);
         if (!command) {
           return ResultUtil.error(new McpError(ErrorCode.MCP_COMMAND_NOT_FOUND));
         }
-        transport = new StdioClientTransport({
-          command: command!,
-          args: getCommandArgs(config),
-          env: getCommandEnv(config),
-        });
-        console.log('evo-conn-info, ', {
-          command: command!,
-          args: getCommandArgs(config),
-          env: getCommandEnv(config),
-        });
+        try {
+          // 使用动态导入，并添加 catch 处理
+          const { StdioClientTransport } = await import(
+            /* webpackIgnore: true */
+            '@modelcontextprotocol/sdk/client/stdio.js'
+          );
+          transport = new StdioClientTransport({
+            command: command!,
+            args: getCommandArgs(config),
+            env: getCommandEnv(config),
+          });
+        } catch (error) {
+          console.error('Failed to load StdioClientTransport:', error);
+          return ResultUtil.error(new Error('Failed to load STDIO transport'));
+        }
       }
 
       if (mcp.type === EMcpType.SSE) {

@@ -16,7 +16,7 @@
     "watch": "vite build --watch --mode development"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.2.17",
+    "@electric-sql/pglite": "^0.3.0",
     "@evo/types": "workspace:*"
   },
   "peerDependencies": {},

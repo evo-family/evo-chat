@@ -11,10 +11,6 @@ export const AddMcp: FC = () => {
   const [isElectron] = useGlobalCtx((s) => s.envProcessor?.isElectron);
 
   const handleAddMcp = () => {
-    if (!isElectron) {
-      message.info('MCP 功能仅支持在桌面端使用');
-      return;
-    }
     if (!selectCategory) {
       message.info('请先选择分类');
       return;

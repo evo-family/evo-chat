@@ -22,9 +22,7 @@ export const McpMenu: FC<IMcpMenuProps> = ({ onMenuClick, selectable = true }) =
   const deleteCategory = useMcpSelector((s) => s.deleteCategory);
 
   useEffect(() => {
-    if (isElectron()) {
-      getCategoryList();
-    }
+    getCategoryList();
   }, []);
 
   const update = useMemoizedFn(() => {

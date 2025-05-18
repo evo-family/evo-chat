@@ -4,6 +4,8 @@ import { ResourceService } from './ResourceService';
 import { SchemaManager } from '@evo/pglite-manager';
 import { app } from 'electron';
 import path from 'path';
+import { getCommandPath } from '../utils/cliCheck';
+import { getCommandArgs, getCommandEnv } from '../utils/mcpUtil';
 
 /**
  * 管理其它包的Server
@@ -32,6 +34,11 @@ export class ManagerService {
 
     this.internalMCPService = new MCPService({
       dbManager,
+      stdioClientConfigFunction: {
+        getCommandPath: getCommandPath,
+        getCommandArgs: getCommandArgs,
+        getCommandEnv: getCommandEnv,
+      },
     });
   }
 

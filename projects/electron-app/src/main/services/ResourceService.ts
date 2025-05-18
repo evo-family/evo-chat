@@ -7,6 +7,7 @@ import { BaseResult } from '@evo/types';
 import { ResultUtil } from '@evo/utils';
 import { SchemaManager } from '@evo/pglite-manager';
 
+const PGDB_VERSION = '0.0.1';
 /**
  * 管理本地资源，向量数据库，文件，pglite地址
  */
@@ -41,7 +42,7 @@ export class ResourceService {
   }
 
   get pgDBPath(): string {
-    const dir = path.join(this.baseDir, 'pg-db');
+    const dir = path.join(this.baseDir, `pg-db-${PGDB_VERSION}`);
     fs.ensureDirSync(dir);
     return dir;
   }
