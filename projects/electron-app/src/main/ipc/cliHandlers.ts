@@ -1,9 +1,10 @@
 import { IPC_EVENTS } from '@evo/utils';
 import { ipcMain } from 'electron';
 import { managerService } from '../services/ManagerService';
+import { CliService } from '../services/CliService';
 
 export async function setupCliHandlers() {
-  const cliService = (await managerService).MCPService.cliManager;
+  const cliService = new CliService({});
   ipcMain.handle(IPC_EVENTS.CLI.CHECK_BUN_COMMAND, async () => {
     return await cliService.checkBunCommand();
   });

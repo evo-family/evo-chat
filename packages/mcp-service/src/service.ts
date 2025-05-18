@@ -1,16 +1,15 @@
 export interface McpServiceOptions {
   dbManager: PGLiteManager;
+  stdioClientConfigFunction?: IStdioClientConfigFunction;
   version?: string;
 }
 import { PGLiteManager } from '@evo/pglite-manager';
-import { CliManager } from './cli-manager/CliManager';
 import { MCPManager } from './mcp-manager/MCPManager';
-import { IDepManager } from './types/common';
+import { IDepManager, IStdioClientConfigFunction } from './types/common';
 import { MCPCategoryManager } from './mcp-manager/MCPCategoryManager';
 import { MCPClientManager } from './mcp-manager/MCPClientManager';
 
 export class MCPService {
-  private internalCliManager: CliManager;
   private internalMCPManager: MCPManager;
   private internalMCPClientManager: MCPClientManager;
   private internalMCPCategoryManager: MCPCategoryManager;
@@ -20,15 +19,13 @@ export class MCPService {
       dbManager: options.dbManager,
     } as IDepManager;
 
-    this.internalCliManager = new CliManager({
-      depManager,
-    });
     this.internalMCPManager = new MCPManager({
       depManager,
     });
 
     this.internalMCPClientManager = new MCPClientManager({
       depManager,
+      stdioClientConfigFunction: options.stdioClientConfigFunction,
       version: options.version,
     });
 
@@ -39,10 +36,6 @@ export class MCPService {
     depManager.MCPManager = this.internalMCPManager;
     depManager.MCPCategoryManager = this.internalMCPCategoryManager;
     depManager.MCPClientManager = this.MCPClientManager;
-  }
-
-  get cliManager() {
-    return this.internalCliManager;
   }
 
   get MCPManager() {

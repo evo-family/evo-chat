@@ -1,6 +1,6 @@
 import { IMcpStdioConfig } from '@evo/types';
 import { getDefaultEnvironment } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { isLinux, isMacOS, isWindows } from './platformUtil';
+import { isLinux, isMacOS, isWindows } from './PlatformUtil';
 
 const isNodeCommand = (command: string) => {
   return command === 'npx' || command === 'bun';

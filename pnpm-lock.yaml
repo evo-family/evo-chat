@@ -426,6 +426,9 @@ importers:
 
   packages/platform-bridge:
     dependencies:
+      '@evo/mcp-service':
+        specifier: workspace:*
+        version: link:../mcp-service
       '@evo/pglite-manager':
         specifier: workspace:*
         version: link:../pglite-manager

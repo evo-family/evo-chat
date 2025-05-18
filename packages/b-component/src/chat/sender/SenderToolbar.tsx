@@ -64,7 +64,7 @@ export const SenderToolbar: FC<ISenderToolbarProps> = React.memo((props) => {
           </Badge>
         </Tooltip> */}
         {isEl && <KnowledgeToolbar />}
-        {isEl && <McpSelectToolbar />}
+        {<McpSelectToolbar />}
         <Divider type="vertical" style={{ margin: '0 10px' }} />
       </Space>
       <ModelSelectToolbar />

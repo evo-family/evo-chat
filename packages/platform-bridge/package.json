@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "@evo/types": "workspace:*",
-    "@evo/utils": "workspace:*"
+    "@evo/utils": "workspace:*",
+    "@evo/pglite-manager": "workspace:*",
+    "@evo/mcp-service": "workspace:*"
   },
   "keywords": [],
   "author": "",
