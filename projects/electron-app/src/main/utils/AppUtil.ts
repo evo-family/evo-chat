@@ -39,7 +39,6 @@ export function getResourcePath(...paths: string[]): string {
 
 export function getAppIcon(iconName) {
   const iconPath = getResourcePath(iconName);
-  console.log('evo=>icon-path', iconPath);
   const icon = nativeImage.createFromPath(iconPath);
   if (process.platform === 'darwin') {
     icon.setTemplateImage(true);

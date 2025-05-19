@@ -1,6 +1,6 @@
 {
   "name": "@evo/platform-bridge",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "module": "dist/index.js",
   "types": "src/index.ts",
@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "@evo/types": "workspace:*",
-    "@evo/utils": "workspace:*"
+    "@evo/utils": "workspace:*",
+    "@evo/pglite-manager": "workspace:*",
+    "@evo/mcp-service": "workspace:*"
   },
   "keywords": [],
   "author": "",

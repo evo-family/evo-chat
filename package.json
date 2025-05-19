@@ -1,6 +1,6 @@
 {
   "name": "evo-chat",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "evo-chat",
   "description": "AI Evo Chat",
   "scripts": {
@@ -17,10 +17,10 @@
     "build:web": "pnpm --filter web run build",
     "prebuild": "pnpm run build:web && pnpm run copy:render",
     "copy:render": "node scripts/copyRenderer.js",
-    "build:unpack": "pnpm run prebuild && pnpm --filter evo-chat run build:unpack",
-    "build:win": "pnpm run prebuild && pnpm --filter evo-chat run build:win",
-    "build:linux": "pnpm run prebuild && pnpm --filter evo-chat run build:linux",
-    "build:mac": "pnpm run prebuild && pnpm --filter evo-chat run build:mac",
+    "build:unpack": "pnpm run prebuild && pnpm --filter client run build:unpack",
+    "build:win": "pnpm run prebuild && pnpm --filter client run build:win",
+    "build:linux": "pnpm run prebuild && pnpm --filter client run build:linux",
+    "build:mac": "pnpm run prebuild && pnpm --filter client run build:mac",
     "download:iconfont": "node scripts/downloadIconfont.js",
     "generate:assistants": "node ./scripts/generate-assistants/generateAssistants.js",
     "fix:tsconfig": "node ./scripts/typescript/fixPaths.mjs",
@@ -125,7 +125,7 @@
       "electron": "35.0.3",
       "electron-builder": "^25.1.8",
       "electron-vite": "^3.1.0",
-      "@electric-sql/pglite": "^0.2.17",
+      "@electric-sql/pglite": "^0.3.0",
       "@electron-toolkit/preload": "^3.0.1",
       "@electron-toolkit/utils": "^4.0.0"
     },

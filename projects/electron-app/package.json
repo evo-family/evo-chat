@@ -1,6 +1,6 @@
 {
   "name": "@evo/client",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -29,7 +29,7 @@
     "extends": "./electron-builder.yml"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.2.17",
+    "@electric-sql/pglite": "^0.3.0",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
     "@evo/knowledge-service": "workspace:*",

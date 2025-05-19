@@ -28,6 +28,7 @@ export const IPC_EVENTS = {
     OPEN_FILE: 'open-file',
     OPEN_FOLDER: 'open-folder',
     GET_VERSION: 'get-version',
+    GET_OS_TYPE: 'get-os-type', // 获取当前操作系统类型
 
     // 暂无实现
     GET_PATH: 'get-system-path',

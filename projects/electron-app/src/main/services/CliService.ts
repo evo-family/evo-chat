@@ -1,17 +1,12 @@
 import { BaseResult, ICliService } from '@evo/types';
 import { checkCommand, getCommandPath as getCliPath } from '../utils/cliCheck';
-import { IDepManager } from '../types/common';
 import { ResultUtil } from '@evo/utils';
 
-export interface ICliManagerOptions {
-  depManager: IDepManager;
-}
+export interface ICliServiceOptions {}
 
-export class CliManager implements ICliService {
-  private depManager: IDepManager;
-
-  constructor(options: ICliManagerOptions) {
-    this.depManager = options.depManager;
+export class CliService implements ICliService {
+  constructor(options: ICliServiceOptions) {
+    // TODO
   }
 
   async checkNpxCommand(): Promise<BaseResult<boolean>> {
