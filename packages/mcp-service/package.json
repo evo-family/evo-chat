@@ -23,7 +23,7 @@
     "@evo/pglite-manager": "workspace:*",
     "@evo/types": "workspace:*",
     "@evo/utils": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.9.0",
+    "@modelcontextprotocol/sdk": "^1.11.4",
     "@google/generative-ai": "^0.24.0"
   },
   "devDependencies": {}

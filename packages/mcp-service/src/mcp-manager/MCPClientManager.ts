@@ -15,6 +15,11 @@ import {
   SSEClientTransportOptions,
 } from '@modelcontextprotocol/sdk/client/sse.js';
 
+import {
+  StreamableHTTPClientTransport,
+  type StreamableHTTPClientTransportOptions,
+} from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { IDepManager, IStdioClientConfigFunction } from '../types/common';
 
@@ -92,6 +97,16 @@ export class MCPClientManager {
           console.error('Failed to load StdioClientTransport:', error);
           return ResultUtil.error(new Error('Failed to load STDIO transport'));
         }
+      }
+
+      if (mcp.type === EMcpType.STREAMABLEHTTP) {
+        const currConfig = config as IMcpSseConfig;
+        const options: SSEClientTransportOptions = {
+          requestInit: {
+            headers: currConfig.headers || {},
+          },
+        };
+        transport = new StreamableHTTPClientTransport(new URL(currConfig.url!), options);
       }
 
       if (mcp.type === EMcpType.SSE) {
