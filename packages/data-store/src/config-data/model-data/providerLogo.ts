@@ -8,8 +8,10 @@ import infini from '../../assets/providers/infini.png';
 import openai from '../../assets/providers/openai.jpeg';
 import baichuan from '../../assets/providers/baichuan.png';
 import zhipu from '../../assets/providers/zhipu.png';
+import system from '../../assets/providers/system.png';
 
 export const providerLogo = {
+  system,
   deepseek,
   siliconFlow,
   baiduQianfan: qinfan,

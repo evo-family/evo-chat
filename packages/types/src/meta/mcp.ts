@@ -36,6 +36,7 @@ export interface IMcpMeta extends IBaseMeta {
 export enum EMcpType {
   STDIO = 'stdio',
   SSE = 'sse',
+  STREAMABLEHTTP = 'streamableHttp',
 }
 
 export interface IMcpTool extends Tool {

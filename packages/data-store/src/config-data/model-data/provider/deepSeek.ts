@@ -43,5 +43,5 @@ export const deepSeekModelProvider: IModel = {
     models: 'https://api.deepseek.com/v1/models',
   },
   groups: deepSeekModelGroup,
-  enable: true,
+  enable: false,
 };
