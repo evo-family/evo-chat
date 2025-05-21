@@ -219,13 +219,14 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
         placeholder="请输入描述"
         fieldProps={{ rows: 2 }}
       />
-      <ProFormRadio.Group
+      <ProFormSelect
         name="type"
         label="类型"
         rules={[{ required: true, message: '请选择类型' }]}
         options={[
           { label: '标准输入/输出(stdio)', value: EMcpType.STDIO },
           { label: '服务器发送事件(sse)', value: EMcpType.SSE },
+          { label: '可流式传输HTTP(streamableHttp)', value: EMcpType.STREAMABLEHTTP },
         ]}
         initialValue={EMcpType.STDIO}
       />
@@ -233,7 +234,7 @@ export const AddOrUpdateMcp: FC<IAddOrUpdateMcpProps> = memo(() => {
       <Form.Item noStyle shouldUpdate>
         {(form) => {
           const type = form.getFieldValue('type');
-          if (type === EMcpType.SSE) {
+          if (type === EMcpType.SSE || type === EMcpType.STREAMABLEHTTP) {
             return (
               <>
                 <ProFormText

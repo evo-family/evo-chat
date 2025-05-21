@@ -17,10 +17,6 @@ export const AddOrUpdateMcpCategory: FC<IAddOrUpdateMcpCategoryProps> = memo(() 
   const updateCategory = useMcpSelector((s) => s.updateCategory);
 
   const handleClick = () => {
-    if (!isElectron) {
-      message.info('MCP 功能仅支持在桌面端使用');
-      return;
-    }
     setCreateModalData();
   };
 
