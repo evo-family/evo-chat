@@ -7,15 +7,8 @@ import { getEmptyModelConnResult } from '@/chat-message/constants/answer';
 import { modelProcessor } from '../../../processor';
 
 export const modelConnHandle: IModelConnHandle = (params) => {
-  const {
-    answerConfig,
-    getMessageContext,
-    taskSignal,
-    userContent,
-    actionRecord,
-    onResolve,
-    firstResolve,
-  } = params;
+  const { answerConfig, getMessageContext, taskSignal, userContent, actionRecord, onResolve } =
+    params;
   const providerName = answerConfig.provider;
 
   // 根据供应商获取对应的连接
@@ -33,6 +26,7 @@ export const modelConnHandle: IModelConnHandle = (params) => {
   const baseConnResult = getEmptyModelConnResult(userContent);
 
   actionRecord.chatTurns.push(baseConnResult);
+  onResolve?.(baseConnResult);
 
   return getMessageContext().then((composeMessages) => {
     return modelConnection
@@ -48,7 +42,6 @@ export const modelConnHandle: IModelConnHandle = (params) => {
           stream: modelConnResult,
           connResult: baseConnResult,
           onResolve,
-          firstResolve,
         });
       })
       .then((connResult) => {

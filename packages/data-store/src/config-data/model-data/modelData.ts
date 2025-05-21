@@ -91,6 +91,13 @@ export const defaultModelParamsConfig = [
     step: 0.1,
     value: 0,
   },
+  {
+    key: 'max_tokens',
+    name: '最大生成token数',
+    tips: '值越大，生成的回答越详细；值越小，生成的回答越简短',
+    min: 1,
+    max: 20000,
+  },
 ];
 
 export const defaultModelParams: IModelParams = {

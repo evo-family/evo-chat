@@ -54,7 +54,6 @@ export const AnswerContentRender = React.memo<IReasoningRenderProps>((props) => 
             key: 3,
             role: 'user',
             content: content,
-            loading: status === EModalConnStatus.PENDING,
           },
         ]}
       />

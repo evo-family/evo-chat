@@ -10,7 +10,6 @@ import { useGetState, useUnmount } from 'ahooks';
 import { DataCell } from '@evo/utils';
 import { createContext } from 'use-context-selector';
 import { createUseContextSelector } from '@/utils/createContextSelector';
-import { debounce } from 'lodash';
 import { useChatMsgCtx } from './message';
 
 export interface IChatAnswerContextProps {
