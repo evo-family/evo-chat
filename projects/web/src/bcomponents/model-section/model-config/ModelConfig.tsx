@@ -63,6 +63,7 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
     return <></>;
   }
 
+  const isSystem = selectModel.id === 'system';
   return (
     <div>
       <Label size="large" bold style={{ marginBottom: 6 }}>
@@ -91,20 +92,23 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
           name="key"
           rules={[{ required: true, message: '请输入 API Key' }]}
           extra={
-            <a
-              style={{ fontSize: 12 }}
-              type="link"
-              onClick={() => {
-                openUrl(selectModel.webSite?.models);
-              }}
-            >
-              点击获取密钥
-            </a>
+            !isSystem && (
+              <a
+                style={{ fontSize: 12 }}
+                type="link"
+                onClick={() => {
+                  openUrl(selectModel.webSite?.models);
+                }}
+              >
+                点击获取密钥
+              </a>
+            )
           }
         >
           <Input.Password
             style={{ width: '100%' }}
             placeholder="请输入 API Key"
+            disabled={isSystem}
             addonAfter={
               <Button type="link" size="small" onClick={handleTest} loading={testing}>
                 测试连接
@@ -113,23 +117,25 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
           />
         </Form.Item>
 
-        <Form.Item
-          label="API 地址"
-          name="url"
-          rules={[{ required: true, message: '请输入 API 地址' }]}
-          extra={
-            <Flex justify="space-between" align="center">
-              <span style={{ color: '#ccc', fontSize: 12 }}>
-                {formatModelHost(selectModel.apiInfo?.url)}
-              </span>
-              <span style={{ color: '#ccc', fontSize: 12 }}>
-                /结尾忽略v1版本，#结尾强制使用输入地址
-              </span>
-            </Flex>
-          }
-        >
-          <Input style={{ width: '100%' }} placeholder="请输入 API 地址" />
-        </Form.Item>
+        {!isSystem && (
+          <Form.Item
+            label="API 地址"
+            name="url"
+            rules={[{ required: true, message: '请输入 API 地址' }]}
+            extra={
+              <Flex justify="space-between" align="center">
+                <span style={{ color: '#ccc', fontSize: 12 }}>
+                  {formatModelHost(selectModel.apiInfo?.url)}
+                </span>
+                <span style={{ color: '#ccc', fontSize: 12 }}>
+                  /结尾忽略v1版本，#结尾强制使用输入地址
+                </span>
+              </Flex>
+            }
+          >
+            <Input style={{ width: '100%' }} placeholder="请输入 API 地址" disabled={isSystem} />
+          </Form.Item>
+        )}
 
         <Form.Item label="模型">
           {selectModel?.groups?.map((group) => {
@@ -151,30 +157,32 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
                       }
                     >
                       <>
-                        <Space>
-                          <Button
-                            type="text"
-                            icon={<EditOutlined />}
-                            onClick={() => {
-                              modelDialog.setDialogData({
-                                open: true,
-                                type: 'update',
-                                data: {
-                                  groupName: group.groupName,
-                                  ...model,
-                                },
-                              });
-                            }}
-                          />
-                          <Button
-                            type="text"
-                            danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => {
-                              removeModel(group.groupName, model.id);
-                            }}
-                          />
-                        </Space>
+                        {!isSystem && (
+                          <Space>
+                            <Button
+                              type="text"
+                              icon={<EditOutlined />}
+                              onClick={() => {
+                                modelDialog.setDialogData({
+                                  open: true,
+                                  type: 'update',
+                                  data: {
+                                    groupName: group.groupName,
+                                    ...model,
+                                  },
+                                });
+                              }}
+                            />
+                            <Button
+                              type="text"
+                              danger
+                              icon={<DeleteOutlined />}
+                              onClick={() => {
+                                removeModel(group.groupName, model.id);
+                              }}
+                            />
+                          </Space>
+                        )}
                       </>
                     </SettingGroup.Item>
                   );
@@ -186,7 +194,8 @@ export const ModelConfig: FC<IModelConfigProps> = () => {
       </Form>
 
       <Space>
-        <ModelList />
+        {!isSystem && <ModelList />}
+
         <AddOrUpdateModel />
       </Space>
     </div>

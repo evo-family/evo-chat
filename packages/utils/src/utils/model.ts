@@ -1,5 +1,12 @@
-import { IModel, IModelConfig, IModelGroup, IModelResponseItem, IModelSchema, TAvailableModelMap } from "@evo/types";
-import { getModelTypesById } from "./modelType";
+import {
+  IModel,
+  IModelConfig,
+  IModelGroup,
+  IModelResponseItem,
+  IModelSchema,
+  TAvailableModelMap,
+} from '@evo/types';
+import { getModelTypesById } from './modelType';
 
 /**
  * 获取模型配置信息
@@ -7,9 +14,9 @@ import { getModelTypesById } from "./modelType";
  * @returns
  */
 export const getModelConfig = (params: {
-  modelMap: TAvailableModelMap,
-  providerId: string,
-  modelId: string
+  modelMap: TAvailableModelMap;
+  providerId: string;
+  modelId: string;
 }) => {
   const { modelMap, providerId, modelId } = params;
 
@@ -19,11 +26,10 @@ export const getModelConfig = (params: {
   }
   const result: IModelConfig = {
     modelId,
-    ...provider?.apiInfo
-  }
-  return result
-}
-
+    ...provider?.apiInfo,
+  };
+  return result;
+};
 
 /**
  * 将模型列表按提供商或路径分组
@@ -31,7 +37,7 @@ export const getModelConfig = (params: {
 export const groupModelsByProvider = (models: IModelResponseItem[]): IModelGroup[] => {
   const groupedMap = new Map<string, IModelGroup>();
 
-  models.forEach(model => {
+  models.forEach((model) => {
     // 确定分组名
     let groupName = model.owned_by || '';
     if (!groupName && model.id.includes('/')) {
@@ -46,7 +52,7 @@ export const groupModelsByProvider = (models: IModelResponseItem[]): IModelGroup
     if (!groupedMap.has(groupName)) {
       groupedMap.set(groupName, {
         groupName,
-        models: []
+        models: [],
       });
     }
 

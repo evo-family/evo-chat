@@ -12,8 +12,10 @@ import { openrouterModelProvider } from './provider/openrouter';
 import { siliconFlowModelProvider } from './provider/siliconFlow';
 import { v4 as uuidv4 } from 'uuid';
 import { zhipuModelProvider } from './provider/zhipu';
+import { systemModelProvider } from './provider/system';
 
 export const defaultModels: IModel[] = [
+  systemModelProvider,
   deepSeekModelProvider,
   siliconFlowModelProvider,
   baiduQianfanModelProvider,
@@ -30,7 +32,7 @@ export const defaultModels: IModel[] = [
     ...group,
     models: group.models.map((modelSchema) => ({
       ...modelSchema,
-      type: getModelTypesById(modelSchema.id),
+      type: getModelTypesById(modelSchema.id, modelSchema.type),
     })),
   })),
 }));

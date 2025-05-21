@@ -405,11 +405,8 @@ importers:
         specifier: ^0.24.0
         version: 0.24.0
       '@modelcontextprotocol/sdk':
-        specifier: ^1.9.0
-        version: 1.9.0
-      which:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^1.11.4
+        version: 1.11.4
 
   packages/pglite-manager:
     dependencies:
@@ -542,6 +539,9 @@ importers:
       fix-path:
         specifier: ^4.0.0
         version: 4.0.0
+      which:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@electron-toolkit/eslint-config-prettier':
         specifier: ^3.0.0
@@ -1613,8 +1613,8 @@ packages:
   '@modelcontextprotocol/sdk@0.5.0':
     resolution: {integrity: sha512-RXgulUX6ewvxjAG0kOpLMEdXXWkzWgaoCGaA2CwNW7cQCIphjpJhjpHSiaPdVCnisjRF/0Cm9KWHUuIoeiAblQ==}
 
-  '@modelcontextprotocol/sdk@1.9.0':
-    resolution: {integrity: sha512-Jq2EUCQpe0iyO5FGpzVYDNFR6oR53AIrwph9yWl7uSc7IWUMsrmpmSaTGra5hQNunXpM+9oit85p924jWuHzUA==}
+  '@modelcontextprotocol/sdk@1.11.4':
+    resolution: {integrity: sha512-OTbhe5slIjiOtLxXhKalkKGhIQrwvhgCDs/C2r8kcBTy5HR/g43aDQU0l7r8O0VGbJPTNJvDc7ZdQMdQDJXmbw==}
     engines: {node: '>=18'}
 
   '@modelcontextprotocol/server-filesystem@2025.3.28':
@@ -8978,8 +8978,9 @@ snapshots:
       raw-body: 3.0.0
       zod: 3.24.2
 
-  '@modelcontextprotocol/sdk@1.9.0':
+  '@modelcontextprotocol/sdk@1.11.4':
     dependencies:
+      ajv: 8.17.1
       content-type: 1.0.5
       cors: 2.8.5
       cross-spawn: 7.0.6
