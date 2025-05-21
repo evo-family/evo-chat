@@ -202,6 +202,9 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
     if (!answerCell) return;
 
+    // 先尝试停止前一个model连接接收
+    this.stopResolveAnswer(id);
+
     // 重置数据answer的数据
     answerCell.set({
       ...answerCell.get(),
@@ -217,9 +220,6 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
     const msgConfig = this.getConfigState();
     const { mcpIds } = msgConfig;
     answerConfig.histroy.push(actionRecord);
-
-    // 先尝试停止前一个model连接接收
-    this.stopResolveAnswer(answerConfig.id);
 
     const resolver = this.getModelConnSignal(answerConfig.id);
     resolver.promise.catch((error) => {

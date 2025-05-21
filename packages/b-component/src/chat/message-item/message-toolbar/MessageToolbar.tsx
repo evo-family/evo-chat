@@ -9,7 +9,6 @@ import { Dropdown, MenuProps, Popconfirm, Tooltip, message } from 'antd';
 import React, { useMemo } from 'react';
 import { useChatMsgCtx, useChatWinCtx } from '@evo/data-store';
 
-import { DropdownButtonProps } from 'antd/es/dropdown';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
 
