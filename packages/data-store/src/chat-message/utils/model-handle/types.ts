@@ -26,7 +26,6 @@ export interface IModelConnParams {
   actionRecord: IModelAnserActionRecord;
   taskSignal: PromiseWrap;
   onResolve?: (value: IModelConnRecord) => void;
-  firstResolve?: (value: IModelConnRecord) => void;
 }
 
 export interface IModelConnHandle {
