@@ -1,4 +1,7 @@
-import { IMcpTool } from '@evo/types';
+import { EMCPExecuteMode, IMcpTool } from '@evo/types';
+
+import { ChatOptions } from '@evo/utils';
+import { IMcpToolsOptions } from '../../mcp';
 import { McpBridgeFactory } from '@evo/platform-bridge';
 import { TComposedContexts } from '@/chat-message/types';
 import { getSystemPrompt } from './prompt';
@@ -10,34 +13,39 @@ import { getSystemPrompt } from './prompt';
  * @returns
  */
 export const composeMcpTools = async (params: {
-  mcpIds?: string[];
+  mcpToolsOptions?: IMcpToolsOptions;
+  mcpExecuteMode?: EMCPExecuteMode;
   userPrompt?: string;
-}): Promise<TComposedContexts> => {
-  const { mcpIds, userPrompt } = params;
+}): Promise<{ composeResult: TComposedContexts; mcpTools: ChatOptions['tools'] }> => {
+  const { mcpToolsOptions, mcpExecuteMode, userPrompt } = params;
   const composeResult: TComposedContexts = [];
+  const mcpTools: ChatOptions['tools'] = [];
 
-  if (!mcpIds?.length) {
-    return composeResult;
+  if (!mcpToolsOptions?.mcpTools?.length) {
+    return { composeResult, mcpTools: mcpTools.length ? mcpTools : undefined };
   }
 
-  await Promise.all(
-    mcpIds.map(async (mcpId) => {
-      const toolsResult = await McpBridgeFactory.getInstance().getTools({
-        mcpId,
-        options: {
-          enable: true,
-          removeInputSchemaKeys: ['$schema'],
-        },
+  if (mcpExecuteMode === EMCPExecuteMode.COMPATIBLE) {
+    mcpToolsOptions.mcpTools.forEach((config) => {
+      composeResult.push({
+        role: 'system',
+        content: getSystemPrompt(userPrompt!, config.tools, config.mcpId),
       });
-
-      if (toolsResult.success && toolsResult.data) {
-        composeResult.push({
-          role: 'system',
-          content: getSystemPrompt(userPrompt!, toolsResult.data as unknown as IMcpTool[], mcpId),
+    });
+  } else {
+    mcpToolsOptions.mcpTools.forEach((config) => {
+      config.tools.forEach((tool) => {
+        mcpTools.push({
+          type: 'function',
+          function: {
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.inputSchema,
+          },
         });
-      }
-    })
-  );
+      });
+    });
+  }
 
-  return composeResult;
+  return { composeResult, mcpTools: mcpTools.length ? mcpTools : undefined };
 };

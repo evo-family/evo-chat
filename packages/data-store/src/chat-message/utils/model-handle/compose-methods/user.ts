@@ -1,7 +1,14 @@
-import { IMessageConfig, TComposedContexts, TModelAnswer } from '@/chat-message/types';
+import {
+  IMessageConfig,
+  IModelConnRecord,
+  TComposedContexts,
+  TModelAnswer,
+} from '@/chat-message/types';
 
+import { EMCPExecuteMode } from '@evo/types';
 import { IChatWindowConfig } from '@/chat-window/types';
 import { KnowledgeBridgeFactory } from '@evo/platform-bridge';
+import { pickMcpFunctionCallMsg } from './histroyMsg';
 
 const composeKnowledgeContent = async (params: {
   knowledgeIds: IChatWindowConfig['knowledgeIds'];
@@ -55,8 +62,9 @@ Please respond in the same language as the user's question.
 export const composeUserMsg = async (params: {
   knowledgeIds: IChatWindowConfig['knowledgeIds'];
   answerConfig: TModelAnswer;
+  mcpExecuteMode?: EMCPExecuteMode;
 }): Promise<TComposedContexts> => {
-  const { knowledgeIds, answerConfig } = params;
+  const { knowledgeIds, answerConfig, mcpExecuteMode } = params;
   const { histroy } = answerConfig;
   const latestRecord = histroy.at(-1);
 
@@ -74,37 +82,11 @@ export const composeUserMsg = async (params: {
     },
   ];
 
-  if (chatTurns.length === 1) {
-  } else {
-    composeResult.push({
-      role: 'assistant',
-      content: firstTurnItem.content,
-    });
+  pickMcpFunctionCallMsg(firstTurnItem, { composeResult, mcpExecuteMode, skipSendMessage: true });
 
-    const exceptLastTurnItem = restTurnItems.slice(0, -2);
-    const lastTurnItem = restTurnItems.at(-1);
-
-    exceptLastTurnItem.forEach((turnItem) => {
-      turnItem.sendMessage &&
-        composeResult.push({
-          role: 'user',
-          content: turnItem.sendMessage,
-        });
-      turnItem.content &&
-        composeResult.push({
-          role: 'assistant',
-          content: turnItem.content,
-        });
-    });
-
-    if (lastTurnItem) {
-      lastTurnItem.sendMessage &&
-        composeResult.push({
-          role: 'user',
-          content: lastTurnItem.sendMessage,
-        });
-    }
-  }
+  restTurnItems.forEach((turnItem) => {
+    pickMcpFunctionCallMsg(turnItem, { composeResult, mcpExecuteMode });
+  });
 
   return composeResult;
 };

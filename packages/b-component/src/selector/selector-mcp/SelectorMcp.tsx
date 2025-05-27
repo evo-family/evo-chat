@@ -1,8 +1,9 @@
-import { Button, Divider, Select, SelectProps, Space } from 'antd';
+import { Button, Divider, Flex, Select, SelectProps, Space, Switch } from 'antd';
 import React, { FC, memo, useMemo } from 'react';
-import { useNavigate } from 'react-router';
+import { useMcpExeMode, useMcpOptions } from '@evo/data-store';
+
 import { PlusOutlined } from '@ant-design/icons';
-import { useMcpOptions } from '@evo/data-store';
+import { useNavigate } from 'react-router';
 
 export interface ISelectorMcpProps extends SelectProps {
   value?: string[];
@@ -13,6 +14,7 @@ export const SelectorMcp: FC<ISelectorMcpProps> = memo((props) => {
   const { value, onChange, showAddMcp = true, ...otherProps } = props;
   const navigate = useNavigate();
   const { mcpOptions } = useMcpOptions();
+  const { isCompatibleMode, handleSwitchModeChange } = useMcpExeMode();
 
   const selectValue = useMemo(() => {
     if (!value || !mcpOptions) return [];
@@ -42,9 +44,8 @@ export const SelectorMcp: FC<ISelectorMcpProps> = memo((props) => {
           {showAddMcp && (
             <>
               <Divider style={{ margin: 0 }} />
-              <Space style={{ padding: 8, alignItems: 'center' }}>
+              <Flex align="center" justify="space-between" style={{ padding: 8 }}>
                 <Button
-                  style={{ width: '100%' }}
                   type="text"
                   size="small"
                   icon={<PlusOutlined />}
@@ -54,7 +55,13 @@ export const SelectorMcp: FC<ISelectorMcpProps> = memo((props) => {
                 >
                   添加 MCP
                 </Button>
-              </Space>
+                <Switch
+                  checkedChildren="兼容"
+                  unCheckedChildren="原生"
+                  checked={isCompatibleMode}
+                  onChange={handleSwitchModeChange}
+                />
+              </Flex>
             </>
           )}
         </>

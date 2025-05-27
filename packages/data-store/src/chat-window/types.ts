@@ -5,7 +5,7 @@ import {
   HookRunnerContext,
   StateTissue,
 } from '@evo/utils';
-import { IAvailableModel, IKnowledgeMeta } from '@evo/types';
+import { EMCPExecuteMode, IAvailableModel, IKnowledgeMeta } from '@evo/types';
 
 export interface IChatWindowConfig {
   id: string;
@@ -26,6 +26,10 @@ export interface IChatWindowConfig {
    * 当前窗口使用的MCP工具列表
    */
   mcpIds?: string[];
+  /**
+   * 当前窗口使用的MCP的执行模式
+   */
+  mcpExecuteMode?: EMCPExecuteMode;
   /**
    * 当前窗口使用的助手列表
    */

@@ -1,3 +1,4 @@
+import { EMCPExecuteMode } from '@evo/types';
 import { IChatWindowSelfOptions } from './types';
 
 export const DEFAULT_WINDOW_CONFIG: IChatWindowSelfOptions = {
@@ -7,5 +8,6 @@ export const DEFAULT_WINDOW_CONFIG: IChatWindowSelfOptions = {
     knowledgeIds: [],
     messageIds: [],
     createdTime: +new Date(),
+    mcpExecuteMode: EMCPExecuteMode.COMPATIBLE,
   },
 };
