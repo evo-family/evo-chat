@@ -14,22 +14,19 @@ import {
   EModalConnStatus,
   IChatMessageInitOptions,
   IChatMessageOptions,
-  IMCPExecuteRecord,
   IMessageConfig,
   IModelAnserActionRecord,
-  IModelConnRecord,
   TModelAnswer,
   TModelAnswerCell,
 } from './types';
-import { IComposeModelContextParams, IModelConnParams } from './utils/model-handle/types';
+import { IModelConnParams, TPostMessageParams } from './utils/model-handle/types';
 
 import { AuthenticationError } from 'openai';
 import { McpBridgeFactory } from '@evo/platform-bridge';
-import { XMLParser } from 'fast-xml-parser';
 import { composeModelConnContext } from './utils/model-handle/modelConnContext';
 import { getEmptyAnswerData } from './constants/answer';
+import { getMcpTools } from './utils/model-handle/mcp';
 import { modelConnHandle } from './utils/model-handle/handler';
-import { transMcpExecuteResultToXML } from './utils/model-handle/compose-methods/mcp/msgMcp';
 
 export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<Context>> {
   configState: DataCell<IMessageConfig>;
@@ -119,7 +116,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       answerData.status = EChatAnswerStatus.END;
       const latestTurnItem = answerData.histroy.at(-1)?.chatTurns.at(-1);
 
-      if (latestTurnItem) {
+      if (latestTurnItem && latestTurnItem.status !== EModalConnStatus.ERROR) {
         latestTurnItem.status = EModalConnStatus.SUCCESS;
       }
 
@@ -170,34 +167,37 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
   async resolveModelConn(
     options: {
       answerCell: TModelAnswerCell;
-    } & Pick<IModelConnParams, 'onResolve' | 'userContent' | 'actionRecord'>,
-    params?: IComposeModelContextParams
+    } & Pick<IModelConnParams, 'userContent' | 'actionRecord'>,
+    params?: TPostMessageParams
   ) {
-    const { answerCell, userContent, actionRecord } = options;
+    const { answerCell } = options;
     const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
+    const { mcpIds } = msgConfig;
     const resolver = this.getModelConnSignal(answerConfig.id);
+    const mcpToolsOptions = mcpIds ? await getMcpTools(mcpIds) : undefined;
 
     return await modelConnHandle({
+      ...options,
+      ...params,
+      mcpToolsOptions,
       msgConfig,
-      userContent,
       answerConfig,
-      actionRecord,
       taskSignal: resolver,
       getMessageContext: () =>
         composeModelConnContext({
+          ...params,
+          mcpToolsOptions,
           msgConfig,
           answerConfig,
-          ...params,
         }),
       onResolve: (data) => {
         this.flushAnswerListen(answerCell);
       },
-      ...params,
     });
   }
 
-  async initializeAnswer(id: string, params?: IComposeModelContextParams) {
+  async initializeAnswer(id: string, params?: TPostMessageParams) {
     const answerCell = this.modelAnswers.getCellSync(id);
 
     if (!answerCell) return;
@@ -212,13 +212,13 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       status: EChatAnswerStatus.PENDING,
     });
 
-    const actionRecord: IModelAnserActionRecord = {
-      chatTurns: [],
-    };
-
     const answerConfig = answerCell.get();
     const msgConfig = this.getConfigState();
     const { mcpIds } = msgConfig;
+
+    const actionRecord: IModelAnserActionRecord = {
+      chatTurns: [],
+    };
     answerConfig.histroy.push(actionRecord);
 
     const resolver = this.getModelConnSignal(answerConfig.id);
@@ -226,7 +226,8 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       const latestRecord = actionRecord.chatTurns.at(-1);
 
       if (latestRecord) {
-        let errorMessage = error?.error ?? error?.message ?? error?.toString() ?? '';
+        let errorMessage =
+          error?.error?.message ?? error?.message ?? error?.error ?? error?.toString() ?? '';
 
         if (error instanceof AuthenticationError) {
           errorMessage = 'API秘钥或令牌无效';
@@ -234,6 +235,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
         latestRecord.status = EModalConnStatus.ERROR;
         latestRecord.errorMessage = errorMessage;
+
         this.flushAnswerListen(answerCell);
       }
     });
@@ -255,66 +257,38 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
       if (mcpIds?.length) {
         let lastConnResult = firstConnResult;
 
-        const parser = new XMLParser({
-          ignoreAttributes: false,
-        });
-
         while (actionRecord.chatTurns.length < 10) {
-          const mcpExecuteParams = parser.parse((lastConnResult as IModelConnRecord).content);
-          const tool_user = mcpExecuteParams?.tool_use;
-
-          if (!tool_user) {
+          if (!lastConnResult.mcpInfo.executeRecords.length) {
             break;
           }
-          // 清理后的内容（移除所有 tool_use 标签）
-          lastConnResult.content = lastConnResult.content.replace(
-            /<tool_use>[\s\S]*?<\/tool_use>/g,
-            ''
-          );
 
-          const validToolUser = Array.isArray(tool_user) ? tool_user : [tool_user];
-
-          for await (const useToolInfo of validToolUser) {
-            const parseAguments = JSON.parse(useToolInfo.exe_param);
-            const executeRecord: IMCPExecuteRecord = {
-              mcp_id: useToolInfo.mcp_id,
-              tool_name: useToolInfo.tool_name,
-              arguments: parseAguments,
-              status: EMCPExecuteStatus.PENDING,
-            };
-            lastConnResult.mcpInfo.executeRecords.push(executeRecord);
-            this.flushAnswerListen(answerCell);
-
+          for await (const record of lastConnResult.mcpInfo.executeRecords) {
             const executeResult = await McpBridgeFactory.getInstance().callTool(
-              useToolInfo.mcp_id,
-              useToolInfo.tool_name,
-              parseAguments
+              record.mcp_id,
+              record.tool_name,
+              record.arguments
             );
 
             if (executeResult?.success && executeResult.data) {
               if (executeResult.data.isError) {
-                executeRecord.status = EMCPExecuteStatus.ERROR;
+                record.status = EMCPExecuteStatus.ERROR;
               } else {
-                executeRecord.status = EMCPExecuteStatus.SUCCESS;
+                record.status = EMCPExecuteStatus.SUCCESS;
               }
-              executeRecord.result = executeResult.data;
+              record.result = executeResult.data;
               this.flushAnswerListen(answerCell);
             } else {
-              executeRecord.status = EMCPExecuteStatus.ERROR;
+              record.status = EMCPExecuteStatus.ERROR;
 
               throw executeResult;
             }
           }
 
-          const XMLContent = transMcpExecuteResultToXML({
-            executeRecords: lastConnResult.mcpInfo.executeRecords,
-          });
-
           lastConnResult = await this.resolveModelConn(
             {
               answerCell,
               actionRecord,
-              userContent: XMLContent,
+              userContent: '',
             },
             params
           );
@@ -336,7 +310,7 @@ export class ChatMessage<Context = any> extends BaseService<IChatMessageOptions<
 
   async postMessage(
     params: Pick<IMessageConfig, 'sendMessage' | 'providers' | 'attachFileInfos'> &
-      Omit<IComposeModelContextParams, 'userContent'>
+      Omit<TPostMessageParams, 'userContent'>
   ) {
     await this.ready();
 

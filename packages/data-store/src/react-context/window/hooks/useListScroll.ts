@@ -83,8 +83,9 @@ export const useListScroll = (curWindowCell: IChatWindowContext['chatWin']) => {
         const scrollHeight = scrollElement.scrollHeight;
         const scrollbarHeight = scrollRect.height;
         const scrollPositionRect = scrollOffset + scrollbarHeight;
+        const shouldAotoScroll = scrollPositionRect >= scrollHeight - 5;
 
-        autoScroll.set(scrollPositionRect >= scrollHeight - 20);
+        autoScroll.set(shouldAotoScroll);
       });
     },
     { wait: 0 }
