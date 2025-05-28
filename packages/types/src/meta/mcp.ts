@@ -64,3 +64,8 @@ export interface IMCPCallToolResponse {
   content: IMCPToolResultContent[];
   isError?: boolean;
 }
+
+export enum EMCPExecuteMode {
+  'FUNCTION_CALL' = 'FUNCTION_CALL',
+  'COMPATIBLE' = 'COMPATIBLE',
+}

@@ -7,7 +7,7 @@ import {
   HookRunnerContext,
 } from '@evo/utils';
 import { ChatCompletionChunk, ChatCompletionMessageParam } from 'openai/resources';
-import { IFileMeta, IMCPCallToolResponse } from '@evo/types';
+import { EMCPExecuteMode, IFileMeta, IMCPCallToolResponse } from '@evo/types';
 
 export enum EModalConnStatus {
   SUCCESS = 'success',
@@ -41,6 +41,7 @@ export interface IModelConnRecord {
   usage?: ChatCompletionChunk['usage'];
   sendMessage: string;
   mcpInfo: {
+    mcpExecuteMode: EMCPExecuteMode;
     executeRecords: Array<IMCPExecuteRecord>;
   };
 }

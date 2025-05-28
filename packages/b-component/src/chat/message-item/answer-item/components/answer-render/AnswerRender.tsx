@@ -13,6 +13,7 @@ import { Divider } from 'antd';
 import { McpExecuteInfo } from '../mcp-execute-info/McpExecuteInfo';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
 import Style from './Style.module.scss';
+import { useDebounceEffect } from 'ahooks';
 
 const cx = cxb.bind(Style);
 
@@ -32,9 +33,13 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
   );
   const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
 
-  useLayoutEffect(() => {
-    tryScrollToBtmIfNeed();
-  }, [content, reasoning_content, status]);
+  useDebounceEffect(
+    () => {
+      tryScrollToBtmIfNeed();
+    },
+    [content, reasoning_content, status],
+    { wait: 20 }
+  );
 
   if (status === EModalConnStatus.PENDING) {
     return (
@@ -64,12 +69,13 @@ export interface IAnswerRenderProps {}
 
 export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
   const [chatTurns] = useChatAnswerCtx((ctx) => ctx.chatTurnsCell);
+  const maxIndex = chatTurns.length - 1;
 
   return chatTurns.map((turnItem, index) => {
     return (
       <div key={index}>
         <AnswerTurnItem turnIndex={index} />
-        {index ? <Divider style={{ margin: '10px 0' }} /> : null}
+        {index !== maxIndex ? <Divider style={{ margin: '10px 0' }} /> : null}
       </div>
     );
   });

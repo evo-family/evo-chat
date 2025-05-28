@@ -15,10 +15,10 @@ import {
 
 import { ChatMessage } from '../chat-message/chatMessage';
 import { DEFAULT_WINDOW_CONFIG } from './constants';
-import { IComposeModelContextParams } from '@/chat-message/utils/model-handle/types';
 import { IFileMeta } from '@evo/types';
 import { StateTissue } from '@evo/utils';
 import { TComposedContexts } from '@/chat-message/types';
+import { TPostMessageParams } from '@/chat-message/utils/model-handle/types';
 import { composeProviders } from './utils/compose/providers';
 import { modelProcessor } from '../processor';
 
@@ -196,20 +196,19 @@ export class ChatWindow<Context = any> extends BaseService<IChatWindowOptions<Co
   }
 
   async composeMessageContext(modelParams = modelProcessor.modelParams.get()): Promise<
-    Omit<IComposeModelContextParams, 'messageIds'> & {
+    Omit<TPostMessageParams, 'messageIds'> & {
       messageIds: string[];
     }
   > {
     const composedContexts: TComposedContexts = [];
 
-    const messageIds = this.configState.getCellValueSync('messageIds') ?? [];
+    const { messageIds, mcpIds, mcpExecuteMode } = this.getConfigState();
     const lastCountMsgIds = messageIds.slice();
     const historyMessages = await Promise.all(
       lastCountMsgIds.map((msgId) => this.getMessage(msgId))
     );
-    const mcpIds = this.configState.getCellValueSync('mcpIds') ?? [];
 
-    return { composedContexts, historyMessages, messageIds, mcpIds };
+    return { composedContexts, historyMessages, messageIds, mcpIds, mcpExecuteMode };
   }
 
   async createMessage(sendMessage: string, params: { fileInfos?: IFileMeta[] }) {
