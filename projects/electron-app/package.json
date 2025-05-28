@@ -1,6 +1,6 @@
 {
   "name": "@evo/client",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",

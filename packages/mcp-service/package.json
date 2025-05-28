@@ -1,6 +1,6 @@
 {
   "name": "@evo/mcp-service",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "types": "./src/index.ts",
   "exports": {
