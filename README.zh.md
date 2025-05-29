@@ -19,41 +19,66 @@
   </a>
 </p>
 
-Evo Chat（Evolution Chat）是一个现代化的开源 AI 对话平台，致力于打造最优雅的大模型交互入口。它支持对接 ChatGPT，Deepseak， 等主流大语言模型（LLM）服务商，并在此基础上不断进化，识库增强、多模态处理、MCP（Model Control Protocol）等扩展能力，让 AI 能力更加丰富。支持全平台部署（Web、App、Windows、Mac、Linux），为用户提供无处不在的 AI 能力入口。
+Evo Chat（Evolution Chat）是一个现代化的开源 AI 对话平台，致力于打造最优雅的大模型交互入口。它支持对接 ChatGPT，Deepseak， 等主流大语言模型（LLM）服务商，并在此基础上不断进化，知识库增强、多模态处理、MCP（Model Control Protocol）等扩展能力，让 AI 能力更加丰富。支持全平台部署（Web、App、Windows、Mac、Linux），为用户提供无处不在的 AI 能力入口。
 
 ## 🖼️ 界面展示
+
+- 首页
+  ![首页](./images/b.webp)
+
+- 助手
+  ![助手](./images/c.webp)
+
+- 知识库
+  ![知识库](./images/g.webp)
+
+- MCP
+  ![MCP](./images/k.webp)
+
+- MCP 会话
+  ![MCP 会话](./images/n.webp)
+
+- 模型管理
+  ![模型管理](./images/r.webp)
+
+- 暗黑模式
+  ![模型管理](./images/t.webp)
 
 ## ✨ 功能特性
 
 - [x] 💬 智能对话
+
   - [x] 支持多模型接入，提供灵活的对话能力
   - [x] 支持上下文对话，保持对话的连贯性
   - [x] 支持知识库问答，快速获取所需信息
 
 - [x] 🚀 知识库管理
+
   - [x] 支持创建、编辑、删除知识库，方便知识的组织和管理
   - [x] 支持向量化文档，提升知识检索效率
   - [x] 支持向量搜索，快速定位相关内容
 
 - [x] 📁 文件管理
+
   - [x] 支持文件上传、预览、删除，简化文件操作
   - [x] 支持文件分类管理，便于文件的归类和查找
   - [x] 支持批量操作，提高工作效率
 
 - [x] 💻 全平台支持
+
   - [x] 支持 Web 在线访问，随时随地使用
   - [x] 支持桌面客户端（Windows、Mac、Linux）
   - [x] 支持移动端 App，提供流畅的移动体验
 
 - [x] 🤖 智能助手
+
   - [x] 支持预设多个专业领域助手（编程、写作、翻译等）
   - [x] 自定义助手角色与专业领域
   - [x] 助手知识库独立管理
   - [x] 快速切换不同助手场景
 
-- [ ] 🔮 进阶功能
-  - [ ] MCP（Model Control Protocol）协议支持
-
+- [x] 🔮 进阶功能
+  - [x] MCP（Model Control Protocol）协议支持
 
 ## 📁 项目结构
 
@@ -88,7 +113,7 @@ Evo Chat（Evolution Chat）是一个现代化的开源 AI 对话平台，致力
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-repo/evo-chat.git
+git clone https://github.com/evo-family/evo-chat.git
 
 # 进入项目目录
 cd evo-chat
@@ -96,9 +121,22 @@ cd evo-chat
 # 安装项目依赖
 pnpm install
 
-# 安装工作区依赖
-npm run bootstrap
+# 启动web
+pnpm run dev:web
+
+# 启动h5
+pnpm run dev:h5
+
+# 启动h5
+pnpm run dev:h5
+
+# 启动electron
+pnpm run dev:client
 ```
+
+## 联系
+
+加微信 `evo-chat`，可以联系到我们
 
 ## 👥 贡献指南
 
@@ -116,8 +154,8 @@ npm run bootstrap
 
 感谢以下贡献者的参与：
 
-<a href="https://github.com/your-repo/evo-chat/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=your-repo/evo-chat" />
+<a href="https://github.com/evo-family/evo-chat/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=evo-family/evo-chat" />
 </a>
 
 ## 📄 开源协议

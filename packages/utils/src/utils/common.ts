@@ -291,3 +291,5 @@ export const stringifyKeyValueText = (obj?: Record<string, string>) => {
     .map(([key, value]) => `${key}=${value}`)
     .join('\n');
 };
+
+export { default as cxb } from 'classnames/bind';

@@ -1,6 +1,6 @@
 {
   "name": "@evo/utils",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "types": "./src/index.ts",
   "exports": {
@@ -25,6 +25,7 @@
     "@tanstack/react-query": "^5.66.9",
     "ahooks": "^3.8.4",
     "axios": "^1.7.9",
+    "classnames": "^2.5.1",
     "dexie": "^4.0.11",
     "lodash": "^4.17.21",
     "openai": "^4.85.4",

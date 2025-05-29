@@ -2,29 +2,29 @@ import { IModelConnRecord, TComposedContexts } from '@/chat-message/types';
 
 import { XMLBuilder } from 'fast-xml-parser';
 
-export const transMcpExecuteResultToXML = (params: {
-  executeRecords: IModelConnRecord['mcpInfo']['executeRecords'];
-}): string => {
-  const { executeRecords } = params;
-  let result = '';
+const builder = new XMLBuilder({
+  ignoreAttributes: false,
+});
 
-  if (!executeRecords.length) return result;
+export const transMcpExecuteToXML = (params: {
+  executeRecord: IModelConnRecord['mcpInfo']['executeRecords'][0];
+}) => {
+  const { executeRecord } = params;
 
-  const builder = new XMLBuilder({
-    ignoreAttributes: false,
+  const toolUse = builder.build({
+    tool_use: {
+      mcp_id: executeRecord.mcp_id,
+      name: executeRecord.tool_name,
+      arguments: JSON.stringify(executeRecord.arguments),
+    },
+  });
+  const toolUseResult = builder.build({
+    tool_use_result: {
+      mcp_id: executeRecord.mcp_id,
+      name: executeRecord.tool_name,
+      result: executeRecord.result?.content.map((data) => data.text).join(',') ?? '',
+    },
   });
 
-  result = executeRecords
-    .map((item) =>
-      builder.build({
-        tool_use_result: {
-          mcp_id: item.mcp_id,
-          name: item.tool_name,
-          result: item.result?.content.map((data) => data.text).join(',') ?? '',
-        },
-      })
-    )
-    .join('\n');
-
-  return result;
+  return { toolUse, toolUseResult };
 };

@@ -469,6 +469,9 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.8.4
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       dexie:
         specifier: ^4.0.11
         version: 4.0.11

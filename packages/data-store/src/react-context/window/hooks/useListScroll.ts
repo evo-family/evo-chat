@@ -42,11 +42,10 @@ export const useListScroll = (curWindowCell: IChatWindowContext['chatWin']) => {
 
           // 增加5px的容错
           if (scrollOffset + scrollbarHeight < scrollHeight - 5) {
-
             scrollToBottom();
           }
         });
-      }, 20);
+      }, 0);
     });
   });
 
@@ -70,17 +69,23 @@ export const useListScroll = (curWindowCell: IChatWindowContext['chatWin']) => {
   });
 
   const { run: onListScroll } = useDebounceFn(
-    (event) => {
+    () => {
       virtualHandle((virIns) => {
         const { scrollElement, scrollRect, scrollOffset } = virIns;
 
-        if (!(scrollElement && scrollRect && scrollOffset)) return;
+        if (!(scrollElement && scrollRect)) return;
+
+        if (!scrollOffset) {
+          autoScroll.set(true);
+          return;
+        }
 
         const scrollHeight = scrollElement.scrollHeight;
         const scrollbarHeight = scrollRect.height;
         const scrollPositionRect = scrollOffset + scrollbarHeight;
+        const shouldAotoScroll = scrollPositionRect >= scrollHeight - 5;
 
-        autoScroll.set(scrollPositionRect >= scrollHeight - 20);
+        autoScroll.set(shouldAotoScroll);
       });
     },
     { wait: 0 }

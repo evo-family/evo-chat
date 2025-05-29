@@ -13,8 +13,9 @@ export const modelConnHandle: IModelConnHandle = (params) => {
     taskSignal,
     userContent,
     actionRecord,
+    mcpToolsOptions,
+    mcpExecuteMode,
     onResolve,
-    firstResolve,
   } = params;
   const providerName = answerConfig.provider;
 
@@ -30,16 +31,18 @@ export const modelConnHandle: IModelConnHandle = (params) => {
     defaultModel: answerConfig.model,
   });
   const modelParams = modelProcessor.modelParams.get();
-  const baseConnResult = getEmptyModelConnResult(userContent);
+  const baseConnResult = getEmptyModelConnResult({ userContent, mcpExecuteMode });
 
   actionRecord.chatTurns.push(baseConnResult);
+  onResolve?.(baseConnResult);
 
-  return getMessageContext().then((composeMessages) => {
+  return getMessageContext().then(({ composeMessages, chatOptions }) => {
     return modelConnection
       .chat(composeMessages, {
         stream: true,
         model: answerConfig.model,
         ...modelParams,
+        ...chatOptions,
       })
       .then((modelConnResult) => {
         taskSignal.promise.finally(() => modelConnResult.controller.abort());
@@ -47,8 +50,9 @@ export const modelConnHandle: IModelConnHandle = (params) => {
         return defaultStreamResolver({
           stream: modelConnResult,
           connResult: baseConnResult,
+          mcpToolsOptions,
+          mcpExecuteMode,
           onResolve,
-          firstResolve,
         });
       })
       .then((connResult) => {

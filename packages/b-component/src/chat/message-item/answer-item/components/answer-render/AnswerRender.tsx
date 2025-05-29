@@ -5,14 +5,17 @@ import {
   useChatWinCtx,
 } from '@evo/data-store';
 import React, { useLayoutEffect, useMemo } from 'react';
+import { cxb, useCellValueSelector } from '@evo/utils';
 
 import { AnswerContentRender } from '../answer-content-render/AnswerContentRender';
 import { BubbleChat } from '@/chat/bubble-chat/BubbleChat';
 import { Divider } from 'antd';
 import { McpExecuteInfo } from '../mcp-execute-info/McpExecuteInfo';
 import { ReasoningRender } from '../reasoning-render/ReasoningRender';
-import { useCellValueSelector } from '@evo/utils';
-import { useUpdateEffect } from 'ahooks';
+import Style from './Style.module.scss';
+import { useDebounceEffect } from 'ahooks';
+
+const cx = cxb.bind(Style);
 
 export interface AnswerRenderTurnItemProps {
   turnIndex: number;
@@ -30,9 +33,28 @@ export const AnswerTurnItem = React.memo<AnswerRenderTurnItemProps>((props) => {
   );
   const [content] = useCellValueSelector(chatTurnsCell, (value) => value.at(turnIndex)?.content);
 
-  useLayoutEffect(() => {
-    tryScrollToBtmIfNeed();
-  }, [content, reasoning_content, status]);
+  useDebounceEffect(
+    () => {
+      tryScrollToBtmIfNeed();
+    },
+    [content, reasoning_content, status],
+    { wait: 20 }
+  );
+
+  if (status === EModalConnStatus.PENDING) {
+    return (
+      <BubbleChat
+        contents={[
+          {
+            key: 3,
+            role: 'user',
+            className: cx('loading'),
+            loading: true,
+          },
+        ]}
+      />
+    );
+  }
 
   return (
     <>
@@ -47,12 +69,13 @@ export interface IAnswerRenderProps {}
 
 export const AnswerRender = React.memo<IAnswerRenderProps>((props) => {
   const [chatTurns] = useChatAnswerCtx((ctx) => ctx.chatTurnsCell);
+  const maxIndex = chatTurns.length - 1;
 
   return chatTurns.map((turnItem, index) => {
     return (
       <div key={index}>
         <AnswerTurnItem turnIndex={index} />
-        <Divider style={{ margin: '10px 0' }} />
+        {index !== maxIndex ? <Divider style={{ margin: '10px 0' }} /> : null}
       </div>
     );
   });
