@@ -1,0 +1,53 @@
+.agent-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  // padding: 0 0 0 20px;
+
+  [class*='rc-virtual-list'] {
+    overflow-y: auto;
+    padding-bottom: 16px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--evo-scrollbar-thumb);
+      border-radius: 3px;
+    }
+  }
+}
+
+
+.search-container {
+  margin-bottom: 16px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.agent-item {
+  padding: 16px 20px 16px 0px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: var(--evo-hover-bg);
+  }
+
+
+
+  .agent-title {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: var(--evo-color-text);
+  }
+
+  .agent-secondary-title {
+    font-size: 14px;
+    color: var(--evo-color-text-secondary);
+    display: block;
+    padding-right: 15px;
+  }
+}
