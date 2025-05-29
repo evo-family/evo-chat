@@ -27,7 +27,7 @@
     "dayjs": "^1.11.13",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.4",
-    "jotai": "^2.12.2",
+    "rc-virtual-list": "^3.18.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^15.4.1",

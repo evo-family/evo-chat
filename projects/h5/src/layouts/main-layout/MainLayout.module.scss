@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f5f5;
 }
 
 .content {
@@ -12,7 +11,6 @@
 
 .tabBar {
   flex-shrink: 0;
-  border-top: solid 1px #eee;
-  background: white;
+  border-top: 1px var(--evo-color-border);
   height: 50px;
 }

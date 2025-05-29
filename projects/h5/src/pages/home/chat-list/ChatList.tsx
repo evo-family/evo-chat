@@ -32,35 +32,8 @@ export const ChatList: FC<IChatListProps> = memo(({}) => {
 
   const { chatList, groupedChatList } = useChatList();
 
-  const handleSearch = useMemoizedFn(() => {
-    console.log('打开搜索');
-  });
-
-  const handleNewChat = useMemoizedFn(() => {
-    chatCtrl.createWindow();
-  });
-
-  const right = (
-    <Space style={{ fontSize: 24, '--gap': '16px' }}>
-      <EvoIcon
-        size={'small'}
-        onClick={handleSearch}
-        style={{ color: 'var(--adm-color-text)' }}
-        type="icon-search"
-      />
-      <EvoIcon
-        size={'small'}
-        onClick={handleNewChat}
-        style={{ color: 'var(--adm-color-text)' }}
-        type="icon-message"
-      />
-    </Space>
-  );
-
   return (
     <Space direction="vertical" style={{ width: '100%', height: '100%' }}>
-      <NavBar right={right} back={null} />
-
       <Space
         direction="vertical"
         style={{

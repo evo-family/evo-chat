@@ -1,8 +1,10 @@
 body {
   margin: 0;
-  /* color: #fff; */
-  font-family: 思源黑体 Regular, Inter, Avenir, Helvetica, Arial, sans-serif;
-  background-image: linear-gradient(to bottom, #020917, #101725);
+
+}
+
+div {
+  box-sizing: border-box;
 }
 
 .content {
@@ -12,15 +14,4 @@ body {
   text-align: center;
   flex-direction: column;
   justify-content: center;
-}
-
-.content h1 {
-  font-size: 3.6rem;
-  font-weight: 700;
-}
-
-.content p {
-  font-size: 1.2rem;
-  font-weight: 400;
-  opacity: 0.5;
 }

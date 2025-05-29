@@ -657,9 +657,9 @@ importers:
       i18next-browser-languagedetector:
         specifier: ^8.0.4
         version: 8.0.4
-      jotai:
-        specifier: ^2.12.2
-        version: 2.12.3(@types/react@18.3.20)(react@18.3.1)
+      rc-virtual-list:
+        specifier: ^3.18.5
+        version: 3.18.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -4796,18 +4796,6 @@ packages:
   jiti@2.4.2:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
     hasBin: true
-
-  jotai@2.12.3:
-    resolution: {integrity: sha512-DpoddSkmPGXMFtdfnoIHfueFeGP643nqYUWC6REjUcME+PG2UkAtYnLbffRDw3OURI9ZUTcRWkRGLsOvxuWMCg==}
-    engines: {node: '>=12.20.0'}
-    peerDependencies:
-      '@types/react': '>=17.0.0'
-      react: 18.3.1
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      react:
-        optional: true
 
   js-base64@3.7.7:
     resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
@@ -12887,11 +12875,6 @@ snapshots:
       supports-color: 8.1.1
 
   jiti@2.4.2: {}
-
-  jotai@2.12.3(@types/react@18.3.20)(react@18.3.1):
-    optionalDependencies:
-      '@types/react': 18.3.20
-      react: 18.3.1
 
   js-base64@3.7.7: {}
 

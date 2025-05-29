@@ -22,6 +22,16 @@
 - `--evo-color-fill-tertiary`: 第三级填充色 (rgba(0, 0, 0, 0.04))
 - `--evo-color-fill-quaternary`: 第四级填充色 (rgba(0, 0, 0, 0.02))
 
+### 边框大小
+
+- `--evo-padding-xxs: 4px`
+- `--evo-padding-xs: 8px`
+- `--evo-padding-sm: 12px`
+- `--evo-padding: 16px`
+- `--evo-padding-md: 20px`
+- `--evo-padding-lg: 24px`
+- `--evo-padding-xl: 32px`
+
 <!--
 ### 边框颜色
 - `--evo-color-border`: 基础边框色

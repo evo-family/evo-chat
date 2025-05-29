@@ -14,24 +14,25 @@ import {
 import { AssistantAvatar, Emoji, EvoIcon, SearchInput } from '@evo/component';
 import React, { FC, useMemo, useRef } from 'react';
 import {
+  AssistantProvider,
   useAssistantCreateWindow,
   useAssistantLogic,
   useAssistantOperation,
+  useAssistantSelector,
 } from '@evo/data-store';
 
 import { ContentPanel } from '../../components';
-import { IAssistantCategory, IAssistantMeta } from '@evo/types';
+import { IAssistantMeta } from '@evo/types';
 import VirtualList from 'rc-virtual-list';
 import style from './Style.module.scss';
 import { useMemoizedFn } from 'ahooks';
-import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { AddOrUpdateAssistant } from './components/add-or-update/AddOrUpdateAssistant';
 import { TableDropdown } from '@ant-design/pro-components';
-import { AssistantProvider, useAssistantSelector } from './assistant-processor/AssistantProvider';
 import { PromptModal } from './components/prompt-modal/PromptMoal';
+import { } from '@evo/data-store';
 
-export interface IAssistantProps {}
+export interface IAssistantProps { }
 
 const RenderAgent = React.forwardRef<
   any,
@@ -94,39 +95,39 @@ const RenderAgent = React.forwardRef<
       actions={
         isMy
           ? [
-              <a key="edit" onClick={handleEdit}>
-                编辑
-              </a>,
-              <TableDropdown
-                key="more"
-                onSelect={(key) => {
-                  if (key === 'delete') {
-                    modal.confirm({
-                      title: '确认删除',
-                      content: `确定要删除助手 "${data.title}" 吗？`,
-                      okText: '确定',
-                      cancelText: '取消',
-                      onOk: () => {
-                        deleteAssistant(data.id);
-                      },
-                    });
-                  }
+            <a key="edit" onClick={handleEdit}>
+              编辑
+            </a>,
+            <TableDropdown
+              key="more"
+              onSelect={(key) => {
+                if (key === 'delete') {
+                  modal.confirm({
+                    title: '确认删除',
+                    content: `确定要删除助手 "${data.title}" 吗？`,
+                    okText: '确定',
+                    cancelText: '取消',
+                    onOk: () => {
+                      deleteAssistant(data.id);
+                    },
+                  });
+                }
 
-                  if (key === 'copy') {
-                    handleCopy();
-                  }
-                }}
-                menus={[
-                  { key: 'copy', name: '复制' },
-                  { key: 'delete', danger: true, name: '删除' },
-                ]}
-              />,
-            ]
+                if (key === 'copy') {
+                  handleCopy();
+                }
+              }}
+              menus={[
+                { key: 'copy', name: '复制' },
+                { key: 'delete', danger: true, name: '删除' },
+              ]}
+            />,
+          ]
           : [
-              <a key="copy" onClick={handleCopy}>
-                复制
-              </a>,
-            ]
+            <a key="copy" onClick={handleCopy}>
+              复制
+            </a>,
+          ]
       }
     >
       <List.Item.Meta
@@ -172,7 +173,7 @@ const RenderAgent = React.forwardRef<
   );
 });
 
-interface IAssistantPageContentProps {}
+interface IAssistantPageContentProps { }
 
 const AssistantPageContent: FC<IAssistantPageContentProps> = React.memo((props) => {
   const [searchText, setSearchText] = useState('');
@@ -207,8 +208,6 @@ const AssistantPageContent: FC<IAssistantPageContentProps> = React.memo((props) 
   const selectCategory = useMemo(() => {
     return categories.find((f) => f.id === selectedCategoryId);
   }, [selectedCategoryId]);
-
-  const handleSelectAgent = useMemoizedFn(async (data: IAssistantMeta) => {});
 
   return (
     <ContentPanel
@@ -251,9 +250,7 @@ const AssistantPageContent: FC<IAssistantPageContentProps> = React.memo((props) 
               itemHeight={88}
               itemKey="id"
             >
-              {(item: IAssistantMeta) => (
-                <RenderAgent key={item.id} data={item} onClick={handleSelectAgent} />
-              )}
+              {(item: IAssistantMeta) => <RenderAgent key={item.id} data={item} />}
             </VirtualList>
           </List>
         </div>

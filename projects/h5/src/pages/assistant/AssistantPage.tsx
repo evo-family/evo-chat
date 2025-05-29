@@ -1,265 +1,264 @@
-import { Button, List, SearchBar, Tabs } from 'antd-mobile';
-import { FC, useEffect, useLayoutEffect, useMemo } from 'react';
-import { getAgentsData, useGlobalCtx } from '@evo/data-store';
+import { SearchBar, Space, Swiper, SwiperRef, Tabs } from 'antd-mobile';
+import { FC, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import {
+  AssistantProvider,
+  useAssistantCreateWindow,
+  useAssistantLogic,
+  useAssistantOperation,
+  useAssistantSelector,
+  useGlobalCtx,
+} from '@evo/data-store';
+import VirtualList from 'rc-virtual-list';
 
-import { IAssistant } from '@evo/types';
-import { InfiniteScroll } from 'antd-mobile';
-import { MessageOutline } from 'antd-mobile-icons';
-import { useMemoizedFn } from 'ahooks';
-// import { useGlobalCtx } from '@evo/data-store';
-import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { ContentPanel } from '../../components';
+import { IAssistantMeta } from '@evo/types';
+import s from './Style.module.scss';
+import React from 'react';
+import { App, Tooltip, List, Tag, Button, Switch } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import { TableDropdown } from '@ant-design/pro-components';
+import { AssistantAvatar, Emoji } from '@evo/component';
+import { AddOrUpdateAssistant } from './components/add-or-update/AddOrUpdateAssistant';
+import { PromptModal } from './components/prompt-modal/PromptMoal';
 
-export interface IAssistantProps {}
+const RenderAgent = React.forwardRef<
+  any,
+  { data: IAssistantMeta; onClick?: (data: IAssistantMeta) => any }
+>((props, ref) => {
+  const { data, onClick } = props;
 
-export const AssistantPage: FC<IAssistantProps> = (props) => {
-  const [searchText, setSearchText] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string>('全部');
-  const [chatCtrl] = useGlobalCtx((ctx) => ctx.chatCtrl);
-  const [agents, setAgents] = useState<IAssistant[]>([]);
-  const navigate = useNavigate();
-  const [pageSize] = useState(10);
-  const [hasMore, setHasMore] = useState(true);
-  const [displayAgents, setDisplayAgents] = useState<IAssistant[]>([]);
-  // 收集所有不重复的标签并按使用频率排序
-  const tags = useMemo(() => {
-    const tagCount = new Map<string, number>();
+  const { modal } = App.useApp();
 
-    // 统计每个标签的使用次数
-    (agents as unknown as IAssistant[]).forEach((agent) => {
-      agent.meta.tags?.forEach((tag) => {
-        tagCount.set(tag, (tagCount.get(tag) || 0) + 1);
-      });
-    });
+  const setUpdateModalData = useAssistantSelector(
+    (s) => s.addOrUpdateAssistantDialog.setUpdateModalData
+  );
 
-    // 将标签按使用频率排序
-    const sortedTags = Array.from(tagCount.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([tag]) => tag);
+  const setDialogData = useAssistantSelector(
+    (s) => s.addOrUpdateAssistantDialog.setDialogData
+  );
+  const { createAssistantWindow } = useAssistantCreateWindow();
 
-    // 取前8个标签，其余放入"其他"类别
-    const topTags = sortedTags.slice(0, 8);
-    const hasOtherTags = sortedTags.length > 8;
-    console.log(
-      'topTags',
-      topTags,
-      ' hasOtherTags:',
-      hasOtherTags,
-      ' agents.length:',
-      agents.length
-    );
-    return ['全部', ...topTags, ...(hasOtherTags ? ['其他'] : [])];
-  }, [agents]);
+  const { updateAssistant, deleteAssistant } = useAssistantOperation();
 
-  /// 修改 filteredAgents 的实现
-  const filteredAgents = useMemo(() => {
-    return agents.filter((agent) => {
-      const searchLower = searchText.toLowerCase();
-      const matchSearch = agent.meta.title
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      const matchDescription = agent.meta.description
-        .toLowerCase()
-        .includes(searchLower);
-      let matchTag = selectedTag === '全部';
-
-      if (!matchTag) {
-        if (selectedTag === '其他') {
-          matchTag =
-            agent.meta.tags?.every((tag) => !tags.slice(1, -1).includes(tag)) ??
-            false;
-        } else {
-          matchTag = agent.meta.tags?.includes(selectedTag) ?? false;
-        }
-      }
-
-      return (matchSearch || matchDescription) && matchTag;
-    });
-  }, [searchText, selectedTag, tags, agents]);
-
-  // 添加 filteredAgents 作为依赖
-  useEffect(() => {
-    // 仅加载第一页数据
-    setDisplayAgents(filteredAgents.slice(0, pageSize));
-    setHasMore(filteredAgents.length > pageSize);
-  }, [selectedTag, searchText, filteredAgents, pageSize]);
-
-  useLayoutEffect(() => {
-    let cleanUpHandler: undefined | (() => any) = undefined;
-    let unmounted = false;
-
-    getAgentsData().then((agentsData) => {
-      if (unmounted) return;
-
-      const subscription = agentsData.globListen(
-        (signal) => {
-          setAgents(
-            agentsData.getCellsValue({ all: true, getArray: true })
-              .array as IAssistant[]
-          );
-        },
-        { immediate: true, debounceTime: 100 }
-      );
-
-      cleanUpHandler = () => subscription.unsubscribe();
-    });
-
-    return () => {
-      unmounted = true;
-      cleanUpHandler && cleanUpHandler();
-    };
-  }, [getAgentsData]);
-
-  const handleSelectAgent = useMemoizedFn(async (data: IAssistant) => {
-    const identifier = data.identifier;
-
-    const selectedAgentInfo: IAssistant = agents.find(
-      (agent) => agent.identifier === identifier
-    ) as unknown as IAssistant;
-    if (!selectedAgentInfo) return;
-
-    navigate('/home');
-
-    // todo_lcf 检测窗口是否存在 并且避免创建
-    // 如果不存在，创建新窗口
-    const newWinIns = await chatCtrl.createWindow(
-      // todo_lcf 创建对话需要支持 agent参数
-      { agentIds: [identifier] }
-    );
-
-    // 关闭弹窗并重置状态
-    setSearchText('');
+  const handleClick = useMemoizedFn(() => {
+    createAssistantWindow(data);
   });
 
-  // 修改加载更多的处理函数
-  const loadMore = async () => {
-    const start = displayAgents.length;
-    const newAgents = filteredAgents.slice(start, start + pageSize);
+  const handleFrequentChange = useMemoizedFn((checked: boolean) => {
+    updateAssistant({
+      ...data,
+      isFrequent: checked,
+    });
+  });
 
-    if (newAgents.length > 0) {
-      setDisplayAgents((prev: IAssistant[]) => [
-        ...prev,
-        ...(newAgents as unknown as IAssistant[]),
-      ]);
-    }
-
-    setHasMore(start + newAgents.length < filteredAgents.length);
+  const handleEdit = () => {
+    setUpdateModalData({
+      data,
+    });
+  };
+  const handleCopy = () => {
+    setDialogData({
+      type: 'copy',
+      open: true,
+      data: { ...data, title: `复制 ${data.title}` },
+    });
   };
 
-  // 修改 useEffect 的依赖项和处理逻辑
-  useEffect(() => {
-    // 仅加载第一页数据
-    setDisplayAgents([]);
-    setHasMore(true);
-  }, [selectedTag, searchText]); // 只在搜索条件变化时重置
-
-  const renderAvatar = (avatar: string) => {
-    // 判断是否为URL或Blob链接
-    const isImageUrl =
-      avatar.startsWith('http') ||
-      avatar.startsWith('blob') ||
-      avatar.startsWith('data:');
-
-    if (isImageUrl) {
-      return (
-        <img
-          src={avatar}
-          alt="avatar"
-          style={{
-            width: 32,
-            height: 32,
-            objectFit: 'cover',
-            borderRadius: '50%',
-            backgroundColor: 'Background',
-          }}
-        />
-      );
-    }
-
-    return <span style={{ fontSize: '24px' }}>{avatar}</span>;
+  const handleEmojiChange = (emoji: string) => {
+    updateAssistant({
+      ...data,
+      avatar: emoji,
+    });
   };
+
+  const isMy = data.category === 'my';
+
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#f5f5f5',
+    <List.Item
+      styles={{
+        actions: {
+          marginLeft: 20,
+        },
       }}
+      key={data.id}
+      actions={
+        isMy
+          ? [
+              <a key="edit" onClick={handleEdit}>
+                编辑
+              </a>,
+              <TableDropdown
+                key="more"
+                onSelect={(key) => {
+                  if (key === 'delete') {
+                    modal.confirm({
+                      title: '确认删除',
+                      content: `确定要删除助手 "${data.title}" 吗？`,
+                      okText: '确定',
+                      cancelText: '取消',
+                      onOk: () => {
+                        deleteAssistant(data.id);
+                      },
+                    });
+                  }
+
+                  if (key === 'copy') {
+                    handleCopy();
+                  }
+                }}
+                menus={[
+                  { key: 'copy', name: '复制' },
+                  { key: 'delete', danger: true, name: '删除' },
+                ]}
+              />,
+            ]
+          : [
+              <a key="copy" onClick={handleCopy}>
+                复制
+              </a>,
+            ]
+      }
     >
-      <div
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          background: '#f5f5f5',
+      <List.Item.Meta
+        avatar={
+          <>
+            {isMy ? (
+              <Emoji value={data.avatar} onChange={handleEmojiChange}>
+                {
+                  <span style={{ cursor: 'pointer' }}>
+                    <AssistantAvatar avatar={data.avatar} width={48} />
+                  </span>
+                }
+              </Emoji>
+            ) : (
+              <AssistantAvatar avatar={data.avatar} width={48} />
+            )}
+          </>
+        }
+        title={
+          <div>
+            {data.title}
+            <div style={{ marginTop: 2 }}>
+              {data.tags.map((tag) => (
+                <Tag
+                  style={{ color: `var(--evo-color-text-tertiary)` }}
+                  key={tag}
+                  bordered={false}
+                >
+                  {tag}
+                </Tag>
+              ))}
+            </div>
+          </div>
+        }
+        description={data.description}
+      />
+      {/* <Space>
+        <Tooltip title="设为常用助手">
+          <Switch
+            size="small"
+            checked={data.isFrequent}
+            onChange={handleFrequentChange}
+          />
+        </Tooltip>
+        <PromptModal data={data} />
+        <Button color="default" variant="filled" onClick={handleClick}>
+          开启新对话
+        </Button>
+      </Space> */}
+    </List.Item>
+  );
+});
+
+export interface IAssistantPageContentProps {}
+
+export const AssistantPageContent: FC<IAssistantPageContentProps> = (props) => {
+  const swiperRef = useRef<SwiperRef>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [searchText, setSearchText] = useState('');
+
+  const [selectedCategoryId, setSelectedCategoryId] = useAssistantSelector(
+    (s) => [s.selectedCategoryId, s.setSelectedCategoryId]
+  );
+
+  const { filteredAssistants, categories } = useAssistantLogic({
+    searchText,
+    selectedCategoryId,
+  });
+
+  const selectedCategoryIdByIndex = (index: number) => {
+    const category = categories[index];
+    setSelectedCategoryId(category.id);
+  };
+
+  console.log(
+    'q=>filteredAssistants',
+    activeIndex,
+    filteredAssistants,
+    selectedCategoryId
+  );
+
+  return (
+    <ContentPanel hiddenToolbarBack title="助手">
+      <Tabs
+        activeKey={categories?.[activeIndex].id}
+        onChange={(key) => {
+          const index = categories.findIndex((item) => item.id === key);
+          setActiveIndex(index);
+          selectedCategoryIdByIndex(index);
+          swiperRef.current?.swipeTo(index);
         }}
       >
-        <SearchBar
-          placeholder="搜索助手"
-          onChange={setSearchText}
-          style={{
-            padding: '8px',
-            '--background': '#ffffff',
-          }}
-        />
-
-        <Tabs
-          defaultActiveKey="全部"
-          onChange={setSelectedTag}
-          style={{
-            color: '#666666',
-            '--title-font-size': '14px',
-            '--active-title-color': '#1677ff',
-            '--active-line-color': '#1677ff',
-            paddingTop: '8px',
-          }}
-          activeKey={selectedTag}
-        >
-          {tags.map((tag) => (
-            <Tabs.Tab title={tag} key={tag}>
-              <List
-                style={{
-                  '--padding-left': '16px',
-                  '--padding-right': '16px',
-                  height: 'calc(100vh - 144px)', // 调整高度以适应固定头部
-                  overflowY: 'auto',
-                }}
-              >
-                {displayAgents.map((agent) => (
-                  <List.Item
-                    key={agent.identifier}
-                    prefix={renderAvatar(agent.meta.avatar)}
-                    description={agent.meta.description}
-                    arrow={false}
-                    extra={
-                      <Button
-                        color="primary"
-                        fill="outline"
-                        size="small"
-                        onClick={() => handleSelectAgent(agent)}
-                      >
-                        开启新对话
-                      </Button>
-                    }
+        {categories.map((item) => (
+          <Tabs.Tab title={item.name} key={item.id} />
+        ))}
+      </Tabs>
+      <Swiper
+        direction="horizontal"
+        loop
+        indicator={() => null}
+        ref={swiperRef}
+        defaultIndex={activeIndex}
+        onIndexChange={(index) => {
+          setActiveIndex(index);
+          selectedCategoryIdByIndex(index);
+        }}
+      >
+        {categories.map((category) => (
+          <Swiper.Item key={category.id}>
+            {category.id === selectedCategoryId && (
+              <div className={s['agent-list']}>
+                <List>
+                  <VirtualList
+                    data={filteredAssistants as unknown as IAssistantMeta[]}
+                    height={window.innerHeight - 190} // 调整高度计算，预留更多空间
+                    itemHeight={88}
+                    itemKey="id"
                   >
-                    <span
-                      style={{
-                        color: '#1677ff',
-                        fontWeight: 500,
-                        fontSize: '16px',
-                      }}
-                    >
-                      {agent.meta.title}
-                    </span>
-                  </List.Item>
-                ))}
-                <InfiniteScroll loadMore={loadMore} hasMore={hasMore} />
-              </List>
-            </Tabs.Tab>
-          ))}
-        </Tabs>
-      </div>
-    </div>
+                    {(item: IAssistantMeta) => (
+                      <RenderAgent key={item.id} data={item} />
+                    )}
+                  </VirtualList>
+                </List>
+              </div>
+            )}
+          </Swiper.Item>
+        ))}
+      </Swiper>
+    </ContentPanel>
   );
 };
+
+export const AssistantPage = React.memo((props) => {
+  return (
+    <>
+      <AssistantProvider>
+        <>
+          <AddOrUpdateAssistant />
+          <AssistantPageContent />
+        </>
+      </AssistantProvider>
+    </>
+  );
+});

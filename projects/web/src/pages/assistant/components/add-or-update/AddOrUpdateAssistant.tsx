@@ -5,9 +5,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import s from './Style.module.scss';
 import { IAssistantMeta } from '@evo/types';
 import { ContentPanel } from '../../../../components';
-import { useAssistantOperation } from '@evo/data-store';
+import { useAssistantOperation, useAssistantSelector } from '@evo/data-store';
 import { useRef } from 'react';
-import { useAssistantSelector } from '../../assistant-processor/AssistantProvider';
 export interface AssistantFormValues
   extends Pick<IAssistantMeta, 'avatar' | 'description' | 'prompt' | 'title'> {}
 
