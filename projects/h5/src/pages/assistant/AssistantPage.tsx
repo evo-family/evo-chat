@@ -85,39 +85,39 @@ const RenderAgent = React.forwardRef<
       actions={
         isMy
           ? [
-              <a key="edit" onClick={handleEdit}>
-                编辑
-              </a>,
-              <TableDropdown
-                key="more"
-                onSelect={(key) => {
-                  if (key === 'delete') {
-                    modal.confirm({
-                      title: '确认删除',
-                      content: `确定要删除助手 "${data.title}" 吗？`,
-                      okText: '确定',
-                      cancelText: '取消',
-                      onOk: () => {
-                        deleteAssistant(data.id);
-                      },
-                    });
-                  }
+            <a key="edit" onClick={handleEdit}>
+              编辑
+            </a>,
+            <TableDropdown
+              key="more"
+              onSelect={(key) => {
+                if (key === 'delete') {
+                  modal.confirm({
+                    title: '确认删除',
+                    content: `确定要删除助手 "${data.title}" 吗？`,
+                    okText: '确定',
+                    cancelText: '取消',
+                    onOk: () => {
+                      deleteAssistant(data.id);
+                    },
+                  });
+                }
 
-                  if (key === 'copy') {
-                    handleCopy();
-                  }
-                }}
-                menus={[
-                  { key: 'copy', name: '复制' },
-                  { key: 'delete', danger: true, name: '删除' },
-                ]}
-              />,
-            ]
+                if (key === 'copy') {
+                  handleCopy();
+                }
+              }}
+              menus={[
+                { key: 'copy', name: '复制' },
+                { key: 'delete', danger: true, name: '删除' },
+              ]}
+            />,
+          ]
           : [
-              <a key="copy" onClick={handleCopy}>
-                复制
-              </a>,
-            ]
+            <a key="copy" onClick={handleCopy}>
+              复制
+            </a>,
+          ]
       }
     >
       <List.Item.Meta
@@ -171,7 +171,7 @@ const RenderAgent = React.forwardRef<
   );
 });
 
-export interface IAssistantPageContentProps {}
+export interface IAssistantPageContentProps { }
 
 export const AssistantPageContent: FC<IAssistantPageContentProps> = (props) => {
   const swiperRef = useRef<SwiperRef>(null);
@@ -192,12 +192,6 @@ export const AssistantPageContent: FC<IAssistantPageContentProps> = (props) => {
     setSelectedCategoryId(category.id);
   };
 
-  console.log(
-    'q=>filteredAssistants',
-    activeIndex,
-    filteredAssistants,
-    selectedCategoryId
-  );
 
   return (
     <ContentPanel hiddenToolbarBack title="助手">

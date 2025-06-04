@@ -11,6 +11,7 @@ import type { BaseSelectRef } from 'rc-select';
 import { IAvailableModel } from '@evo/types';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
+import { EvoSelect } from '@Evo/ui-component';
 
 export interface ISelectorModelRef {
   selectRef: React.RefObject<BaseSelectRef>;
@@ -34,6 +35,7 @@ export const SelectorModel = memo(
       showAddModel = true,
       returnArray,
       children,
+      open,
       ...otherProps
     } = props;
     const navigate = useNavigate();
@@ -79,45 +81,81 @@ export const SelectorModel = memo(
     };
 
     return (
-      <Select
-        ref={selectRef}
-        placeholder="请选择模型"
-        {...otherProps}
+      <EvoSelect
+        // ref={selectRef}
         className="evo-select"
-        dropdownStyle={{
-          padding: 0,
-          ...otherProps.dropdownStyle,
+        options={modelOptions!}
+        value={selectValue!}
+        open={open}
+        selectProps={{
+          // @ts-ignore
+          ref: selectRef,
+          placeholder: '请选择模型',
+          ...otherProps,
+          dropdownStyle: {
+            padding: 0,
+            ...otherProps.dropdownStyle,
+          },
+          dropdownRender: (menu) => (
+            <>
+              <div className="evo-select-menu">{menu}</div>
+              {showAddModel && (
+                <>
+                  <Divider style={{ margin: 0 }} />
+                  <Space style={{ padding: 8, alignItems: 'center' }}>
+                    <Button
+                      size="small"
+                      style={{ width: '100%' }}
+                      type="text"
+                      icon={<PlusOutlined />}
+                      onClick={() => {
+                        navigate('/settings');
+                      }}
+                    >
+                      添加模型
+                    </Button>
+                  </Space>
+                </>
+              )}
+            </>
+          ),
+          mode: mode,
+
         }}
-        dropdownRender={(menu) => (
-          <>
-            <div className="evo-select-menu">{menu}</div>
-            {showAddModel && (
-              <>
-                <Divider style={{ margin: 0 }} />
-                <Space style={{ padding: 8, alignItems: 'center' }}>
-                  <Button
-                    size="small"
-                    style={{ width: '100%' }}
-                    type="text"
-                    icon={<PlusOutlined />}
-                    onClick={() => {
-                      navigate('/settings');
-                    }}
-                  >
-                    添加模型
-                  </Button>
-                </Space>
-              </>
-            )}
-          </>
-        )}
-        mode={mode}
-        value={selectValue}
+        // ref={selectRef}
+        // placeholder="请选择模型"
+        // {...otherProps}
+        // dropdownStyle={{
+        //   padding: 0,
+        //   ...otherProps.dropdownStyle,
+        // }}
+        // dropdownRender={(menu) => (
+        //   <>
+        //     <div className="evo-select-menu">{menu}</div>
+        //     {showAddModel && (
+        //       <>
+        //         <Divider style={{ margin: 0 }} />
+        //         <Space style={{ padding: 8, alignItems: 'center' }}>
+        //           <Button
+        //             size="small"
+        //             style={{ width: '100%' }}
+        //             type="text"
+        //             icon={<PlusOutlined />}
+        //             onClick={() => {
+        //               navigate('/settings');
+        //             }}
+        //           >
+        //             添加模型
+        //           </Button>
+        //         </Space>
+        //       </>
+        //     )}
+        //   </>
+        // )}
+        // mode={mode}
         onChange={handleChange}
-        options={modelOptions}
       >
-        {children}
-      </Select>
+      </EvoSelect>
     );
   })
 );

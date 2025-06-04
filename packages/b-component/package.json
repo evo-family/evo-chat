@@ -34,6 +34,7 @@
     "@evo/platform-bridge": "workspace:*",
     "@evo/types": "workspace:*",
     "@evo/utils": "workspace:*",
+    "@evo/ui-component": "workspace:*",
     "@tanstack/react-virtual": "^3.13.6",
     "@uiw/react-codemirror": "^4.23.12",
     "@uiw/react-markdown-preview": "^5.1.3",

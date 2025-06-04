@@ -10,8 +10,9 @@ import { useSenderSelector } from '../sender-processor/SenderProvider';
 import { useModelOptionsData } from '../../../hooks';
 import { useNavigate } from 'react-router';
 import { ISelectorModelRef, SelectorModel } from '../../../selector';
+import { EvoTooltip } from '@evo/ui-component';
 
-export interface IModelSelectToolbarProps {}
+export interface IModelSelectToolbarProps { }
 
 export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => {
   const [chatWin] = useChatWinCtx((ctx) => ctx.chatWin);
@@ -82,7 +83,7 @@ export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => 
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-      <Tooltip title="选择模型">
+      <EvoTooltip title="选择模型">
         <Button
           className={classNames('evo-button-icon')}
           type="text"
@@ -92,7 +93,7 @@ export const ModelSelectToolbar: FC<IModelSelectToolbarProps> = memo((props) => 
             setModelSelectOpen(!modelSelectOpen);
           }}
         />
-      </Tooltip>
+      </EvoTooltip>
       <SelectorModel
         style={{ width: '100%' }}
         placeholder=""

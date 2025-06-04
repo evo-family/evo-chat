@@ -14,6 +14,8 @@ overrides:
   '@rsbuild/plugin-svgr': 1.2.0
   '@rspack/core': 1.3.8
   '@rsdoctor/rspack-plugin': ^0.4.12
+  antd: ^5.24.0
+  antd-mobile: ^5.38.1
   ahooks: ^3.7.8
   react: 18.3.1
   react-dom: 18.3.1
@@ -206,6 +208,9 @@ importers:
       '@evo/types':
         specifier: workspace:*
         version: link:../types
+      '@evo/ui-component':
+        specifier: workspace:*
+        version: link:../ui-component
       '@evo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -445,6 +450,43 @@ importers:
       '@llm-tools/embedjs-interfaces':
         specifier: ^0.1.28
         version: 0.1.28(openai@4.94.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2))
+
+  packages/ui-component:
+    dependencies:
+      '@ant-design/icons':
+        specifier: ^5.6.1
+        version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@evo/types':
+        specifier: workspace:*
+        version: link:../types
+      '@evo/utils':
+        specifier: workspace:*
+        version: link:../utils
+      antd:
+        specifier: ^5.24.0
+        version: 5.24.7(date-fns@2.30.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      antd-mobile:
+        specifier: ^5.38.1
+        version: 5.39.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@types/react-highlight-words':
+        specifier: ^0.20.0
+        version: 0.20.0
+      '@types/react-syntax-highlighter':
+        specifier: ^15.5.13
+        version: 15.5.13
+      less:
+        specifier: ^4.2.2
+        version: 4.3.0
+      sass:
+        specifier: ^1.85.1
+        version: 1.86.3
 
   packages/utils:
     dependencies:
@@ -807,32 +849,32 @@ packages:
   '@ant-design/pro-card@2.9.7':
     resolution: {integrity: sha512-uDDYowmYH1ldRfG8Mb4QOwcEEz6ptRBQDLO1tkVADCRkdOMwz82xlZneR4uVuFyKcuNmgHzarYNncozBKhFuaA==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
 
   '@ant-design/pro-components@2.8.7':
     resolution: {integrity: sha512-QhibkPsUJryEjI1QmwUn+XCngGHidu0ekvricL6TIEvPgP+AUAca29XutN5+Mmn8Xfja1ca9HFTHTgFoV74Z7Q==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
   '@ant-design/pro-descriptions@2.6.7':
     resolution: {integrity: sha512-fgn2d0kDWUODGDWKpgziZuuqPlmIoKxQFJY9Yg4nbaRp8GDDKZeSSqgvW+OxjpYM8dxq31fiz1dZlZnOPoYKpg==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
 
   '@ant-design/pro-field@3.0.4':
     resolution: {integrity: sha512-nJSng/6/pPZFdiFeTtZcBQLNrHg9tIeiKFR1+zzbnQbI3qBOFP9aBZS/+LwkQZcI2G71vrRgz2x5OhHb7AX0wQ==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
 
   '@ant-design/pro-form@2.31.7':
     resolution: {integrity: sha512-0TCtIC/ynbLPoes8sLBFwFbi0tkeNmSU6the2EcyKIKDLfWHDbfkLM1OSFrzv3QD+H8OgFWMkTSOjhMOKSsOBg==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       rc-field-form: '>=1.22.0'
       react: 18.3.1
       react-dom: 18.3.1
@@ -840,35 +882,35 @@ packages:
   '@ant-design/pro-layout@7.22.4':
     resolution: {integrity: sha512-X2WO4L2itXemX4zhS+0NG+8kXQD5SX9sG+zjx/15BmIO3FvsUGqOHgoCg0vhd424EiyPj7WtdMZJ39G1xdgDwA==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
   '@ant-design/pro-list@2.6.7':
     resolution: {integrity: sha512-6k/En7pioMgepho/1HMf2DAnkSTZiat1lDg2ggCok2lhSgqXzir7x22ewJQRgPvEiVb6/qqaFQNd7a8dnrFj1w==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
   '@ant-design/pro-provider@2.15.4':
     resolution: {integrity: sha512-DBX0JNUNOYXAucVqd/zTdqtXckCDqr2Lo85KIku2YzWdhptDPDZRTNqL04JShjGejDl8fzwQ8yREHgVUfzn6Gg==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
   '@ant-design/pro-skeleton@2.2.1':
     resolution: {integrity: sha512-3M2jNOZQZWEDR8pheY00OkHREfb0rquvFZLCa6DypGmiksiuuYuR9Y4iA82ZF+mva2FmpHekdwbje/GpbxqBeg==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
   '@ant-design/pro-table@3.19.0':
     resolution: {integrity: sha512-nL25734d5q5oqtmG7Apn2TNJUnJE8m9dkopXMQdoNZnv8qeRQLBH+i5cZT1yh7FIO8z6QLXleg+KnR/cI7VRRw==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       rc-field-form: '>=1.22.0'
       react: 18.3.1
       react-dom: 18.3.1
@@ -876,7 +918,7 @@ packages:
   '@ant-design/pro-utils@2.17.0':
     resolution: {integrity: sha512-hHKUISjMEoS+E5ltJWyvNTrlEA3IimZNxtDrEhorRIbgVYAlmEN5Mj/ESSofzDM3+UlxiI5+A/Y6IHkByTfDEA==}
     peerDependencies:
-      antd: ^4.24.15 || ^5.11.2
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
@@ -888,7 +930,7 @@ packages:
   '@ant-design/x@1.1.1':
     resolution: {integrity: sha512-DFzNQfCTdYBhTJxorGI1ylhH/ZODcU5yn64xt/8/11slT0ALMuHC5Afx717KNQiao4RleXjypiEWuP0K1f+Szg==}
     peerDependencies:
-      antd: ^5.20.3
+      antd: ^5.24.0
       react: 18.3.1
       react-dom: 18.3.1
 
